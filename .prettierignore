@@ -1,0 +1,4 @@
+# Ignore all markdown files to preserve admonition indentation
+docs/
+*.md
+**/*.md

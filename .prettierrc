@@ -1,0 +1,13 @@
+{
+  "tabWidth": 2,
+  "useTabs": false,
+  "overrides": [
+    {
+      "files": ["*.md", "docs/**/*.md"],
+      "options": {
+        "proseWrap": "preserve",
+        "parser": "markdown"
+      }
+    }
+  ]
+}

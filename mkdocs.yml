@@ -1,0 +1,116 @@
+site_name: Kedi Documentation
+site_description: A typed reasoning layer for LLM orchestration.
+site_author: Kedi Lang
+repo_url: https://github.com/kedi-lang/kedi
+repo_name: kedi-lang/kedi
+edit_uri: edit/master/docs/
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: teal
+      accent: purple
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: teal
+      accent: lime
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.indexes
+    - toc.integrate
+    - toc.follow
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+  icon:
+    repo: fontawesome/brands/github
+    admonition:
+      note: fontawesome/solid/note-sticky
+      tip: fontawesome/solid/lightbulb
+      warning: fontawesome/solid/triangle-exclamation
+      danger: fontawesome/solid/skull-crossbones
+      success: fontawesome/solid/check
+
+plugins:
+  - search
+  - with-pdf:
+      author: Kedi Lang
+      copyright: "© 2025 Kedi Lang"
+      cover: true
+      back_cover: true
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.blocks.admonition
+  - pymdownx.blocks.details
+  - pymdownx.blocks.tab
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - attr_list
+  - md_in_html
+  - def_list
+  - tables
+
+extra_css:
+  - stylesheets/vscode_dark.css
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/kedi-lang/kedi
+  generator: false
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation: getting-started/installation.md
+      - Your First Program: getting-started/hello-world.md
+  - Core Concepts:
+      - Procedures: concepts/procedures.md
+      - Variables & Types: concepts/variables-and-types.md
+      - Escaping & Continuation: concepts/escaping.md
+      - Code Generation: concepts/codegen.md
+      - Python Interop: concepts/python-interop.md
+      - LLM Integration: concepts/llm-integration.md
+  - Agent Adapters:
+      - Overview: adapters/index.md
+      - PydanticAdapter: adapters/pydantic.md
+      - DSPyAdapter: adapters/dspy.md
+      - Custom Adapters: adapters/custom.md
+  - Examples:
+      - Trip Planner: examples/trip-planner.md
+      - Financial Analyst: examples/financial-analyst.md
+      - Word Chain: examples/word-chain.md
+      - Data Pipeline: examples/data-pipeline.md
+      - Code Reviewer: examples/code-reviewer.md
+  - Reference:
+      - CLI Reference: reference/cli.md
+      - Syntax Reference: reference/syntax.md
+      - API Reference: reference/api.md
+      - Troubleshooting: reference/troubleshooting.md
