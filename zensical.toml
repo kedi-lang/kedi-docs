@@ -2,10 +2,12 @@
 site_name = "Kedi"
 site_description = "A typed reasoning layer for LLM orchestration."
 site_author = "Kedi Lang"
-site_url = "https://docs.kedi-lang.org/"
+site_url = "https://kedi-lang.org/"
+repo_url = "https://github.com/kedi-lang/kedi"
+repo_name = "kedi-lang/kedi"
 docs_dir = "docs"
 site_dir = "site"
-copyright = "Kedi contributors"
+copyright = 'Copyright &copy; 2026 <a href="https://github.com/orgs/kedi-lang/teams/kedi-maintainers">Kedi contributors</a>'
 extra_css = [
   "stylesheets/kedi-highlight.css",
   "stylesheets/docs-ui.css",
@@ -135,6 +137,7 @@ features = [
   "navigation.instant",
   "navigation.sections",
   "navigation.indexes",
+  "navigation.footer",
   "navigation.top",
   "navigation.tracking",
   "search.highlight",
@@ -144,6 +147,9 @@ features = [
   "content.code.annotate",
   "content.tabs.link",
 ]
+
+[project.theme.icon]
+repo = "fontawesome/brands/github"
 
 [[project.theme.palette]]
 media = "(prefers-color-scheme)"
@@ -165,6 +171,26 @@ primary = "teal"
 accent = "amber"
 toggle.icon = "lucide/moon"
 toggle.name = "Switch to system preference"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/github"
+link = "https://github.com/kedi-lang"
+name = "Kedi on GitHub"
+
+[[project.extra.social]]
+icon = "simple/huggingface"
+link = "https://huggingface.co/kedi-lang"
+name = "Kedi on Hugging Face"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/linkedin"
+link = "https://www.linkedin.com/company/kedi-lang/"
+name = "Kedi on LinkedIn"
+
+[[project.extra.social]]
+icon = "fontawesome/solid/envelope"
+link = "mailto:hello@kedi-lang.org"
+name = "Email Kedi"
 
 [project.markdown_extensions.abbr]
 [project.markdown_extensions.admonition]
