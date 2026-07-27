@@ -1,205 +1,135 @@
-# Syntax Reference
+# Syntax Index
 
-A complete reference to all Kedi syntax elements.
+## Program Forms
 
-## Grammar Overview
+| Form | Meaning |
+| --- | --- |
+| `@name(params) -> Type:` | Define a lexically scoped procedure |
+| `~Name(fields)` | Define a Pydantic-compatible custom type |
+| `[name: Type] = value` | Deterministic assignment |
+| `>> prompt [field: Type]` | Structured model call |
+| `[name] << prompt` | Raw text model call and capture |
+| `>> prompt` with no fields | Raw model call whose response is discarded |
+| `= value` | Return text assembled from literals and substitutions |
+| `= `expression`` | Return one native Python value |
+| `= ```...```` | Execute Python statements and return their value |
+| `` `statement` `` | Execute one Python statement for side effects |
+| `````...````` | Execute a multiline Python block |
+| `> name: ...` | Apply a directive |
+| `# ...` / `### ... ###` | Line or block comment |
 
-```
-program     ::= statement*
-statement   ::= procedure | type_def | assignment | template | python_block | comment
-```
+Declarations and executable statements retain source order. Indentation defines
+scope; tabs compare as width four, but spaces are recommended.
+
+## Templates and Values
+
+| Syntax | Role |
+| --- | --- |
+| `<name>` | Read and render a variable |
+| `<procedure(args)>` | Call a procedure and render its result |
+| `<`expression`>` | Evaluate Python and render the result |
+| `[field]` | Capture a model-produced string |
+| `[field: Type]` | Capture and validate a typed model output |
+| `[field: `TypeExpr`]` | Resolve the output type from Python |
+
+Angle brackets are reads; square brackets are writes. Substitution always
+renders into surrounding text. A Python assignment or native return preserves
+the object.
+
+Adjacent continuation lines after one `>>` are newline-joined into one model
+call. Outputs become visible after the whole block completes. A new `>>` starts
+a new call and may read outputs from a previous call.
 
 ## Procedures
 
-```
-procedure   ::= "@" name "(" params ")" "->" return_type ":" body
-params      ::= (param ("," param)*)?
-param       ::= name (":" type)?
-return_type ::= type
-body        ::= (indent statement)+
-```
-
-**Examples:**
-
-```python
-# Basic procedure
-@greet(name: str) -> str:
-    Hello, <name>!
-    = <name>
-
-# Typed parameters
-@calculate(x: int, y: int) -> int:
-    Sum of <x> and <y> is [sum].
-    = <sum>
-
-# Default parameters (not yet supported)
-@greet(name: str, greeting: str) -> str:
-    <greeting>, <name>!
-    = <greeting>
+```kedi
+@format_issue(
+  issue_id: int,
+  title: str = `"Untitled"`
+) -> str:
+  = Issue \#<issue_id>: <title>
 ```
 
-## Type Definitions
+Parameters support positional and named calls, Python-expression defaults, and
+direct or backtick type annotations. Required parameters precede defaults.
+Unannotated parameters and returns default to `str`.
 
-```
-type_def    ::= "~" name "(" fields ")"
-fields      ::= field ("," field)*
-field       ::= name (":" type)?
-```
+Calls may nest:
 
-**Examples:**
-
-```python
-# Simple type
-~Person(name: str, age: int)
-
-# Complex type
-~Company(name: str, employees: list, revenue: float)
+```kedi
+= `format_issue(issue.id, title=issue.title)`
 ```
 
-## Templates
+Commas, parentheses, and delimiters that are literal Kedi text must be escaped
+when they would otherwise be parsed as call syntax.
 
-```
-template    ::= text (substitution | output)*
-substitution ::= "<" name ">"
-output      ::= "[" name "]"
-```
+## Custom Types
 
-**Examples:**
-
-```python
-# Substitution: insert variable value
-Hello, <name>!
-
-# Output: capture LLM output
-What is the [capital] of <country>?
-
-# Combined
-Tell me a [fact] about <topic>.
+```kedi
+~Finding(
+  path: Annotated[str, "Repository-relative path"],
+  severity: Literal["low", "high"],
+  tags: list[str] = `[]`
+)
 ```
 
-## Python Blocks
+Field names are unique identifiers. Required fields precede defaults, and a
+defaulted field needs an explicit type. Mutable defaults are deep-copied per
+instance.
 
-````
-python_block ::= "```python" python_code "```"
-````
+## Python Forms
 
-**Examples:**
+- Backticks inside an assignment, return, argument, substitution, annotation,
+  model, setting, or directive are Python expressions.
+- A standalone backtick line is a Python statement.
+- Triple-backtick blocks contain Python statements. Add `=` before the opening
+  fence when the block should return a value.
+- The initial top-level Python fence is the prelude and supplies globals to
+  following Kedi declarations.
 
-````python
-@compute(data: list) -> float:
-    Calculate the [value] from <data>.
+Kedi values are available as Python globals in the runtime frame. Python writes
+to recognized Kedi globals are synchronized; lexical locals remain scoped.
 
-```python
-import statistics
-result = statistics.mean(<data>)
-\```
+## Validation and Generation
 
-    The mean is [result].
-    = <result>
-````
+```kedi
+@test: procedure_name:
+  > case: unique_case:
+    `assert procedure_name() == "ok"`
 
-## Assignments
-
-```
-assignment  ::= "=" value | "=" "<" procedure_call ">"
-```
-
-**Examples:**
-
-```python
-# Direct return
-= <result>
-
-# Procedure call return
-= <greet(Alice)>
+@eval: procedure_name:
+  > data: rows:
+    = `[(input_value, {"field": "expected"})]`
+  > test_data: rows:
+    = `[(held_out_value, {"field": "expected"})]`
+  > metric: score(rows):
+    = `procedure_name(rows) == expected["field"]`
 ```
 
-## Comments
+`> optimize:` and `> auto:` occur inside procedures. Their bodies accept either
+an explicit leading `>>` or legacy bare template lines. Bare template lines are
+invalid everywhere else.
 
-```
-comment     ::= "#" text (until end of line)
-```
+## Escapes
 
-**Examples:**
+| Escape | Literal result |
+| --- | --- |
+| `\<` `\>` | angle brackets |
+| `\[` `\]` | square brackets |
+| `\(` `\)` | parentheses |
+| `\,` | comma |
+| `\=` `\@` `\#` | equals, at, hash |
+| `\~` or `~~` | tilde |
+| ``\` `` | backtick |
+| `\\` | backslash |
+| `\t` `\n` `\s` | tab, newline, preserved space |
 
-```python
-# This is a comment
-@greet(name: str) -> str:  # Inline comment
-    Hello!
-```
+A trailing backslash continues a rendered `=` return onto the next physical
+line. It is unrelated to template continuation.
 
-## Escape Sequences
+## Names and Comments
 
-| Sequence | Meaning               |
-| -------- | --------------------- |
-| `\<`     | Literal `<`           |
-| `\>`     | Literal `>`           |
-| `\[`     | Literal `[`           |
-| `\]`     | Literal `]`           |
-| `\=`     | Literal `=`           |
-| `\@`     | Literal `@`           |
-| `\,`     | Literal `,` (in args) |
-| `\\`     | Literal `\`           |
-| `\#`     | Literal `#`           |
-| `\~`     | Literal `~`           |
-| `` \` `` | Literal `` ` ``       |
-| `\(`     | Literal `(`           |
-| `\)`     | Literal `)`           |
-| `\t`     | Tab                   |
-| `\n`     | Newline               |
-| `\s`     | Space                 |
-
-## Line Continuation
-
-Use `\` at end of line to continue to next line as single template:
-
-```python
-@analyze(topic: str) -> str:
-    You are an expert. \
-    Analyze <topic>. \
-    Provide [analysis].
-    = <analysis>
-```
-
-## Type System
-
-### Built-in Types
-
-| Type    | Description       |
-| ------- | ----------------- |
-| `str`   | Text string       |
-| `int`   | Integer           |
-| `float` | Floating-point    |
-| `bool`  | Boolean           |
-| `list`  | List/Array        |
-| `dict`  | Dictionary        |
-| `code`  | Executable Python |
-
-### Custom Types
-
-```python
-~MyType(field1: type, field2: type)
-```
-
-Custom types are converted to Pydantic models automatically.
-
-## File Structure
-
-A typical Kedi file:
-
-```python
-# Type definitions (top)
-~Person(name: str, age: int)
-
-# Procedures
-@create_person(name: str, age: int) -> Person:
-    Create a [person] with name <name> and age <age>.
-
-@greet(person: Person) -> str:
-    Hello [greeting] to <person.name>!
-    = <greeting>
-
-# Main execution (bottom)
-person = <create_person(Alice, 30)>
-= <greet(<person>)>
-```
+Identifiers match Python-style names: a letter or underscore followed by
+letters, digits, or underscores. `args` is runtime-owned and cannot be assigned.
+`#` begins a Kedi comment; use `\#` for a visible hash. A first `###` block in a
+procedure or profile becomes its docstring.

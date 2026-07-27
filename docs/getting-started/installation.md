@@ -1,124 +1,75 @@
 # Installation
 
-Getting started with Kedi is straightforward. It's a Python package that you can install in minutes.
+## Supported Python Versions
 
----
+Kedi requires Python 3.10 or newer. The package metadata currently supports
+Python 3.10 through 3.14.
 
-## Requirements
+## Install with uv
 
-| Requirement | Version                     |
-| ----------- | --------------------------- |
-| Python      | 3.10+                       |
-| pip         | latest                      |
-| LLM API Key | OpenAI / Anthropic / Ollama |
-
----
-
-## Installation Methods
-
-=== "uv (Recommended)"
-
-    ```bash
-    uv add kedi
-    ```
-
-=== "pip"
-
-    ```bash
-    pip install kedi
-    ```
-
-=== "From Source"
-
-    ```bash
-    git clone https://github.com/kedi-lang/kedi.git
-    cd kedi
-    pip install -e .
-    ```
-
----
-
-## Verify Installation
+For an application project:
 
 ```bash
-kedi --version
+uv add kedi
 ```
 
-Expected output:
+Run Kedi inside the project environment:
 
+```bash
+uv run kedi --help
+uv run kedi-lsp
 ```
-kedi 0.1.0
+
+For a temporary CLI invocation without adding a project dependency, use
+`uvx kedi`. Pin a version in automation so CI and local behavior do not drift.
+
+## Install with pip
+
+Kedi can also be installed into an activated virtual environment:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install kedi
 ```
 
----
+Use `uv` for the repository's contributor workflow. The `pip` path is intended
+for consumers whose environments are managed by another tool.
 
-## Configuration
+## Optional Backend Dependencies
 
-### LLM Provider Setup
+The core distribution includes the Pydantic AI, DSPy, and LangChain adapter
+dependencies. Some harness or runtime surfaces need additional packages:
 
-Kedi supports multiple LLM providers. Configure via environment variables or a `.env` file:
+```bash
+uv add "kedi[claude]"
+uv add "kedi[playground]"
+```
 
-=== "OpenAI"
+The `claude` extra installs the Claude Agent SDK. The `playground` extra adds
+the browser/playground server dependencies. Codex and ACP connect to external
+agent processes and may require their own executable, authentication, or
+command configuration.
 
-    ```bash title=".env"
-    OPENAI_API_KEY=sk-...
-    OPENAI_MODEL=gpt-4o
-    ```
+## Verify the CLI
 
-=== "Anthropic"
+```bash
+kedi --help
+kedi -p -c "= ready"
+```
 
-    ```bash title=".env"
-    ANTHROPIC_API_KEY=sk-ant-...
-    ANTHROPIC_MODEL=claude-sonnet-4-20250514
-    ```
+The second command parses inline Kedi without contacting a model. If
+`kedi-lsp` is on `PATH`, editor integrations can start the language server.
 
-=== "Ollama (Local)"
+## Upgrade Kedi
 
-    ```bash title=".env"
-    OLLAMA_BASE_URL=http://localhost:11434
-    OLLAMA_MODEL=llama3
-    ```
+With uv:
 
-### Environment Priority
+```bash
+uv lock --upgrade-package kedi
+uv sync
+```
 
-1. Environment variables (highest priority)
-2. `.env` file in current directory
-3. `.env` file in home directory
-4. Default values
-
----
-
-## Editor Support
-
-### VS Code Extension
-
-Install the Kedi VS Code extension for syntax highlighting:
-
-1. Open VS Code
-2. Go to Extensions (`Cmd+Shift+X`)
-3. Search for "Kedi"
-4. Click Install
-
-!!! tip "Syntax Highlighting"
-    The VS Code extension provides syntax highlighting, error detection, and code snippets for `.kedi` files.
-
----
-
-## Troubleshooting
-
-!!! warning "Common Issues"
-    **Python version too old:**
-    ```bash
-    python --version  # Must be 3.10+
-    ```
-    
-    **Missing API key:**
-    ```bash
-    export OPENAI_API_KEY="your-key-here"
-    ```
-
----
-
-## Next Steps
-
-[:material-rocket-launch: Write Your First Program](hello-world.md){ .md-button .md-button--primary }
+Review release notes before upgrading a production workflow. Kedi programs may
+also depend on provider SDK behavior, agent harness versions, and installed
+Kedi packages.

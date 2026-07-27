@@ -1,0 +1,187 @@
+[project]
+site_name = "Kedi"
+site_description = "A typed reasoning layer for LLM orchestration."
+site_author = "Kedi Lang"
+site_url = "https://docs.kedi-lang.org/"
+docs_dir = "docs"
+site_dir = "site"
+copyright = "Kedi contributors"
+extra_css = ["stylesheets/kedi-highlight.css"]
+extra_javascript = ["javascripts/kedi-highlight.js"]
+nav = [
+  { "Home" = "index.md" },
+  { "Start" = [
+    "getting-started/index.md",
+    { "Installation" = "getting-started/installation.md" },
+    { "First Program" = "getting-started/first-program.md" },
+    { "Projects and Execution" = "getting-started/projects-and-execution.md" },
+  ] },
+  { "Core Language" = [
+    "core-language/index.md",
+    { "Source Structure" = "core-language/source-structure.md" },
+    { "Templates and Invokes" = "core-language/templates-and-invokes.md" },
+    { "Substitutions and Calls" = "core-language/substitutions-and-calls.md" },
+    { "Outputs and Assignments" = "core-language/outputs-and-assignments.md" },
+    { "Procedures" = "core-language/procedures.md" },
+    { "Parameters and Returns" = "core-language/parameters-and-returns.md" },
+    { "Types" = "core-language/types.md" },
+    { "Multiline Syntax and Escaping" = "core-language/multiline-and-escaping.md" },
+  ] },
+  { "Python Interop" = [
+    "python-interop/index.md",
+    { "Inline Expressions" = "python-interop/inline-expressions.md" },
+    { "Python Blocks" = "python-interop/python-blocks.md" },
+    { "Prelude, Globals, and Scope" = "python-interop/prelude-globals-and-scope.md" },
+  ] },
+  { "Modules and Packaging" = [
+    "modules-and-packaging/index.md",
+    { "Modules" = "modules-and-packaging/modules.md" },
+    { "Imports and Exports" = "modules-and-packaging/imports-and-exports.md" },
+    { "Built-In Modules" = "modules-and-packaging/built-in-modules.md" },
+    { "Package Manifests" = "modules-and-packaging/package-manifests.md" },
+    { "Installation and Registries" = "modules-and-packaging/installation-and-registries.md" },
+  ] },
+  { "Agentic Engineering" = [
+    "agentic-engineering/index.md",
+    { "Backend Selection" = "agentic-engineering/backend-selection.md" },
+    { "Models and Reasoning" = "agentic-engineering/models-and-reasoning.md" },
+    { "Instructions and Settings" = "agentic-engineering/instructions-and-settings.md" },
+    { "Profiles" = "agentic-engineering/profiles.md" },
+    { "Tools and Use" = "agentic-engineering/tools-and-use.md" },
+    { "Approvals and Sensitive Operations" = "agentic-engineering/approvals.md" },
+    { "MCP Servers" = "agentic-engineering/mcp.md" },
+    { "Skills" = "agentic-engineering/skills.md" },
+    { "Subagents" = "agentic-engineering/subagents.md" },
+    { "Scoping and Capabilities" = "agentic-engineering/scoping-and-capabilities.md" },
+  ] },
+  { "Runtime" = [
+    "runtime/index.md",
+    { "Execution and Dataflow" = "runtime/execution-and-dataflow.md" },
+    { "Concurrency" = "runtime/concurrency.md" },
+    { "Caching" = "runtime/caching.md" },
+    { "Errors and Debugging" = "runtime/errors-and-debugging.md" },
+  ] },
+  { "Evals and Optimization" = [
+    "evals-and-optimization/index.md",
+    { "Test Blocks" = "evals-and-optimization/test-blocks.md" },
+    { "Evaluation Suites" = "evals-and-optimization/evaluation-suites.md" },
+    { "Datasets and Metrics" = "evals-and-optimization/datasets-and-metrics.md" },
+    { "Prompt Optimization" = "evals-and-optimization/prompt-optimization.md" },
+    { "GEPA" = "evals-and-optimization/gepa.md" },
+    { "AI-Generated Procedures" = "evals-and-optimization/ai-generated-procedures.md" },
+  ] },
+  { "Python API" = [
+    "python-api/index.md",
+    { "Query Decorator" = "python-api/query.md" },
+    { "Bind Decorator" = "python-api/bind.md" },
+    { "Configuration and Context" = "python-api/configuration-and-context.md" },
+    { "Types and Tools" = "python-api/types-and-tools.md" },
+    { "Approvals, MCP, and Skills" = "python-api/approvals-mcp-and-skills.md" },
+    { "Concurrency and Promises" = "python-api/concurrency-and-promises.md" },
+    { "Caching, Runtime, and Executors" = "python-api/caching-runtime-and-executors.md" },
+  ] },
+  { "Agent Adapters" = [
+    "agent-adapters/index.md",
+    { "Pydantic AI" = "agent-adapters/pydantic-ai.md" },
+    { "DSPy" = "agent-adapters/dspy.md" },
+    { "LangChain" = "agent-adapters/langchain.md" },
+    { "Custom Adapters" = "agent-adapters/custom-adapters.md" },
+    { "Codex" = "agent-adapters/codex.md" },
+    { "Claude" = "agent-adapters/claude.md" },
+    { "ACP Agents" = "agent-adapters/acp.md" },
+  ] },
+  { "Tooling" = [
+    "tooling/index.md",
+    { "Run and Parse Commands" = "tooling/run-and-parse.md" },
+    { "Test, Eval, and Optimize Commands" = "tooling/test-eval-and-optimize.md" },
+    { "Package Commands" = "tooling/package-commands.md" },
+    { "Language Server" = "tooling/language-server.md" },
+    { "VS Code" = "tooling/vscode.md" },
+    { "Zed" = "tooling/zed.md" },
+    { "Browser and Playground" = "tooling/browser-and-playground.md" },
+  ] },
+  { "Examples" = [
+    "examples/index.md",
+    { "Complete Program" = "examples/complete-program.md" },
+    { "Structured Extraction" = "examples/structured-extraction.md" },
+    { "Tools and Approvals" = "examples/tools-and-approvals.md" },
+    { "Agent Delegation" = "examples/agent-delegation.md" },
+    { "Evaluation and Optimization" = "examples/evaluation-and-optimization.md" },
+    { "Modules and Packaging" = "examples/modules-and-packaging.md" },
+  ] },
+  { "Reference" = [
+    "reference/index.md",
+    { "Syntax Index" = "reference/syntax.md" },
+    { "Directive Index" = "reference/directives.md" },
+    { "CLI Reference" = "reference/cli.md" },
+    { "Environment Variables" = "reference/environment-variables.md" },
+    { "Package Manifest" = "reference/package-manifest.md" },
+    { "Python API" = "reference/python-api.md" },
+    { "Capability Matrix" = "reference/capability-matrix.md" },
+    { "Diagnostics and Troubleshooting" = "reference/diagnostics-and-troubleshooting.md" },
+    { "Semantic Coverage Map" = "reference/semantic-coverage.md" },
+  ] },
+]
+
+[project.theme]
+language = "en"
+features = [
+  "navigation.instant",
+  "navigation.tabs",
+  "navigation.sections",
+  "navigation.indexes",
+  "navigation.top",
+  "navigation.tracking",
+  "search.highlight",
+  "search.suggest",
+  "toc.follow",
+  "content.code.copy",
+  "content.code.annotate",
+  "content.tabs.link",
+]
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme)"
+toggle.icon = "lucide/sun-moon"
+toggle.name = "Switch to light mode"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: light)"
+scheme = "default"
+primary = "teal"
+accent = "deep orange"
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to dark mode"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: dark)"
+scheme = "slate"
+primary = "teal"
+accent = "amber"
+toggle.icon = "lucide/moon"
+toggle.name = "Switch to system preference"
+
+[project.markdown_extensions.abbr]
+[project.markdown_extensions.admonition]
+[project.markdown_extensions.attr_list]
+[project.markdown_extensions.def_list]
+[project.markdown_extensions.footnotes]
+[project.markdown_extensions.md_in_html]
+[project.markdown_extensions.tables]
+[project.markdown_extensions.toc]
+permalink = true
+[project.markdown_extensions.pymdownx.details]
+[project.markdown_extensions.pymdownx.highlight]
+anchor_linenums = true
+line_spans = "__span"
+pygments_lang_class = true
+[project.markdown_extensions.pymdownx.inlinehilite]
+[project.markdown_extensions.pymdownx.snippets]
+[project.markdown_extensions.pymdownx.superfences]
+custom_fences = [
+  { name = "kedi", class = "kedi", format = "pymdownx.superfences.fence_code_format" },
+]
+[project.markdown_extensions.pymdownx.tabbed]
+alternate_style = true
+[project.markdown_extensions.pymdownx.tasklist]
+custom_checkbox = true
