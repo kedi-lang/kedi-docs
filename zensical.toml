@@ -6,8 +6,14 @@ site_url = "https://docs.kedi-lang.org/"
 docs_dir = "docs"
 site_dir = "site"
 copyright = "Kedi contributors"
-extra_css = ["stylesheets/kedi-highlight.css"]
-extra_javascript = ["javascripts/kedi-highlight.js"]
+extra_css = [
+  "stylesheets/kedi-highlight.css",
+  "stylesheets/docs-ui.css",
+]
+extra_javascript = [
+  "javascripts/kedi-highlight.js",
+  "javascripts/copy-markdown.js",
+]
 nav = [
   { "Home" = "index.md" },
   { "Start" = [
@@ -127,7 +133,6 @@ nav = [
 language = "en"
 features = [
   "navigation.instant",
-  "navigation.tabs",
   "navigation.sections",
   "navigation.indexes",
   "navigation.top",

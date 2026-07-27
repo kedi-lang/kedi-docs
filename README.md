@@ -11,10 +11,12 @@ uv tool run zensical serve
 ## Validate
 
 ```bash
-uv tool run zensical build --clean --strict
+uv tool run --from zensical==0.0.51 python scripts/build_docs.py
 ```
 
-The generated static site is written to `site/`.
+The generated static site is written to `site/`. The build also publishes each
+source page as Markdown and creates `site/llms.txt` plus
+`site/llms-full.txt`.
 
 ## Deploy
 
