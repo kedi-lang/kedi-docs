@@ -20,6 +20,24 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
 
+      - name: Check Kedi repository access
+        env:
+          KEDI_REPOSITORY_TOKEN: ${{ secrets.KEDI_REPOSITORY_TOKEN }}
+        run: |
+          if [ -z "$KEDI_REPOSITORY_TOKEN" ]; then
+            echo "::error::KEDI_REPOSITORY_TOKEN must grant read access to kedi-lang/kedi"
+            exit 1
+          fi
+
+      - name: Check out Kedi stable
+        uses: actions/checkout@v6
+        with:
+          repository: kedi-lang/kedi
+          ref: stable
+          token: ${{ secrets.KEDI_REPOSITORY_TOKEN }}
+          path: .kedi-source
+          persist-credentials: false
+
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
@@ -29,7 +47,7 @@ jobs:
         run: |
           python -m pip install --disable-pip-version-check \
             -r requirements-docs.txt \
-            "kedi @ git+https://github.com/kedi-lang/kedi.git@stable"
+            ./.kedi-source
 
       - name: Validate Kedi examples and adapter metadata
         run: |

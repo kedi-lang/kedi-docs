@@ -31,5 +31,10 @@ with the pinned dependency in `requirements-docs.txt` and publishes `site/` to
 the `gh-pages` branch. GitHub Pages serves that branch at
 <https://kedi-lang.org/>.
 
+The repository secret `KEDI_REPOSITORY_TOKEN` must contain a fine-grained
+GitHub token with read-only `Contents` access to the private
+`kedi-lang/kedi` repository. The workflow checks out its `stable` branch and
+installs Kedi from that local checkout.
+
 The workflow can also be started manually from **Actions → Documentation → Run
 workflow**.
