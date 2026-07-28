@@ -8,9 +8,7 @@ Create `review.kedi`:
 ~Review(decision: Literal["approve", "revise"], summary: str)
 
 @review_change(title: str, diff_summary: str) -> Review:
-  >> Review the change titled <title>.
-  The diff summary is: <diff_summary>
-  Return [review: Review].
+  >> For change <title> with diff summary <diff_summary>, the review result is [review: Review].
   = `review`
 
 = `review_change(args.title, args.diff_summary).model_dump_json()`
@@ -39,13 +37,11 @@ call renders its result to text, so it is appropriate for procedures returning
 
 ## Write a Template
 
-The two continuation rows after `>>` are joined with newlines and sent as one
-model request:
+Continuation rows after `>>` are joined with newlines and sent as one model
+request. This example needs only one row:
 
 ```kedi
->> Review the change titled <title>.
-The diff summary is: <diff_summary>
-Return [review: Review].
+>> For change <title> with diff summary <diff_summary>, the review result is [review: Review].
 ```
 
 `<title>` and `<diff_summary>` are substitutions. They read existing values;
@@ -62,7 +58,7 @@ Kedi also exposes raw capture for deliberately unstructured provider text:
 
 ```kedi
 @review_change(title: str, diff_summary: str) -> str:
-  [review] << Review <title>: <diff_summary>
+  [review] << Review of <title> with diff summary <diff_summary>:
   = <review>
 ```
 

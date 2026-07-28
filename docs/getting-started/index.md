@@ -7,8 +7,7 @@ short structured brief, and returns the captured text:
 
 ```kedi
 @brief(topic: str) -> str:
-  >> Explain <topic> to a software engineer.
-  Keep the answer to two sentences and return [summary: str].
+  >> A two-sentence brief for a software engineer about <topic> is [summary: str].
   = <summary>
 
 = <brief(`args.topic`)>
@@ -36,7 +35,7 @@ credentials.
 For a fixed prompt with one result, capture the output explicitly:
 
 ```kedi
->> Explain why idempotency matters as [answer: str] in one paragraph.
+>> The importance of idempotency, explained in one paragraph, is [answer: str].
 = <answer>
 ```
 
@@ -44,7 +43,7 @@ The typed field keeps the response and makes its contract visible to the
 adapter. A plain template without an output field does **not** keep the response:
 
 ```kedi
->> Explain why idempotency matters in one paragraph.
+>> In one paragraph, idempotency matters because
 ```
 
 That form is appropriate only when the call's side effects or trace matter and

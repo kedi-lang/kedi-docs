@@ -4,22 +4,11 @@ Kedi is a typed language and Python API for building LLM programs whose prompts,
 dataflow, structured outputs, tools, tests, and agent configuration live in one
 readable source format.
 
-## What Kedi Is
-
-Kedi sits between application code and model or agent frameworks. A `.kedi`
-program can:
-
-- render prompts from runtime values;
-- capture model output into typed fields;
-- compose reusable procedures;
-- run Python expressions and blocks when deterministic code is the right tool;
-- expose procedures and Python callables as agent tools;
-- configure models, MCP servers, skills, approvals, and subagents;
-- define tests, datasets, metrics, prompt optimization, and generated procedures.
-
-Kedi is not a model provider. Model calls are routed through an **agent
-framework adapter** such as Pydantic AI, DSPy, or LangChain, or an **agent
-harness adapter** such as Codex, Claude, or an ACP agent.
+It combines runtime substitution and typed output capture with reusable
+procedures, deterministic Python, model and agent configuration, tools, MCP,
+skills, approvals, subagents, tests, evaluations, and prompt optimization.
+Model calls run through framework adapters such as Pydantic AI, DSPy, or
+LangChain, or harness adapters such as Codex, Claude, and ACP.
 
 ## Why Typed LLM Programs
 
@@ -31,8 +20,7 @@ thing.
 ~Ticket(category: str, urgency: int)
 
 @classify(message: str) -> Ticket:
-  >> Classify this support message: <message>
-  Return [ticket: Ticket].
+  >> The classification of support message <message> is [ticket: Ticket].
   = `ticket`
 ```
 
@@ -47,7 +35,7 @@ explicit output contract:
 
 ```kedi
 @summarize(message: str) -> str:
-  >> Summarize <message> as [summary: str] in two sentences.
+  >> A two-sentence summary of <message> is [summary: str].
   = <summary>
 ```
 
