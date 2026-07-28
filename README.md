@@ -33,8 +33,9 @@ the `gh-pages` branch. GitHub Pages serves that branch at
 
 The repository secret `KEDI_REPOSITORY_TOKEN` must contain a fine-grained
 GitHub token with read-only `Contents` access to the private
-`kedi-lang/kedi` repository. The workflow checks out its `stable` branch and
-installs Kedi from that local checkout.
+`kedi-lang/kedi` and `kedi-lang/tree-sitter-kedi` repositories. The workflow
+checks out Kedi's `stable` branch, resolves its pinned `tree-sitter-kedi`
+submodule revision, and installs both packages from those local checkouts.
 
 The workflow can also be started manually from **Actions → Documentation → Run
 workflow**.
