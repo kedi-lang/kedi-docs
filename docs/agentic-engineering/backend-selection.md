@@ -9,7 +9,7 @@ different execution and capability contracts.
 > adapter: pydantic
 > model: groq:qwen/qwen3-32b
 
->> Extract [summary: str] from <document>.
+>> Summary of <document>: [summary: str].
 ```
 
 Built-in framework shortnames are `pydantic`, `dspy`, and `langchain`.

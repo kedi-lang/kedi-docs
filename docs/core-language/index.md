@@ -20,7 +20,7 @@ Indentation defines scope. There is no brace-delimited alternative.
 Kedi uses explicit syntax for the model boundary:
 
 ```kedi
->> Extract [count: int] action items from <notes>.
+>> <notes> contains [count: int] action items.
 ```
 
 This performs a model call and captures `count`. By contrast:
@@ -39,7 +39,7 @@ Angle brackets read values; square brackets introduce or assign values:
 
 ```kedi
 [topic] = API compatibility
->> Explain <topic> and return [summary: str].
+>> <topic>, explained briefly: [summary: str].
 = <summary>
 ```
 

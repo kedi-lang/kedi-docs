@@ -26,7 +26,15 @@ jobs:
           python-version: "3.x"
 
       - name: Install documentation dependencies
-        run: python -m pip install --disable-pip-version-check -r requirements-docs.txt
+        run: |
+          python -m pip install --disable-pip-version-check \
+            -r requirements-docs.txt \
+            "kedi @ git+https://github.com/kedi-lang/kedi.git@stable"
+
+      - name: Validate Kedi examples and adapter metadata
+        run: |
+          python scripts/validate_kedi_examples.py
+          python scripts/sync_capability_matrix.py --check
 
       - name: Build documentation
         run: python scripts/build_docs.py

@@ -10,13 +10,19 @@ uv tool run zensical serve
 
 ## Validate
 
+Install Kedi from the source version the documentation targets, then run:
+
 ```bash
+python scripts/validate_kedi_examples.py
+python scripts/sync_capability_matrix.py --check
 uv tool run --from zensical==0.0.51 python scripts/build_docs.py
 ```
 
-The generated static site is written to `site/`. The build also publishes each
-source page as Markdown and creates `site/llms.txt` plus
-`site/llms-full.txt`.
+The first command parser-checks Kedi fences with their declared source
+filename. The second prevents the committed adapter table from drifting from
+`AdapterCapabilities`. The generated static site is written to `site/`; the
+build also publishes each source page as Markdown and creates `site/llms.txt`
+plus `site/llms-full.txt`.
 
 ## Deploy
 

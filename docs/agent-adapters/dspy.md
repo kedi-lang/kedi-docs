@@ -36,7 +36,7 @@ entries. Active system instructions become signature instructions.
 
 ```kedi
 > adapter: dspy
->> Extract [name] and [score: float] from <text>.
+>> <text> identifies [name] with score [score: float].
 ```
 
 Reasoning-model thinking wrappers are stripped before DSPy's structured marker
@@ -74,4 +74,3 @@ spans to DSPy modules, and evaluates them through the Kedi metric bridge.
 - Approval is enforced on Kedi-projected tools, not through a separate native
   DSPy approval protocol.
 - Provider-specific settings outside the supported key set are filtered.
-

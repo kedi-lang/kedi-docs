@@ -38,7 +38,7 @@ Single-line `> use:` applies a profile when no procedure with that name exists:
 ```kedi
 > use: reviewer
 
->> Review the current change and return [review: str].
+>> Review of the current change: [review: str].
 = <review>
 ```
 

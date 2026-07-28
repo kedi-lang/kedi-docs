@@ -8,8 +8,8 @@ independent model templates without changing source syntax or expected results.
 Every `>>` or `<<` call blocks until the adapter returns:
 
 ```kedi
->> Produce [first: str].
->> Produce [second: str].
+>> First independent result: [first: str].
+>> Second independent result: [second: str].
 ```
 
 This is easiest to debug and is appropriate when latency is unimportant, the
@@ -46,11 +46,11 @@ positive bound.
 There is no parallel operator. The runtime follows value dependencies:
 
 ```kedi
->> Extract [service: str] from <incident>.
->> Find [owner: str] for <service>.
+>> Incident <incident> affects [service: str].
+>> Owner of <service>: [owner: str].
 
->> Extract [region: str] from <incident>.
->> Find [runbook: str] for <region>.
+>> Incident <incident> occurred in [region: str].
+>> Runbook for <region>: [runbook: str].
 ```
 
 The service and region calls can start together. Each downstream call begins as

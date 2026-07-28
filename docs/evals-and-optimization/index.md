@@ -42,7 +42,7 @@ An eval suite declares data and one metric:
 
 ```kedi
 @classify(text: str) -> str:
-  >> Classify <text> as positive or negative: [label]
+  >> Sentiment of <text>: [label: Literal["positive", "negative"]]
   = `label`
 
 @eval: classify:

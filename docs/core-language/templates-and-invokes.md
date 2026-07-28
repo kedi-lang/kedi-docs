@@ -6,8 +6,8 @@
 
 ```kedi
 @extract_owner(issue: str) -> str:
-  >> Read this issue: <issue>
-  Return the responsible team as [owner: str].
+  >> Issue: <issue>
+  Responsible team: [owner: str].
   = <owner>
 ```
 
@@ -20,9 +20,9 @@ Continuation rows at the same indentation are newline-joined into one model
 request:
 
 ```kedi
->> Read <incident>.
-Identify [service: str].
-Estimate [severity: Literal["low", "medium", "high"]].
+>> Incident: <incident>.
+Affected service: [service: str].
+Severity: [severity: Literal["low", "medium", "high"]].
 ```
 
 Do not prefix every continuation row with `>>` unless separate model calls are
@@ -34,8 +34,8 @@ The previous example produces one request with two output fields. Starting a
 second block produces a dependency-aware second request:
 
 ```kedi
->> Read <incident> and identify [service: str].
->> Write a remediation checklist for <service> as [steps: list[str]].
+>> Incident <incident> affects [service: str].
+>> Remediation steps for <service>: [steps: list[str]].
 ```
 
 The second call can substitute `service` because the first call completed and

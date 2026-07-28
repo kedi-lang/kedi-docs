@@ -16,7 +16,7 @@ def summarize(topic: str, audience: str = "developers") -> str:
 `summarize.kedi`:
 
 ```kedi
->> Summarize <topic> for <audience> as [summary: str].
+>> Summary of <topic> for <audience>: [summary: str].
 = `summary`
 ```
 

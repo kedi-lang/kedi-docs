@@ -27,9 +27,9 @@ to `str`. Add an annotation whenever a value is intentionally not text.
 Types can be nested:
 
 ```kedi
->> Return [scores: dict[str, list[float]]].
->> Set [state: Literal["open", "closed", "blocked"]].
->> Find [owner: str | None].
+>> Model scores: [scores: dict[str, list[float]]].
+>> Current state: [state: Literal["open", "closed", "blocked"]].
+>> Responsible owner: [owner: str | None].
 ```
 
 Choose a shape that the model and adapter can reliably represent. Deeply nested
@@ -135,7 +135,7 @@ Use a custom type when one output has a meaningful structured shape:
   conditions: list[str] = `[]`
 )
 
->> Review the request and return [decision: Decision].
+>> Request review decision: [decision: Decision].
 = `decision.model_dump_json()`
 ```
 

@@ -67,8 +67,9 @@ stringifying a collection merely to pass it to another typed procedure.
 One `>>` block is one adapter call:
 
 ```kedi
->> Read <incident>.
-Return [service: str] and [severity: str].
+>> Incident: <incident>.
+Affected service: [service: str].
+Severity: [severity: str].
 ```
 
 Kedi prepares substitutions, builds a combined output schema, invokes the
@@ -79,8 +80,8 @@ Continuation lines in the same block cannot read outputs from that same call.
 Start another `>>` block for a dependency:
 
 ```kedi
->> Extract [service: str] from <incident>.
->> Recommend [owner: str] for <service>.
+>> Incident <incident> affects [service: str].
+>> Recommended owner for <service>: [owner: str].
 ```
 
 ## Procedure Frames and Joins

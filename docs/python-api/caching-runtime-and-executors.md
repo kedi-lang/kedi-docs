@@ -96,6 +96,12 @@ assert runtime.run_main() == "cus_123"
 The runtime owns procedure/global environments and uses `ContextVar` for the
 current invocation, trace stack, and subagent stack.
 
+Runtime failures are raised as `KediExecutionError`. Catch the exception when
+embedding Kedi, call `exc.render()` for the formatted Kedi traceback, or inspect
+`frames`, `python_traces`, and `original` programmatically. See
+[Errors, Frames, and Tracebacks](../runtime/errors-and-debugging.md) for the
+complete error model.
+
 ## Low-Level Expressions
 
 The root package exports constructors used with `runtime.m(...)`:
@@ -222,4 +228,3 @@ The state file belongs to the subagent coordinator and is separate from
 response, codegen, and optimization caches. Pending or running work restored
 after process loss is marked interrupted rather than falsely reported as
 completed.
-

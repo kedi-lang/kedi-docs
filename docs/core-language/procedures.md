@@ -26,7 +26,7 @@ Statements execute in source order. A return statement starts with `=`:
 
 ```kedi
 @summarize(text: str) -> str:
-  >> Summarize <text> as [summary: str].
+  >> One-sentence summary of <text>: [summary: str].
   = <summary>
 ```
 
@@ -69,7 +69,7 @@ Procedures can form pipelines:
   = `value.strip().lower()`
 
 @classify(value: str) -> str:
-  >> Classify <value> as [category: str].
+  >> The category of <value> is [category: str].
   = <category>
 
 @process(value: str) -> str:

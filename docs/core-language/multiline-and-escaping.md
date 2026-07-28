@@ -9,18 +9,17 @@ to another.
 Same-indentation lines following `>>` form one model request:
 
 ```kedi
->> Review the deployment.
-Return [risk: Literal["low", "medium", "high"]].
-Explain the decision in [reason: str].
+>> Deployment risk: [risk: Literal["low", "medium", "high"]].
+Reason for that decision: [reason: str].
 = <risk>: <reason>
 ```
 
-The three prompt lines are newline-joined and share one structured schema.
+The two prompt lines are newline-joined and share one structured schema.
 Another `>>` starts another model call:
 
 ```kedi
->> Extract [service: str].
->> Recommend an owner for <service> as [owner: str].
+>> Affected service: [service: str].
+>> Recommended owner for <service>: [owner: str].
 ```
 
 Use one block when outputs belong to one judgement. Use separate blocks when a

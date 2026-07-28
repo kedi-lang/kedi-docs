@@ -15,7 +15,7 @@ import kedi
 @kedi.query
 def summarize(text: str) -> str:
     """kedi
->> Summarize <text> as [summary: str] in one sentence.
+>> One-sentence summary of <text>: [summary: str].
     = `summary`
     """
     ...

@@ -24,9 +24,9 @@ after a model call.
 )
 
 @extract_incident(report: str) -> Incident:
-  >> Read this incident report:
+  >> Incident report:
   <report>
-  Return one normalized [incident: Incident].
+  Normalized incident: [incident: Incident].
   = `incident`
 
 [report: str] = Payment retries failed in checkout. The Payments team owns the follow-up.
@@ -64,9 +64,8 @@ often simpler:
 
 ```kedi
 @classify(message: str) -> tuple[str, bool]:
-  >> Classify <message>.
-  Return [category: Literal["question", "request", "incident"]]
-  and whether it is [urgent: bool].
+  >> <message> is a [category: Literal["question", "request", "incident"]].
+  Urgent: [urgent: bool].
   = `(category, urgent)`
 ```
 
@@ -86,7 +85,7 @@ CurrentRegion = Literal["eu", "us", "apac"]
 ```
 
 @extract_region(text: str) -> `CurrentRegion`:
-  >> Identify [region: `CurrentRegion`] in <text>.
+  >> Region mentioned in <text>: [region: `CurrentRegion`].
   = `region`
 ````
 

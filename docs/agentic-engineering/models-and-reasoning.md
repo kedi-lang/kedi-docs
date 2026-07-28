@@ -20,13 +20,13 @@ A model directive applies to following calls in the current lexical scope:
 > model: fast-model
 
 @draft(topic: str) -> str:
-  >> Draft [text: str] about <topic>.
+  >> Draft about <topic>: [text: str].
   = <text>
 
 > model: quality-model
 
 @review(text: str) -> str:
-  >> Review <text> and return [feedback: str].
+  >> Review feedback for <text>: [feedback: str].
   = <feedback>
 ```
 
@@ -80,7 +80,7 @@ An inner scope inherits the outer model and effort until it replaces either:
 
 @deep_review(text: str) -> str:
   > effort: high
-  >> Review <text> as [result: str].
+  >> Detailed review of <text>: [result: str].
   = <result>
 ```
 

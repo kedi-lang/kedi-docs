@@ -28,9 +28,8 @@ INCIDENTS = {
   = `INCIDENTS[incident_id]`
 
 @extract_incident(incident_id: int, report: str) -> Incident:
-  >> Extract one incident from report <report>.
-  Preserve identifier <incident_id>.
-  Return [incident: Incident].
+  >> Report <report> describes [incident: Incident].
+  Its identifier is <incident_id>.
   = `incident`
 
 @format_incident(incident: Incident) -> str:

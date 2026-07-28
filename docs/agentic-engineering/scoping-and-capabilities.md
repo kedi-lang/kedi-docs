@@ -11,7 +11,7 @@ the selected adapter can honor the resulting contract.
 
 @quick(text: str) -> str:
   > effort: low
-  >> Summarize <text> as [summary: str].
+  >> Summary of <text>: [summary: str].
   = <summary>
 ```
 
@@ -27,13 +27,13 @@ top-level change does not retroactively change a previously declared procedure:
 > model: first-model
 
 @first() -> str:
-  >> Return a brief [answer: str].
+  >> Brief answer: [answer: str].
   = <answer>
 
 > model: second-model
 
 @second() -> str:
-  >> Return a brief [answer: str].
+  >> Brief answer: [answer: str].
   = <answer>
 ```
 

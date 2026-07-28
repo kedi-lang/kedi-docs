@@ -11,7 +11,7 @@ import kedi
 @kedi.query
 def title_for(topic: str) -> str:
     """kedi
->> Write [title: str], a short documentation title for <topic>.
+>> Short documentation title for <topic>: [title: str].
     = `title`
     """
     ...
@@ -33,7 +33,7 @@ The Python signature defines call binding:
 @kedi.query
 def explain(topic: str, audience: str = "developers") -> str:
     """kedi
->> Explain <topic> for <audience> as [answer: str].
+>> Explanation of <topic> for <audience>: [answer: str].
     = `answer`
     """
     ...
@@ -51,7 +51,7 @@ The decorated body is metadata-only:
 @kedi.query
 def classify(text: str) -> str:
     """kedi
-    >> Classify <text> as bug, feature, or question: [label]
+    >> <text> is a [label: Literal["bug", "feature", "question"]].
     = `label`
     """
     raise AssertionError("never executed")
@@ -101,7 +101,7 @@ class Review(BaseModel):
 @kedi.query
 def review(text: str) -> Review:
     """kedi
-    >> Review <text> and return [result: Review].
+    >> Review of <text>: [result: Review].
     = `result`
     """
     ...
@@ -124,7 +124,7 @@ T = TypeVar("T")
 @kedi.query
 def extract(text: str, output_type: type[T]) -> T:
     """kedi
-    >> Extract [result: `output_type`] from <text>.
+    >> Structured representation of <text>: [result: `output_type`].
     = `result`
     """
     ...
@@ -147,7 +147,7 @@ Framework adapters use `adapter=`; process-backed harnesses use `agent=`:
 )
 def extract_name(text: str) -> str:
     """kedi
-    >> Extract the person's [name] from <text>.
+    >> The person in <text> is named [name].
     = `name`
     """
     ...
@@ -217,7 +217,7 @@ servers are appended to configured servers.
 @kedi.query(cache=True)
 def stable_summary(text: str) -> str:
     """kedi
->> Summarize <text> as [summary: str].
+>> Summary of <text>: [summary: str].
     = `summary`
     """
     ...

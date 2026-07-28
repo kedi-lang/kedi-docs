@@ -35,7 +35,7 @@ class Review(BaseModel):
 @kedi.query
 def review(text: str) -> Review:
     """kedi
-    >> Review <text> and return [result: Review].
+    >> Review of <text>: [result: Review].
     = `result`
     """
     ...
@@ -117,7 +117,7 @@ class InternalResult:
 @kedi.query(env={"InternalResult": InternalResult})
 def extract(text: str) -> InternalResult:
     """kedi
-    >> Extract [result: InternalResult] from <text>.
+    >> Structured representation of <text>: [result: InternalResult].
     = `result`
     """
     ...

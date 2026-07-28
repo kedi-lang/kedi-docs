@@ -39,29 +39,20 @@ Every adapter provides async and sync paths for:
 It also declares `kind`, `shortname`, and `AdapterCapabilities`. Optional
 protocols add profile overrides, tool registration, approvals, and subagents.
 
-## Structured Output
+## Capability Negotiation
 
-`>> ... [field]` requires structured output. Pydantic, DSPy, LangChain, Claude,
-and Codex support it. Generic ACP currently does not; use raw capture:
+The [capability matrix](../reference/capability-matrix.md) is generated from
+the built-in adapters' declared metadata and is the canonical support table.
+Kedi checks required capabilities rather than silently emulating a missing
+surface. For example, `>> ... [field]` requires structured output; a text-only
+adapter must use raw capture instead:
 
 ```kedi
->> Return a plain-text [answer: str] for the question.
+[answer] << Answer the question in plain text.
 ```
 
-Structured output is validated again at adapter boundaries where supported.
-
-## Tools and MCP
-
-Pydantic, LangChain, Claude, DSPy, and Codex accept Kedi tools. Pydantic,
-LangChain, and Claude accept stdio/SSE/HTTP MCP. DSPy accepts stdio MCP only.
-Codex currently rejects Kedi MCP declarations, although Codex itself retains
-its harness-native tools. Generic ACP receives neither Kedi tools nor MCP
-servers from this adapter.
-
-## Subagent Support
-
-Pydantic, LangChain, Claude, and Codex support foreground/background children.
-DSPy supports blocking children only. Generic ACP is not subagent-capable.
+Transport modes, provider restrictions, native harness tools, and lifecycle
+details are adapter-specific and remain documented on each adapter page.
 
 ## Choose a Backend
 
@@ -71,6 +62,3 @@ DSPy supports blocking children only. Generic ACP is not subagent-capable.
 - Choose Claude or Codex when a coding-agent harness and its native tools are
   part of the task.
 - Choose ACP only when driving an existing stdio ACP agent as a text harness.
-
-Consult the [capability matrix](../reference/capability-matrix.md) before
-building a portable profile.

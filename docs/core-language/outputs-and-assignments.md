@@ -9,7 +9,7 @@ values. Neither form is the same as `<name>`, which reads a value.
 An output field embedded in a template is an L-value:
 
 ```kedi
->> Read the incident report and return [severity: str] and [summary: str].
+>> Incident severity: [severity: str]. Summary: [summary: str].
 = <severity>: <summary>
 ```
 
@@ -26,13 +26,13 @@ values that Python can determine exactly.
 An untyped output defaults to `str`:
 
 ```kedi
->> Write a concise [headline].
+>> Concise headline: [headline].
 ```
 
 A typed output asks the adapter for a native value and validates it:
 
 ```kedi
->> Extract [priority: int], [owners: list[str]], and [blocked: bool].
+>> Priority: [priority: int]. Owners: [owners: list[str]]. Blocked: [blocked: bool].
 ```
 
 Kedi does not merely include the annotation in the prompt. It resolves the type,
@@ -51,7 +51,7 @@ from typing import Literal
 Priority = Literal["low", "medium", "high"]
 ```
 
->> Classify the ticket as [priority: `Priority`].
+>> Ticket priority: [priority: `Priority`].
 ````
 
 For ordinary built-in or custom Kedi types, prefer the direct form
@@ -64,7 +64,7 @@ Use `Annotated[T, "description"]` to explain a field to the model while keeping
 `T` as its runtime type:
 
 ```kedi
->> Extract [code: Annotated[str, "Uppercase ISO 3166-1 alpha-2 country code"]].
+>> Country code: [code: Annotated[str, "Uppercase ISO 3166-1 alpha-2 country code"]].
 ```
 
 The description becomes JSON Schema metadata for adapters that expose schemas.
@@ -80,8 +80,9 @@ repeat obvious information such as `Annotated[int, "An integer"]`.
 One template can fill several fields:
 
 ```kedi
->> From the release note, extract [version: str], [date: date], and
-the [changes: list[str]].
+>> Release version: [version: str].
+Release date: [date: date].
+Changes: [changes: list[str]].
 ```
 
 All continuation lines in that `>>` block belong to one model request and one
@@ -90,7 +91,7 @@ value in the current scope:
 
 ```kedi
 [status] = draft
->> Review the document and set [status: str].
+>> Document status after review: [status: str].
 = <status>
 ```
 
@@ -163,7 +164,7 @@ surface one of them.
 Use `>>` output fields when you need typed or multiple structured values:
 
 ```kedi
->> Extract [language: str] and [confidence: float].
+>> Detected language: [language: str]. Confidence: [confidence: float].
 ```
 
 Use raw capture when the complete model response should remain an unstructured

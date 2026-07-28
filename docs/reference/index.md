@@ -31,3 +31,15 @@ from each table provide examples and rationale.
 
 The reference describes public behavior. Internal modules not exported from
 `kedi` may change without preserving compatibility.
+
+## Terminology
+
+- **Template call** is the Kedi-level `>>` operation. It may request structured
+  output fields or discard a raw response when no fields are present.
+- **Raw invoke** is `[name] << prompt`, which retains the model's complete text
+  response as a string.
+- **Adapter invocation** is the runtime call through Kedi's `AgentAdapter`
+  protocol.
+- **Provider request** is the outbound model or harness request made by an
+  adapter. One Kedi operation may require multiple provider requests when tools
+  or agent loops are involved.
