@@ -21,7 +21,7 @@ uv tool run --from zensical==0.0.51 python scripts/build_docs.py
 The first command parser-checks Kedi fences with their declared source
 filename. The second prevents the committed adapter table from drifting from
 `AdapterCapabilities`. The generated static site is written to `site/`; the
-build also publishes each source page as Markdown and creates `site/llms.txt`
+build also publishes each source page as Markdown and it creates `site/llms.txt`
 plus `site/llms-full.txt`.
 
 ## Deploy
