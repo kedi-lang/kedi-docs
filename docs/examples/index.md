@@ -43,7 +43,10 @@ caller should receive an object rather than its string representation.
 
 ## Verification
 
-Every Kedi listing in this section is parser-checked as part of the
-documentation validation. Parser validity does not prove that a provider
-supports every schema or capability. Run model-facing examples against the
-same adapter and model intended for production.
+The documentation build validates Markdown structure and links, but it does not
+currently parse every Kedi fence. Some listings are fragments, while package
+manifests and module examples require the source path shown by their directory
+tree. Parser validity also does not prove that a provider supports every schema
+or capability. Parse complete listings in their documented file context, then
+run model-facing examples against the same adapter and model intended for
+production.

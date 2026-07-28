@@ -67,7 +67,7 @@ nav = [
     { "Execution and Dataflow" = "runtime/execution-and-dataflow.md" },
     { "Concurrency" = "runtime/concurrency.md" },
     { "Caching" = "runtime/caching.md" },
-    { "Errors and Debugging" = "runtime/errors-and-debugging.md" },
+    { "Errors, Frames, and Tracebacks" = "runtime/errors-and-debugging.md" },
   ] },
   { "Evals and Optimization" = [
     "evals-and-optimization/index.md",

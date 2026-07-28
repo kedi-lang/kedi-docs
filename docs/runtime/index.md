@@ -48,4 +48,6 @@ These are separate systems and are documented in [Caching](caching.md).
 Parse errors include file, line, column, source snippet, and message. Runtime
 errors carry Kedi procedure/statement frames and remapped embedded-Python
 locations. Capability and adapter errors fail at the narrowest boundary that
-can identify the unmet contract.
+can identify the unmet contract. See
+[Errors, Frames, and Tracebacks](errors-and-debugging.md) for the complete
+exception model and programmatic inspection API.

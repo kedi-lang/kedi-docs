@@ -90,5 +90,5 @@ in an active ACP profile takes precedence.
 Successful runs return zero. Source read, parse, execution, validation,
 codegen, optimizer, and package errors return nonzero. Parse diagnostics include
 source location and excerpts; execution errors include hydrated Kedi/Python
-trace context when available.
-
+trace context when available. The frame model and embedded-Python mapping are
+documented in [Errors, Frames, and Tracebacks](../runtime/errors-and-debugging.md).

@@ -5,7 +5,7 @@ metric that returns both a score and actionable feedback.
 
 ## Complete Program
 
-```kedi
+````kedi
 > adapter: pydantic
 > model: groq:qwen/qwen3-32b
 
@@ -44,7 +44,7 @@ metric that returns both a score and actionable feedback.
     ```
 
 = `extract_owner("Identity: sessions expire immediately after login")`
-```
+````
 
 The bare prompt lines inside `> optimize:` are intentional. They are legacy
 template syntax accepted only inside `> optimize:` and `> auto:` bodies. They

@@ -22,7 +22,7 @@ the eval metric represents the behavior you actually want.
 
 Tests are Python assertions grouped under a procedure name:
 
-```kedi
+````kedi
 @slugify(title: str) -> str:
   = `title.strip().lower().replace(" ", "-")`
 
@@ -31,7 +31,7 @@ Tests are Python assertions grouped under a procedure name:
     ```
     assert slugify("  Kedi Reference  ") == "kedi-reference"
     ```
-```
+````
 
 `kedi program.kedi --test` exits nonzero if any case fails. Test blocks do not
 add runtime behavior to a normal program execution.
