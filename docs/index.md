@@ -1,8 +1,9 @@
-# Kedi
+# Kedi Programming Language
 
-Kedi is a typed language and Python API for building LLM programs whose prompts,
+Kedi is a typed orchestration language for building LLM programs whose prompts,
 dataflow, structured outputs, tools, tests, and agent configuration live in one
-readable source format.
+readable source format. Use it through `.kedi` programs or embed the same runtime
+semantics through its Python API.
 
 It combines runtime substitution and typed output capture with reusable
 procedures, deterministic Python, model and agent configuration, tools, MCP,

@@ -1,4 +1,4 @@
-# Kedi Documentation
+# Kedi Programming Language
 
 The Kedi documentation site is built with Zensical.
 

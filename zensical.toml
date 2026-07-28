@@ -1,6 +1,6 @@
 [project]
-site_name = "Kedi"
-site_description = "A typed reasoning layer for LLM orchestration."
+site_name = "Kedi Programming Language"
+site_description = "A typed orchestration language for LLM programs."
 site_author = "Kedi Lang"
 site_url = "https://kedi-lang.org/"
 repo_url = "https://github.com/kedi-lang/kedi"

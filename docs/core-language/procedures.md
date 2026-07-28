@@ -159,6 +159,78 @@ Kedi surfaces this text in editor hover, generated Python stubs, procedure JSON
 schemas, and tool descriptions. A block comment after another statement remains
 a comment and does not become the procedure docstring.
 
+### Structured Docstrings and JSON Schema
+
+Kedi follows the summary-and-body convention from PEP 257 and recommends
+Google-style Python docstrings for structured `Args:` and `Returns:` sections.
+PEP 257 defines general docstring conventions but does not prescribe those
+section names; `Args:` and `Returns:` come from the Google-style convention.
+
+When a procedure is exposed as a tool, Kedi parses the leading docstring and
+adds its descriptions to the generated JSON Schemas:
+
+```kedi
+@quote_shipping(destination: str, weight_kg: float, express: bool = `False`) -> float:
+  ###
+  Calculate a shipping quote for one destination.
+
+  Args:
+      destination: Country or region receiving the shipment.
+      weight_kg: Package weight in kilograms; must be greater than zero.
+      express: Whether to use the faster express service.
+
+  Returns:
+      Estimated shipping price in US dollars.
+  ###
+  = `0.0`
+```
+
+The procedure signature and docstring produce this input schema:
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "destination": {
+      "title": "Destination",
+      "type": "string",
+      "description": "Country or region receiving the shipment."
+    },
+    "weight_kg": {
+      "title": "Weight Kg",
+      "type": "number",
+      "description": "Package weight in kilograms; must be greater than zero."
+    },
+    "express": {
+      "default": false,
+      "title": "Express",
+      "type": "boolean",
+      "description": "Whether to use the faster express service."
+    }
+  },
+  "required": ["destination", "weight_kg"],
+  "title": "quote_shipping",
+  "type": "object",
+  "description": "Calculate a shipping quote for one destination. Returns `float` instance."
+}
+```
+
+Kedi emits the return contract separately:
+
+```json
+{
+  "type": "number",
+  "description": "Estimated shipping price in US dollars."
+}
+```
+
+Types, required fields, and defaults come from the procedure signature.
+Descriptions under `Args:` are matched to parameters by name, while the
+`Returns:` text describes the return schema. Docstring text documents the
+contract; it does not override its types. Kedi also accepts common
+reStructuredText forms such as `:param name:` and `:return:`, but Google style
+is the recommended form for new code.
+
 Document externally visible procedures and every procedure exposed with
 `> tool:`. Include semantic constraints that types cannot express; do not
 duplicate the signature verbatim.
