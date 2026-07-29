@@ -24,7 +24,7 @@ rejected according to that adapter's contract.
 
 `> artifacts:` fields are `enabled`, `store`, `path`, `threshold`, `ttl`,
 `idle_ttl`, `preview_chars`, `read_max_chars`, `session_quota`,
-`max_artifacts`, and `cleanup_interval`. The policy is lexical and disabled by
+`max_artifacts`, and `cleanup_interval`. The policy is lexical and enabled by
 default. See [Tool Artifacts](../runtime/tool-artifacts.md).
 
 `> mcp:` fields:

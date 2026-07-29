@@ -2,13 +2,12 @@
 
 Tool artifacts keep large generated fields and tool results out of model
 context while preserving their original native value for Kedi and Python.
-They are opt-in and scoped like other agent configuration.
+They are enabled by default and scoped like other agent configuration.
 
 ## Enable Artifacts
 
 ```kedi
 > artifacts:
-    enabled: true
     store: memory
     threshold: 100kb
     ttl: 1h
@@ -42,7 +41,7 @@ Its policy is lexical: it affects subsequent calls in the current scope.
 
 | Field | Default | Meaning |
 | --- | --- | --- |
-| `enabled` | `false` | Convert qualifying values into artifacts |
+| `enabled` | `true` | Convert qualifying values into artifacts |
 | `store` | `memory` | `memory` or persistent bounded `file` storage |
 | `path` | `.kedi/artifacts` | Root used by the file store |
 | `threshold` | `100kb` | Minimum serialized size for conversion |
@@ -114,10 +113,10 @@ Enabling artifacts registers three management tools:
 - `read_artifact(ref_id, max_chars=-1, offset=0, path=None)` reads a bounded
   chunk. `offset` paginates content and `path` is an RFC 6901 JSON Pointer for
   structured values. `-1` selects the configured limit; it is not unlimited.
-- `invalidate_artifact(ref_id)` releases an artifact and compacts portable
+- `release_artifact(ref_id)` releases an artifact and compacts portable
   history linked to it.
 
-Search and read are read-only operations. Invalidation is mutating and follows
+Search and read are read-only operations. Release is mutating and follows
 the active approval policy. Management-tool results are never artifacted again.
 
 ## Storage and Security
@@ -133,22 +132,22 @@ payload and metadata writes are atomic.
 
 Each reference belongs to one artifact session. Other sessions cannot read it.
 Fixed TTL never moves; idle TTL refreshes only after a successful access.
-Invalidation is idempotent. An active leased read may finish while release is
+Release is idempotent. An active leased read may finish while release is
 pending, but later reads fail with a released or expired error.
 
 Expiry runs lazily and through one process-level cleanup service. Kedi does not
 create one cleanup thread per runtime.
 
-## History and Invalidation
+## History and Release
 
 Portable conversation history stores compact refs and bounded read chunks, not
-the original payload. Invalidating or expiring a ref removes obsolete chunks
+the original payload. Releasing or expiring a ref removes obsolete chunks
 while preserving valid tool-call/result structure and leaves a metadata-only
 tombstone.
 
 Provider-native checkpoints may still retain earlier content. Kedi marks such
 checkpoints stale and rotates or replays compact portable history when the
-adapter supports continuation. Invalidation does not claim to erase content
+adapter supports continuation. Release does not claim to erase content
 already retained by a remote provider.
 
 Kedi remains stateless by default. Use an explicit Python

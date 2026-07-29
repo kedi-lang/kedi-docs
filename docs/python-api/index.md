@@ -107,8 +107,8 @@ parse and response caches. `kedi.force(value)` explicitly resolves a low-level
 `KediPromise`; ordinary query results are resolved before they return.
 
 `kedi.session()` creates an explicit stateful boundary for model history and
-artifact ownership. Artifact handling itself is opt-in through `artifacts=` on
-configuration contexts and decorators.
+artifact ownership. Artifact handling is enabled by default and can be
+configured or disabled through `artifacts=` on contexts and decorators.
 
 ## Public API Map
 

@@ -21,8 +21,8 @@ kedi.configure(
 )
 ```
 
-`artifacts=True` enables the default policy. `artifacts=False` explicitly
-disables an inherited policy in `context()`, `query()`, or `bind()`.
+Artifact handling is enabled by default. `artifacts=False` explicitly disables
+the inherited policy in `configure()`, `context()`, `query()`, or `bind()`.
 
 For a typed policy object:
 
@@ -129,7 +129,7 @@ These types are exported from `kedi`:
 | `ArtifactRef[T]` | Compact metadata sent across model context |
 | `ArtifactChunk` | Bounded result from an artifact read |
 | `ArtifactSearchResult` | Metadata-only search result |
-| `ArtifactReleaseResult` | Invalidation status and compaction count |
+| `ArtifactReleaseResult` | Release status and compaction count |
 | `ArtifactHandle[T]` | Internal lazy native-value handle |
 | `ConversationState` | Portable history and artifact ownership |
 

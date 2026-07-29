@@ -178,9 +178,9 @@ with kedi.session() as conversation:
     second = review_report()
 ```
 
-Artifacts keep large values out of model context; a session allows separate
-calls to share portable history and artifact ownership. Both features remain
-opt-in. See [Artifacts and Sessions](artifacts-and-sessions.md).
+Artifacts keep large values out of model context and are enabled by default. A
+session is opt-in and allows separate calls to share portable history and
+artifact ownership. See [Artifacts and Sessions](artifacts-and-sessions.md).
 
 ## Invalid Combinations
 

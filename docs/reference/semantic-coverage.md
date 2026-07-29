@@ -70,7 +70,7 @@ those explanations.
 - Promise forcing, failure draining, thread safety, and adaptive job management
 - Parse, response, codegen, and optimization caches
 - Large-value artifact conversion, native lazy resolution, and compact model refs
-- Memory/file stores, TTL, quotas, bounded reads, invalidation, and history compaction
+- Memory/file stores, TTL, quotas, bounded reads, release, and history compaction
 - Structured diagnostics, source maps, and debug exporters
 
 ## Testing, Evaluation, and Generation
