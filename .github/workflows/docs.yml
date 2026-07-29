@@ -29,11 +29,11 @@ jobs:
             exit 1
           fi
 
-      - name: Check out Kedi stable
+      - name: Check out Kedi tool artifacts branch
         uses: actions/checkout@v6
         with:
           repository: kedi-lang/kedi
-          ref: stable
+          ref: tool_artifacts
           token: ${{ secrets.KEDI_REPOSITORY_TOKEN }}
           path: .kedi-source
           persist-credentials: false
@@ -43,7 +43,7 @@ jobs:
         run: |
           revision="$(git -C .kedi-source ls-tree HEAD tree-sitter-kedi | awk '{print $3}')"
           if ! [[ "$revision" =~ ^[0-9a-f]{40}$ ]]; then
-            echo "::error::Kedi stable does not contain a valid tree-sitter-kedi gitlink"
+            echo "::error::The selected Kedi revision does not contain a valid tree-sitter-kedi gitlink"
             exit 1
           fi
           echo "revision=$revision" >> "$GITHUB_OUTPUT"
