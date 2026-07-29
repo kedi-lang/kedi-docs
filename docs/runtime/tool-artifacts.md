@@ -6,7 +6,7 @@ They are opt-in and scoped like other agent configuration.
 
 ## Enable Artifacts
 
-```kedi
+```kedi no-parse
 > artifacts:
     enabled: true
     store: memory
@@ -24,7 +24,7 @@ The directive is valid at top level, inside a procedure, and inside a profile.
 Its policy is lexical: it affects subsequent calls in the current scope.
 `enabled: false` disables an inherited policy.
 
-```kedi
+```kedi no-parse
 > profile: compact:
     > adapter: pydantic
     > artifacts:
@@ -57,7 +57,7 @@ Its policy is lexical: it affects subsequent calls in the current scope.
 Byte sizes accept `b`, `kb`, `mb`, `gb`, `kib`, `mib`, and `gib`. Durations
 accept `ms`, `s`, `m`, `h`, and `d`. Runtime values may use inline Python:
 
-```kedi
+```kedi no-parse
 > artifacts:
     enabled: true
     threshold: `args.artifact_threshold`
@@ -77,7 +77,7 @@ approval -> tool call -> validation -> artifact store -> compact reference
 Kedi stores an internal lazy handle in its environment. Native Kedi and Python
 reads resolve the handle and receive the original typed value:
 
-```kedi
+```kedi no-parse
 > artifacts:
     enabled: true
     threshold: 1b

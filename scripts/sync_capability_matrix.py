@@ -44,8 +44,6 @@ CAPABILITIES = (
     ("Dynamic native approval handler", "supports_native_approval_handler"),
     ("Foreground subagents", "supports_subagents"),
     ("Background subagents", "supports_background_subagents"),
-    ("Compact artifacts", "supports_artifacts"),
-    ("Native artifact transport", "supports_native_artifacts"),
 )
 
 

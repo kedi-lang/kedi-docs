@@ -26,8 +26,6 @@ part of the base adapter protocol rather than an optional capability.
 | Dynamic native approval handler | yes | no | yes |
 | Foreground subagents | yes | yes | yes |
 | Background subagents | yes | no | yes |
-| Compact artifacts | yes | yes | yes |
-| Native artifact transport | no | no | no |
 
 ## Agent Harnesses
 
@@ -45,8 +43,6 @@ part of the base adapter protocol rather than an optional capability.
 | Dynamic native approval handler | yes | no | no |
 | Foreground subagents | yes | yes | no |
 | Background subagents | yes | yes | no |
-| Compact artifacts | yes | yes | no |
-| Native artifact transport | no | no | no |
 <!-- END GENERATED ADAPTER CAPABILITIES -->
 
 ACP is intentionally a raw-text harness. It starts a fresh ACP session for each
@@ -84,8 +80,6 @@ not only the adapter.
 | `native_approval_handler` | Dynamic handler projected natively |
 | `subagents` | `> subagent:` |
 | `background_subagents` | Background lifecycle tools |
-| `artifacts` | Compact refs plus bounded artifact management tools |
-| `native_artifacts` | Adapter-owned artifact transport without Kedi projection |
 
 Raw invokes with no structured fields can run on a text-only adapter. A profile
 may be syntactically valid but capability-invalid for its selected backend;
