@@ -11,6 +11,7 @@
 | `> effort: level` | Set `minimal`, `low`, `medium`, `high`, `xhigh`, or `max` |
 | `> system: text` | Replace active instructions; block form joins lines |
 | `> settings:` | Merge adapter settings by key |
+| `> artifacts:` | Configure scoped large-value storage and compact references |
 | `> approval: allow`, `deny`, or handler | Set lexical tool approval policy |
 | `> mcp:` | Append one MCP server specification |
 | `> use: name` | Register a tool, apply a profile, or enable `skills` |
@@ -20,6 +21,11 @@ Framework and harness selection are mutually exclusive in one state. Literal
 names are statically validated; backtick expressions defer validation to
 runtime. Adapter settings unsupported by the selected backend are filtered or
 rejected according to that adapter's contract.
+
+`> artifacts:` fields are `enabled`, `store`, `path`, `threshold`, `ttl`,
+`idle_ttl`, `preview_chars`, `read_max_chars`, `session_quota`,
+`max_artifacts`, and `cleanup_interval`. The policy is lexical and disabled by
+default. See [Tool Artifacts](../runtime/tool-artifacts.md).
 
 `> mcp:` fields:
 

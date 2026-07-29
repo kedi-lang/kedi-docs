@@ -3,6 +3,10 @@
 Kedi has several independent reuse mechanisms. Enabling one does not enable the
 others.
 
+Tool artifacts are not a cache: they replace large model-visible values with
+bounded references while retaining the native value for the current artifact
+session. See [Tool Artifacts](tool-artifacts.md).
+
 ## Python API Parse Cache
 
 `@kedi.query` and `@kedi.bind` cache parsed programs automatically. The key is:

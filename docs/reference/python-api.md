@@ -33,6 +33,8 @@ import kedi
     mcp_servers=(),
     approval=...,
     skills=...,
+    artifacts=...,
+    conversation=...,
     cache=False,
 )
 def function(value: str) -> str: ...
@@ -66,7 +68,8 @@ Kedi return remains the runtime authority.
 
 `configure(...)` accepts `model`, mutually exclusive `adapter`/`agent`,
 `system`, `effort`, `settings`, `tools`, `env`, `mcp_servers`, `approval`,
-`skills`, `parallel`, `max_workers`, and adapter-specific keyword arguments.
+`skills`, `artifacts`, `conversation`, `parallel`, `max_workers`, and
+adapter-specific keyword arguments.
 Each call rebuilds defaults; it does not merge with a previous `configure`.
 
 `context(...)` accepts the same values and merges them over current
@@ -102,6 +105,21 @@ only `Exception` subclasses are retried.
 Pydantic/dataclass surface. `inject=True` registers it by name for query
 annotations in the defining module; `inject=False` removes that implicit
 registration while the class can still be supplied through `env`.
+
+## Artifacts and Sessions
+
+`ArtifactPolicy` validates memory/file storage, size threshold, TTL, bounded
+preview/read limits, quota, record count, and cleanup interval. `artifacts=`
+accepts a policy, mapping, boolean, or `None` on `configure`, `context`,
+`query`, and `bind`.
+
+`session(state=None)` is a synchronous and asynchronous context manager. It
+creates or activates a `ConversationState` so calls can share portable model
+history and artifact ownership. Kedi remains stateless by default.
+
+Public artifact models are `ArtifactRef`, `ArtifactChunk`,
+`ArtifactSearchResult`, `ArtifactReleaseResult`, and `ArtifactHandle`. See
+[Artifacts and Sessions](../python-api/artifacts-and-sessions.md).
 
 ## Approvals
 

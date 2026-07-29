@@ -37,7 +37,8 @@ Every adapter provides async and sync paths for:
 - `invoke(...)`: a raw prompt returning text.
 
 It also declares `kind`, `shortname`, and `AdapterCapabilities`. Optional
-protocols add profile overrides, tool registration, approvals, and subagents.
+protocols add profile overrides, tool registration, approvals, subagents,
+compact artifacts, and stateful conversation handoff.
 
 ## Capability Negotiation
 

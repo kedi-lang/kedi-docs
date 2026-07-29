@@ -69,6 +69,8 @@ those explanations.
 - Dataflow dependencies, sequential execution, parallel execution, and snapshots
 - Promise forcing, failure draining, thread safety, and adaptive job management
 - Parse, response, codegen, and optimization caches
+- Large-value artifact conversion, native lazy resolution, and compact model refs
+- Memory/file stores, TTL, quotas, bounded reads, invalidation, and history compaction
 - Structured diagnostics, source maps, and debug exporters
 
 ## Testing, Evaluation, and Generation
@@ -83,6 +85,7 @@ those explanations.
 - `query`, `bind`, `configure`, `context`, and `reset_config`
 - Type, tool, and approval decorators
 - MCP, skills, environment precedence, backend overrides, and dynamic output types
+- Artifact policy, conversation state, and explicit sync/async sessions
 - Parallel contexts, promises, cache helpers, runtime objects, and executors
 
 ## Tooling and Integrations

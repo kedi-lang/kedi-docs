@@ -18,6 +18,7 @@ kedi.configure(
     env={"audience": "maintainers"},
     approval="deny",
     skills=False,
+    artifacts=False,
     parallel=False,
     max_workers=8,
 )
@@ -42,6 +43,9 @@ with kedi.context(
 
 Nested contexts merge in order. Later settings and environment keys override
 earlier keys. Tools merge by registered name. MCP server sequences append.
+Artifact mappings overlay inherited policy fields. `artifacts=False` disables
+an inherited policy. Conversation state changes only when an explicit
+`conversation=` is supplied.
 
 ## Sync and Async Context Managers
 
@@ -160,6 +164,24 @@ The default selection metadata is the Pydantic framework with no explicit
 model. Registered `@kedi.type` classes remain registered, and in-memory caches
 remain intact. Use `kedi.clear_cache()` separately.
 
+## Artifacts and Conversation State
+
+```python
+import kedi
+
+kedi.configure(
+    artifacts={"enabled": True, "threshold": "100kb", "ttl": "1h"},
+)
+
+with kedi.session() as conversation:
+    first = create_report()
+    second = review_report()
+```
+
+Artifacts keep large values out of model context; a session allows separate
+calls to share portable history and artifact ownership. Both features remain
+opt-in. See [Artifacts and Sessions](artifacts-and-sessions.md).
+
 ## Invalid Combinations
 
 Configuration fails early for:
@@ -174,4 +196,3 @@ Configuration fails early for:
 Prefer explicit selection in production entry points. Environment selection is
 useful for deployment overrides but makes the active backend less visible in
 code.
-

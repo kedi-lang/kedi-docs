@@ -1,8 +1,8 @@
 # Python API
 
 The Python API embeds Kedi programs in typed Python callables. It preserves the
-same template, substitution, output, profile, tool, MCP, approval, skills, and
-runtime semantics as `.kedi` files.
+same template, substitution, output, profile, tool, MCP, approval, skills,
+artifact, conversation, and runtime semantics as `.kedi` files.
 
 ## Embed Kedi in Python
 
@@ -106,6 +106,10 @@ with kedi.parallel(max_workers=4):
 parse and response caches. `kedi.force(value)` explicitly resolves a low-level
 `KediPromise`; ordinary query results are resolved before they return.
 
+`kedi.session()` creates an explicit stateful boundary for model history and
+artifact ownership. Artifact handling itself is opt-in through `artifacts=` on
+configuration contexts and decorators.
+
 ## Public API Map
 
 Common imports come from the package root:
@@ -115,7 +119,14 @@ from kedi import (
     ApprovalDecision,
     ApprovalPolicy,
     ApprovalRequest,
+    ArtifactChunk,
+    ArtifactHandle,
+    ArtifactPolicy,
+    ArtifactRef,
+    ArtifactReleaseResult,
+    ArtifactSearchResult,
     CacheInfo,
+    ConversationState,
     KediPromise,
     KediPromiseLeak,
     KediRuntime,
@@ -129,6 +140,7 @@ from kedi import (
     parallel,
     query,
     reset_config,
+    session,
     tool,
     type,
 )

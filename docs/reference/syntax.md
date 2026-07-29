@@ -16,6 +16,7 @@
 | `` `statement` `` | Execute one Python statement for side effects |
 | `````...````` | Execute a multiline Python block |
 | `> name: ...` | Apply a directive |
+| `> artifacts:` | Configure scoped artifact storage for large values |
 | `# ...` / `### ... ###` | Line or block comment |
 
 Declarations and executable statements retain source order. Indentation defines

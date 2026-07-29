@@ -43,6 +43,11 @@ The Python API has in-memory parse and optional response caches. AI-generated
 procedures use `.cache.kedi`; prompt optimization uses `.optimized.json`.
 These are separate systems and are documented in [Caching](caching.md).
 
+Tool artifacts are a separate runtime feature for keeping large generated
+fields and tool results out of model context. Native Kedi/Python reads retain
+the original typed value while model calls receive bounded references. See
+[Tool Artifacts](tool-artifacts.md).
+
 ## Diagnostics
 
 Parse errors include file, line, column, source snippet, and message. Runtime
