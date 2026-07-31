@@ -448,6 +448,14 @@ If a stream completes below the threshold, Kedi reconstructs its declared
 native value. If artifacts are disabled, a stream may stay inline only up to
 the 100,000-byte hard tool-result limit.
 
+The bundled `filesystem.read_text_file` and skill `read_skill` tools use
+`ArtifactStream` automatically during adapter tool calls. Their direct
+Kedi/Python call contract remains `str`; the incremental transport is an
+internal execution detail and does not alter their schema. Small bounded tools
+such as directory and artifact metadata listing remain materialized. Sandbox
+and subagent results are artifact-admitted after completion because their
+underlying engines do not expose incremental result chunks.
+
 ## Serialization and Stores
 
 ### Canonical serialization
