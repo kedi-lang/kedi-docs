@@ -129,7 +129,7 @@ These types are exported from `kedi`:
 | `ArtifactRef[T]` | Compact metadata sent across model context |
 | `ArtifactChunk` | Bounded result from an artifact read |
 | `ArtifactSearchResult` | Metadata-only search result |
-| `ArtifactReleaseResult` | Release status and compaction count |
+| `ArtifactReleaseResult` | Payload release status |
 | `ArtifactHandle[T]` | Internal lazy native-value handle |
 | `ConversationState` | Portable history and artifact ownership |
 
@@ -137,4 +137,4 @@ Application code normally configures `ArtifactPolicy` and `ConversationState`.
 The remaining types are useful for custom adapters, tooling, and diagnostics.
 
 See [Tool Artifacts](../runtime/tool-artifacts.md) for storage guarantees,
-management tools, expiry, quotas, and history compaction.
+management tools, expiry, quotas, and cache-epoch history semantics.
