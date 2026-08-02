@@ -20,7 +20,7 @@ instructions, tools, approval, and delegation reviewable as one unit.
 
 A profile body may contain `> adapter:`, `> agent:`, `> model:`, `> effort:`,
 `> approval:`, `> system:`, `> settings:`, `> mcp:`, `> use:`,
-`> subagent:`, and `> max_agents:`.
+`> subagent:`, `> max_agents:`, and `> workflow:`.
 
 ## Profile Documentation
 
@@ -49,8 +49,8 @@ as a tool. Avoid such collisions.
 
 Applying a profile merges it into active state:
 
-- scalar members such as backend, model, effort, system, approval, and
-  `max_agents` replace earlier values when specified;
+- scalar members such as backend, model, effort, system, approval,
+  `max_agents`, and workflow mode replace earlier values when specified;
 - settings merge by key;
 - tools and subagents merge by name, with later bindings taking precedence;
 - MCP servers append in order;
@@ -101,6 +101,7 @@ produce diagnostics or compile-time errors.
     > adapter: pydantic
     > subagent: researcher
     > max_agents: 3
+    > workflow: dynamic
 
 > profile: researcher:
     > adapter: pydantic
@@ -108,7 +109,8 @@ produce diagnostics or compile-time errors.
 ```
 
 Only directly listed children can be delegated to. `max_agents` bounds the
-descendant work started by one parent invocation. See
+descendant work started by one parent invocation. Workflow mode defaults to
+`delegate`; `dynamic` exposes one sandboxed Python orchestration tool. See
 [Subagents](subagents.md) for lifecycle and safety rules.
 
 ## Choosing Profile Boundaries

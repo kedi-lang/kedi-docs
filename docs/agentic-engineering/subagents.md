@@ -29,6 +29,81 @@ spawn any profile.
 only `researcher`. Forward profile references are valid. Unknown children and
 cycles in the delegation graph are rejected.
 
+## Choose an Orchestration Mode
+
+Profiles default to delegated orchestration. These two forms are equivalent:
+
+```kedi
+> profile: coordinator:
+    > adapter: pydantic
+    > subagent: researcher
+```
+
+```kedi
+> profile: coordinator:
+    > adapter: pydantic
+    > subagent: researcher
+    > workflow: delegate
+```
+
+Delegate mode exposes `delegate_task` and the lifecycle tools documented
+below. The parent model regains control after each foreground child call.
+
+Dynamic mode replaces those parent-facing orchestration tools with one
+sequential `run_workflow(code: str)` tool:
+
+```kedi
+> profile: reviewer:
+    ###
+    Identify contradictions in supplied evidence.
+    ###
+    > adapter: pydantic
+
+> profile: coordinator:
+    > adapter: pydantic
+    > subagent: researcher
+    > subagent: reviewer
+    > workflow: dynamic
+    > max_agents: 8
+```
+
+The parent generates a restricted Python program. Direct child profiles become
+documented async functions inside that program:
+
+```python
+import asyncio
+
+research, review = await asyncio.gather(
+    researcher(task="Collect evidence for the claim."),
+    reviewer(task="Find contradictions in the supplied evidence."),
+)
+{
+    "evidence": research["task_summary"],
+    "review": review["task_summary"],
+}
+```
+
+Each function accepts a required keyword-only `task` and optional
+`final_schema`. Its dictionary result always contains `run_id`, `subagent`,
+`task_summary`, and `final_result`. The workflow's final expression is returned
+to the parent; bounded `print()` output is included only as diagnostic output.
+Use ordinary `await` for dependent work and `asyncio.gather` for independent
+fan-out.
+
+The code executes in Monty. It cannot access host Python objects, adapters,
+credentials, environment variables, files, network, processes, clocks, or
+arbitrary imports. Child calls still run through Kedi's normal coordinator, so
+both modes share profile isolation, safety ceilings, approvals, cwd, usage
+accounting, concurrency, cancellation, and ancestor budgets.
+
+Type and syntax checking precede child execution. A failed child becomes a
+sanitized `RuntimeError` that workflow code may catch. Successful identical
+calls are retained in a bounded retry-salvage table, allowing a corrected
+workflow to reuse already-paid results. Budget exhaustion is terminal rather
+than retryable. Canceling the workflow cancels and joins all pending children.
+Dynamic workflows cannot nest, and only JSON-safe values cross the sandbox
+boundary.
+
 ## Child Isolation
 
 Every delegate call starts a fresh child conversation. The child receives its

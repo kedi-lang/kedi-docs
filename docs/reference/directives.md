@@ -49,15 +49,19 @@ transports are documented in [MCP Servers](../agentic-engineering/mcp.md).
 | `> profile: name:` | Define a reusable agent state |
 | `> subagent: child` | Permit one direct child profile |
 | `> max_agents: N` | Bound descendant starts for one invocation |
+| `> workflow: delegate\|dynamic` | Select direct or sandboxed dynamic child orchestration |
 
 A profile body may contain adapter or agent selection, model, effort, system,
 settings, approval, MCP, tools, child profiles, and descendant budget. Scalar
 members replace earlier values, settings merge by key, tools/children merge by
 name, and MCP servers append.
 
-`> subagent:` and `> max_agents:` are profile members rather than arbitrary
-runtime spawn commands. Forward child references are valid; unknown children,
-cycles, nonpositive budgets, and unsupported adapter capabilities fail.
+`> subagent:`, `> max_agents:`, and `> workflow:` are profile members rather
+than arbitrary runtime spawn commands. `delegate` is the default. `dynamic`
+requires at least one direct child and exposes `run_workflow` instead of the
+delegation lifecycle tools. Forward child references are valid; unknown
+children, cycles, nonpositive budgets, duplicate workflow modes, and
+unsupported adapter capabilities fail.
 
 ## Modules and Packages
 
