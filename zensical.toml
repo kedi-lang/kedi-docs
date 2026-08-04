@@ -68,6 +68,7 @@ nav = [
     { "Concurrency" = "runtime/concurrency.md" },
     { "Tool Artifacts" = "runtime/tool-artifacts.md" },
     { "Caching" = "runtime/caching.md" },
+    { "Telemetry" = "runtime/telemetry.md" },
     { "Errors, Frames, and Tracebacks" = "runtime/errors-and-debugging.md" },
   ] },
   { "Evals and Optimization" = [

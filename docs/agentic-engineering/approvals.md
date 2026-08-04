@@ -81,6 +81,22 @@ The handler must return `ApprovalDecision.allow()`,
 `ApprovalDecision.deny()`, or `ApprovalDecision.edit(arguments)`. Returning a
 string or arbitrary mapping is an error.
 
+### LLM-backed approval helper
+
+The built-in `helpers` module provides an LLM-backed dynamic handler that uses
+the active model:
+
+```kedi
+> import: helpers
+> approval: `llm_approval`
+```
+
+!!! warning "Experimental and limited-context"
+    Approval requests do not currently include a call reason. `llm_approval`
+    therefore judges with limited information: the tool name, description,
+    declared risk, and call arguments. This helper is not a stable feature and
+    must not be treated as a complete authorization boundary.
+
 ## Approval Request
 
 The immutable request contains:

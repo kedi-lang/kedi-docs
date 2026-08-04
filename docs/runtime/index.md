@@ -56,3 +56,11 @@ locations. Capability and adapter errors fail at the narrowest boundary that
 can identify the unmet contract. See
 [Errors, Frames, and Tracebacks](errors-and-debugging.md) for the complete
 exception model and programmatic inspection API.
+
+## Telemetry
+
+Kedi is a no-op until its separate OpenTelemetry instrumentor is enabled. The
+instrumentor exposes runtime, agent, and artifact spans and metrics while
+keeping content and source capture disabled by default. See
+[Telemetry](telemetry.md) for configuration, Logfire integration, privacy
+controls, span hierarchy, and metric names.
