@@ -33,7 +33,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           repository: kedi-lang/kedi
-          ref: tool_artifacts
+          ref: stable
           token: ${{ secrets.KEDI_REPOSITORY_TOKEN }}
           path: .kedi-source
           persist-credentials: false
