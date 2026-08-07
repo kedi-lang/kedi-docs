@@ -1,0 +1,136 @@
+# Kedi Programming Language
+
+> A typed orchestration language for LLM programs.
+
+Typed reference documentation for the Kedi language and Python API.
+
+## Overview
+
+- [Home](https://kedi-lang.org/index.md): Kedi is a typed orchestration language for building LLM programs whose prompts, dataflow, structured outputs, tools, tests, and agent configuration live in one readable source format. Use it through .kedi programs or embed the same runtime semantics through its Python API.
+
+## Start
+
+- [Start with Kedi](https://kedi-lang.org/getting-started/index.md): The first workflow accepts a topic from the command line, asks a model for a short structured brief, and returns the captured text:
+- [Installation](https://kedi-lang.org/getting-started/installation.md): Kedi requires Python 3.10 or newer. The package metadata currently supports Python 3.10 through 3.14.
+- [First Program](https://kedi-lang.org/getting-started/first-program.md): Create review.kedi:
+- [Projects and Execution](https://kedi-lang.org/getting-started/projects-and-execution.md): A .kedi file can contain top-level values, types, procedures, profiles, tests, evals, and the final executable statements. Single-file programs are a good fit when the public surface is small and all prompts share one lifecycle.
+
+## Core Language
+
+- [Core Language](https://kedi-lang.org/core-language/index.md): A Kedi program is an ordered sequence of declarations and executable statements. The public language surface includes:
+- [Source Structure](https://kedi-lang.org/core-language/source-structure.md): Kedi preserves source order for declarations and executable statements. Imports publish their exported bindings at the position of the import, and later writes replace earlier bindings:
+- [Templates and Invokes](https://kedi-lang.org/core-language/templates-and-invokes.md): >> opens a model template at top level or inside a procedure:
+- [Substitutions and Calls](https://kedi-lang.org/core-language/substitutions-and-calls.md): Substitutions are Kedi's read syntax. They insert an existing value, a procedure result, or a Python expression into rendered text. They never declare an output.
+- [Outputs and Assignments](https://kedi-lang.org/core-language/outputs-and-assignments.md): Square brackets are write syntax in Kedi. In a >> template they declare fields the model must produce; on the left of = they assign deterministic values. Neither form is the same as <name>, which reads a value.
+- [Procedures](https://kedi-lang.org/core-language/procedures.md): Procedures package Kedi statements into typed, reusable callables. They are also the unit exposed to tools, tests, evals, optimization, generated code, and the Python API.
+- [Parameters and Returns](https://kedi-lang.org/core-language/parameters-and-returns.md): Procedure signatures define the native contract between Kedi, Python, tools, tests, and evals. An omitted annotation is not Any: it defaults to str.
+- [Types](https://kedi-lang.org/core-language/types.md): Kedi types are runtime contracts, provider schemas, and editor information. They are used in output fields, assignments, procedure signatures, custom fields, tool schemas, evals, and the Python API.
+- [Multiline Syntax and Escaping](https://kedi-lang.org/core-language/multiline-and-escaping.md): Kedi has separate multiline rules for model prompts, rendered returns, Python, comments, and directives. Do not transfer one construct's continuation syntax to another.
+
+## Python Interop
+
+- [Python Interop](https://kedi-lang.org/python-interop/index.md): Python is Kedi's deterministic execution layer. Use it for arithmetic, validation, data shaping, library calls, control flow, and local side effects; use Kedi templates where model judgement is required.
+- [Inline Expressions](https://kedi-lang.org/python-interop/inline-expressions.md): Inline Python is a single expression enclosed in one pair of backticks. It is evaluated in the active Kedi runtime environment.
+- [Python Blocks](https://kedi-lang.org/python-interop/python-blocks.md): Fenced Python blocks execute statement suites. They are the right boundary for control flow, local imports, multiple calculations, exception handling, and deterministic integration code.
+- [Prelude, Globals, and Scope](https://kedi-lang.org/python-interop/prelude-globals-and-scope.md): The prelude establishes shared Python state before Kedi declarations and statements are compiled. Ordinary blocks, by contrast, are isolated execution units whose new Python locals do not persist.
+
+## Modules and Packaging
+
+- [Modules and Packaging](https://kedi-lang.org/modules-and-packaging/index.md): Kedi modules split a program into explicit public surfaces. Packages distribute one module tree through the local Kedi registry; they do not change the module language.
+- [Modules](https://kedi-lang.org/modules-and-packaging/modules.md): A module is a .kedi source file compiled as part of a root program. Its top-level code initializes module state; its export directive selects which bindings are published to importers.
+- [Imports and Exports](https://kedi-lang.org/modules-and-packaging/imports-and-exports.md): Imports publish selected module bindings directly into the current source environment. Exports are explicit so implementation helpers remain private.
+- [Built-In Modules](https://kedi-lang.org/modules-and-packaging/built-in-modules.md): Kedi ships a small set of ordinary .kedi modules. They use the same explicit exports, profiles, Python interop, tool metadata, and resolution rules as project modules.
+- [Package Manifests](https://kedi-lang.org/modules-and-packaging/package-manifests.md): package.kedi is a declarative package manifest written in Kedi directive syntax. It is not an executable module.
+- [Installation and Registries](https://kedi-lang.org/modules-and-packaging/installation-and-registries.md): Kedi installs package source into a user-local registry. Installation validates the manifest, Python compatibility, source containment, file kinds, and bounded tree size before replacing an existing installed copy.
+
+## Agentic Engineering
+
+- [Agentic Engineering](https://kedi-lang.org/agentic-engineering/index.md): Kedi treats model execution as scoped agent configuration rather than a global string. A scope can select a framework or harness, model, reasoning effort, instructions, settings, tools, MCP servers, skills, approvals, and child agents.
+- [Backend Selection](https://kedi-lang.org/agentic-engineering/backend-selection.md): Kedi separates framework adapters from agent harnesses because they expose different execution and capability contracts.
+- [Models and Reasoning](https://kedi-lang.org/agentic-engineering/models-and-reasoning.md): Model and reasoning directives refine the active backend. They do not select a framework or harness by themselves.
+- [Instructions and Settings](https://kedi-lang.org/agentic-engineering/instructions-and-settings.md): Instructions define agent behavior; settings define adapter/model mechanics. Both are lexical and apply to following calls.
+- [Profiles](https://kedi-lang.org/agentic-engineering/profiles.md): Profiles are named, reusable agent-state fragments. They make backend, instructions, tools, approval, and delegation reviewable as one unit.
+- [Tools and Use](https://kedi-lang.org/agentic-engineering/tools-and-use.md): > use: either exposes a callable as an agent tool, applies a profile, or enables the reserved project-skill surface. Resolution depends on its form.
+- [Approvals and Sensitive Operations](https://kedi-lang.org/agentic-engineering/approvals.md): Approvals mediate individual tool calls after arguments are produced and before the tool executes. They are not model-output validation and do not sandbox ordinary embedded Python.
+- [MCP Servers](https://kedi-lang.org/agentic-engineering/mcp.md): > mcp: attaches one Model Context Protocol server to the active agent state. The selected adapter translates the normalized specification into its MCP client/toolset surface.
+- [Skills](https://kedi-lang.org/agentic-engineering/skills.md): Skills are project-local instruction documents loaded on demand through two read-only tools. Kedi does not inject every skill into every prompt.
+- [Subagents](https://kedi-lang.org/agentic-engineering/subagents.md): Subagents let one profile delegate bounded, isolated work to explicitly declared child profiles. Delegation is a typed tool surface, not an implicit ability to spawn any profile.
+- [Scoping and Capabilities](https://kedi-lang.org/agentic-engineering/scoping-and-capabilities.md): Agent state follows lexical source scope. Capability metadata determines whether the selected adapter can honor the resulting contract.
+
+## Runtime
+
+- [Runtime](https://kedi-lang.org/runtime/index.md): The runtime turns Kedi source into a validated program, compiles declarations and scopes, executes deterministic statements, and crosses the model boundary only at explicit template or raw-invoke statements.
+- [Execution and Dataflow](https://kedi-lang.org/runtime/execution-and-dataflow.md): Kedi executes source in order while preserving lexical declaration state. Parallel mode changes scheduling of model work, not the language result.
+- [Interactive Execution](https://kedi-lang.org/runtime/interactive-execution.md): Interactive execution evaluates complete Kedi fragments against one persistent, process-local runtime. It is useful for terminal exploration, notebooks, debuggers, and hosts that need to submit code incrementally without replaying earlier cells.
+- [Concurrency](https://kedi-lang.org/runtime/concurrency.md): Kedi is sequential by default. Parallel execution is opt-in and accelerates independent model templates without changing source syntax or expected results.
+- [Tool Artifacts](https://kedi-lang.org/runtime/tool-artifacts.md): Tool Artifacts is Kedi's bounded large-value transport. It prevents large tool results and generated fields from being copied into model context while preserving the original typed value for Kedi and embedded Python.
+- [Caching](https://kedi-lang.org/runtime/caching.md): Kedi has several independent reuse mechanisms. Enabling one does not enable the others.
+- [Telemetry](https://kedi-lang.org/runtime/telemetry.md): Kedi provides a dependency-free telemetry seam in the runtime. It is a no-op until the separate opentelemetry-instrumentation-kedi package installs an OpenTelemetry backend. Application code keeps ownership of the OpenTelemetry SDK, resource, sampler, exporter, and shutdown lifecycle.
+- [Errors, Frames, and Tracebacks](https://kedi-lang.org/runtime/errors-and-debugging.md): Kedi reports failures in the language that owns the failing operation. Parse diagnostics point to Kedi syntax, runtime failures carry Kedi execution frames, and embedded Python tracebacks are mapped back from generated Python to the original .kedi source.
+
+## Evals and Optimization
+
+- [Evals and Optimization](https://kedi-lang.org/evals-and-optimization/index.md): Kedi separates four related jobs: deterministic tests, dataset-driven evaluation, prompt optimization, and AI-generated procedure implementations. They use some of the same procedures and Python environment, but they do not have the same purpose or lifecycle.
+- [Test Blocks](https://kedi-lang.org/evals-and-optimization/test-blocks.md): A test suite is a top-level block named after the procedure it validates. Each case has a unique label and contains Python code:
+- [Evaluation Suites](https://kedi-lang.org/evals-and-optimization/evaluation-suites.md): An evaluation suite belongs at top level and names the procedure being scored:
+- [Datasets and Metrics](https://kedi-lang.org/evals-and-optimization/datasets-and-metrics.md): A training dataset is Python code that returns an iterable:
+- [Prompt Optimization](https://kedi-lang.org/evals-and-optimization/prompt-optimization.md): An optimize span is an executable template block inside a procedure:
+- [GEPA](https://kedi-lang.org/evals-and-optimization/gepa.md): GEPA reflectively evolves prompt instructions from execution traces, metric scores, and feedback. Use it when:
+- [AI-Generated Procedures](https://kedi-lang.org/evals-and-optimization/ai-generated-procedures.md): > auto: defines a procedure by contract instead of a handwritten body:
+
+## Python API
+
+- [Python API](https://kedi-lang.org/python-api/index.md): The Python API embeds Kedi programs in typed Python callables. It preserves the same template, substitution, output, profile, tool, MCP, approval, skills, artifact, conversation, and runtime semantics as .kedi files.
+- [Query Decorator](https://kedi-lang.org/python-api/query.md): A query function's docstring must start with a standalone kedi line:
+- [Bind Decorator](https://kedi-lang.org/python-api/bind.md): bind connects a Python signature to a complete .kedi program:
+- [Configuration and Context](https://kedi-lang.org/python-api/configuration-and-context.md): kedi.configure(...) creates a new default configuration in the current context:
+- [Types and Tools](https://kedi-lang.org/python-api/types-and-tools.md): @kedi.type makes Python classes usable in Kedi output annotations and Python expressions:
+- [Approvals, MCP, and Skills](https://kedi-lang.org/python-api/approvals-mcp-and-skills.md): Decorate a handler to install it as the current Python API configuration's default dynamic policy:
+- [Artifacts and Sessions](https://kedi-lang.org/python-api/artifacts-and-sessions.md): The Python API exposes the same artifact policy as > artifacts: and an explicit session boundary for calls that must share conversation history.
+- [Concurrency and Promises](https://kedi-lang.org/python-api/concurrency-and-promises.md): Python API execution is sequential by default. Enable promise-pipelined template calls globally:
+- [Caching, Runtime, and Executors](https://kedi-lang.org/python-api/caching-runtime-and-executors.md): CacheInfo is a frozen dataclass with counts for the process-memory parse and response caches. It does not report codegen, optimized prompt, GEPA checkpoint, or adapter-provider caches.
+
+## Agent Adapters
+
+- [Agent Adapters](https://kedi-lang.org/agent-adapters/index.md): Adapters translate Kedi's uniform prompt contract into a model framework or an agent harness. Selection is explicit because those backends have materially different capabilities.
+- [Pydantic AI](https://kedi-lang.org/agent-adapters/pydantic-ai.md): Pydantic AI is a core Kedi dependency:
+- [DSPy](https://kedi-lang.org/agent-adapters/dspy.md): DSPy ships in Kedi's core dependency set:
+- [LangChain](https://kedi-lang.org/agent-adapters/langchain.md): Kedi includes LangChain, OpenAI/OpenRouter integrations, and MCP adapters:
+- [Custom Adapters](https://kedi-lang.org/agent-adapters/custom-adapters.md): Implement AgentAdapter[T] from kedi.agent_adapter:
+- [Codex](https://kedi-lang.org/agent-adapters/codex.md): The Codex adapter starts:
+- [Claude](https://kedi-lang.org/agent-adapters/claude.md): Install the optional SDK:
+- [ACP Agents](https://kedi-lang.org/agent-adapters/acp.md): The generic ACP adapter launches an Agent Client Protocol process and speaks newline-delimited JSON-RPC over stdio:
+
+## Tooling
+
+- [Tooling](https://kedi-lang.org/tooling/index.md): Kedi ships one CLI, an LSP server, editor integrations, package commands, and low-level browser/playground bridges.
+- [Run and Parse Commands](https://kedi-lang.org/tooling/run-and-parse.md): Kedi loads imports, optimized prompts, generates missing > auto: procedures, compiles, and runs the top-level program.
+- [Test, Eval, and Optimize Commands](https://kedi-lang.org/tooling/test-eval-and-optimize.md): Runs every @test: case and exits 1 if any fail.
+- [Package Commands](https://kedi-lang.org/tooling/package-commands.md): From a package root:
+- [Language Server](https://kedi-lang.org/tooling/language-server.md): Equivalent fallback:
+- [VS Code](https://kedi-lang.org/tooling/vscode.md): Install **Kedi-Lang** (dyigitpolat.kedi-vscode) and the Microsoft Python extension. VS Code 1.85 or newer is required.
+- [Zed](https://kedi-lang.org/tooling/zed.md): Open **Zed → Extensions**, search for **Kedi**, and install it. For local development choose **Install Dev Extension** and select the kedi-zed directory, not the grammar repository.
+- [Browser and Playground](https://kedi-lang.org/tooling/browser-and-playground.md): Kedi parsing/compilation can remain on a Python backend while embedded Python and model inference are delegated through bridges. This avoids pretending the entire Python runtime or provider SDK runs natively in the browser.
+
+## Examples
+
+- [Examples](https://kedi-lang.org/examples/index.md): These examples combine Kedi features into reviewable programs. Read the focused language pages first when you need a complete rule rather than a guided scenario.
+- [Complete Program](https://kedi-lang.org/examples/complete-program.md): This compact application combines typed extraction, deterministic Python, procedure tools, profiles, command-line input, tests, and evals without hiding the boundaries between them.
+- [Structured Extraction](https://kedi-lang.org/examples/structured-extraction.md): This example extracts one reusable native object rather than parsing JSON text after a model call.
+- [Tools and Approvals](https://kedi-lang.org/examples/tools-and-approvals.md): This program exposes a read-only lookup and a mutating report writer. A dynamic approval handler redirects writes into a controlled directory.
+- [Agent Delegation](https://kedi-lang.org/examples/agent-delegation.md): Subagents are explicit direct-child profiles. They are appropriate when a coordinator needs an isolated conversation, tool set, model, or safety policy; they are unnecessary for deterministic helper procedures.
+- [Evaluation and Optimization](https://kedi-lang.org/examples/evaluation-and-optimization.md): This example improves one extraction prompt with supervised examples and a metric that returns both a score and actionable feedback.
+- [Modules and Packaging](https://kedi-lang.org/examples/modules-and-packaging.md): This example creates a package whose public surface contains a type and two procedures while its parsing helper remains private.
+
+## Reference
+
+- [Reference](https://kedi-lang.org/reference/index.md): This section is the compact, searchable inventory of Kedi's public language, runtime, Python, adapter, and tooling contracts. The conceptual sections linked from each table provide examples and rationale.
+- [Syntax Index](https://kedi-lang.org/reference/syntax.md): Declarations and executable statements retain source order. Indentation defines scope; tabs compare as width four, but spaces are recommended.
+- [Directive Index](https://kedi-lang.org/reference/directives.md): Framework and harness selection are mutually exclusive in one state. Literal names are statically validated; backtick expressions defer validation to runtime. Adapter settings unsupported by the selected backend are filtered or rejected according to that adapter's contract.
+- [CLI Reference](https://kedi-lang.org/reference/cli.md): Use kedi --help, kedi install --help, or kedi add --help for the relevant usage surface.
+- [Environment Variables](https://kedi-lang.org/reference/environment-variables.md): KEDI_ADAPTER and KEDI_AGENT are mutually exclusive. Python configure(), decorator arguments, source directives, and CLI options can provide more local selection. KEDI_PARALLEL accepts 0/1, true/false, on/off, or a positive worker count; invalid values fail rather than silently selecting a mode.
+- [Package Manifest](https://kedi-lang.org/reference/package-manifest.md): The file must be named exactly package.kedi, contain exactly one package directive, and contain no imports, exports, procedures, types, Python, values, or executable statements. Comments are allowed.
+- [Python API](https://kedi-lang.org/reference/python-api.md): All stable high-level names below are imported from kedi.
+- [Capability Matrix](https://kedi-lang.org/reference/capability-matrix.md): Capabilities are declared contracts, not feature guesses. Kedi validates the active profile against them and fails when a required surface is unavailable.
+- [Diagnostics and Troubleshooting](https://kedi-lang.org/reference/diagnostics-and-troubleshooting.md): Kedi distinguishes parse, compile, capability, execution, validation, and external-backend failures. Preserve the rendered source location and original exception when reporting a problem.
+- [Semantic Coverage Map](https://kedi-lang.org/reference/semantic-coverage.md): This page owns the documentation coverage checklist for Kedi's public semantics. Each item must be explained in a focused guide and represented in the compact reference where applicable. It is a maintenance contract, not a substitute for those explanations.
