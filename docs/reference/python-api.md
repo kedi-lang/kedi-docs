@@ -121,6 +121,19 @@ Public artifact models are `ArtifactRef`, `ArtifactChunk`,
 `ArtifactSearchResult`, `ArtifactReleaseResult`, and `ArtifactHandle`. See
 [Artifacts and Sessions](../python-api/artifacts-and-sessions.md).
 
+## Interactive Execution
+
+`interactive(...) -> InteractiveSession` creates a synchronous, process-local
+incremental runtime. `InteractiveSession.execute(source, *, source_name=None)`
+parses and executes one complete fragment exactly once while retaining earlier
+values, declarations, imports, conversation state, and artifacts. It returns
+the same native result as `KediRuntime.run_main()`. `close()` is idempotent;
+the session is also a context manager.
+
+See [Interactive Execution](../runtime/interactive-execution.md) for supported
+configuration, source identity, failure semantics, restrictions, and the
+`kedi --idle` frontend.
+
 ## Approvals
 
 `@kedi.approval` installs a sync or async handler in current configuration and

@@ -37,6 +37,15 @@ Sequential execution is the default. Parallel mode schedules independent model
 templates concurrently and discovers dependencies from value reads. Both modes
 must produce identical values and failures.
 
+## Interactive Execution
+
+`kedi.interactive()` and `kedi --idle` execute complete fragments against one
+persistent, process-local runtime. Earlier fragments are not replayed, while
+their values, declarations, imports, conversation state, and artifacts remain
+available to later fragments. See
+[Interactive Execution](interactive-execution.md) for lifecycle, result,
+traceback, multiline-input, and terminal-command semantics.
+
 ## Caches and Artifacts
 
 The Python API has in-memory parse and optional response caches. AI-generated

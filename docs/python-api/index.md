@@ -110,6 +110,18 @@ parse and response caches. `kedi.force(value)` explicitly resolves a low-level
 artifact ownership. Artifact handling is enabled by default and can be
 configured or disabled through `artifacts=` on contexts and decorators.
 
+`kedi.interactive()` creates a persistent process-local runtime for executing
+complete Kedi fragments without replaying earlier fragments:
+
+```python
+with kedi.interactive() as interactive_session:
+    interactive_session.execute("[value: int] = `40`")
+    assert interactive_session.execute("= `value + 2`") == 42
+```
+
+See [Interactive Execution](../runtime/interactive-execution.md) for source
+identity, lifecycle, failure behavior, and terminal REPL usage.
+
 ## Public API Map
 
 Common imports come from the package root:
@@ -127,6 +139,7 @@ from kedi import (
     ArtifactSearchResult,
     CacheInfo,
     ConversationState,
+    InteractiveSession,
     KediPromise,
     KediPromiseLeak,
     KediRuntime,
@@ -137,6 +150,7 @@ from kedi import (
     configure,
     context,
     force,
+    interactive,
     parallel,
     query,
     reset_config,

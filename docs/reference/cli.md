@@ -5,6 +5,7 @@
 ```text
 kedi SOURCE [OPTIONS] [PROGRAM_OPTIONS]
 kedi -c SOURCE_TEXT [OPTIONS] [PROGRAM_OPTIONS]
+kedi --idle [RUNTIME_BACKEND_OPTIONS]
 kedi parse SOURCE
 kedi SOURCE --parse
 kedi install [PACKAGE.KEDI]
@@ -30,6 +31,20 @@ source-file identity and adjacent artifacts.
 The historical option name is `--adapter`, but it accepts both framework
 adapters and harnesses. In Kedi source and the Python API, `adapter` and `agent`
 remain separate type-safe concepts.
+
+## Interactive Mode
+
+`kedi --idle` starts a process-local incremental session. It uses `+++` for a
+new fragment and `...` for continuation input. Enter an empty continuation line
+to execute a buffered multiline fragment. `:show <expression>` inspects a
+value, `help` displays command help, and `:exit`, `Ctrl+C`, or `Ctrl+D` closes
+the session.
+
+Interactive mode accepts `--adapter` and `--adapter-model`. It rejects a source
+file, `-c/--command`, program arguments, `--parse`, `--test`, `--eval`, and
+`--optimize`. See [Interactive Execution](../runtime/interactive-execution.md)
+for state persistence, native results, imports, history, and complete terminal
+behavior.
 
 ## Validation and Generation Options
 

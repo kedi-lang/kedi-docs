@@ -65,6 +65,7 @@ nav = [
   { "Runtime" = [
     "runtime/index.md",
     { "Execution and Dataflow" = "runtime/execution-and-dataflow.md" },
+    { "Interactive Execution" = "runtime/interactive-execution.md" },
     { "Concurrency" = "runtime/concurrency.md" },
     { "Tool Artifacts" = "runtime/tool-artifacts.md" },
     { "Caching" = "runtime/caching.md" },
