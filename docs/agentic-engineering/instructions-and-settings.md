@@ -127,3 +127,7 @@ blindly. Adapter docs list the exact mapping.
 
 Prefer a minimal settings block. Every additional provider knob is part of the
 profile's operational contract and should have a tested reason.
+
+Conversation history and compaction are intentionally not model settings. Use
+`> history: enabled` for stateful calls or the expanded history policy described
+in [Caching and Conversation History](../runtime/caching.md).

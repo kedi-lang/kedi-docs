@@ -7,6 +7,75 @@ Tool artifacts are not a cache: they replace large model-visible values with
 bounded references while retaining the native value for the current artifact
 session. See [Tool Artifacts](tool-artifacts.md).
 
+## Stateful Conversation History
+
+Kedi model calls are stateless by default. Enable history in a lexical scope
+when later template or raw-invoke blocks must receive complete successful turns
+from earlier calls:
+
+```kedi
+> history: enabled
+
+>> Remember [project_name].
+>> A concise tagline for <project_name> is [tagline].
+
+= <tagline>
+```
+
+History is valid at top level, in procedures, and in profiles. A nested
+`> history: disabled` scope neither reads nor mutates enabled outer history.
+Failed and cancelled calls do not commit partial turns.
+
+History is partitioned by adapter. Each adapter lane keeps its native or
+portable message sequence, tool lifecycle, and stable cache identity. Switching
+adapters resumes that adapter's lane rather than translating private provider
+messages. Artifact release and expiry do not delete or reorder existing
+messages, so a cached prefix remains append-only within its cache epoch.
+
+## Native Compaction
+
+Compaction belongs to history because it changes the conversation lifecycle and
+cache epoch. Configure it with the expanded history form:
+
+```kedi
+> history:
+    enabled: true
+    > compaction:
+        mode: native
+        threshold: `100_000`
+```
+
+`enabled` is required. `mode: native` delegates compaction to a verified
+provider path. `threshold` is an optional positive input-token count; omission
+uses the integration's default. Current native paths are:
+
+- Pydantic AI `OpenAIResponsesModel` with `OpenAICompaction`;
+- Pydantic AI `AnthropicModel` with `AnthropicCompaction`;
+- LangChain OpenAI chat models with `context_management`;
+- LangChain Anthropic chat models with context management and the required
+  compaction beta.
+
+Unsupported adapters and models fail before model I/O. Kedi never silently
+changes `native` into an application summarizer. Disable an inherited policy
+without disabling history by setting `mode: disabled`:
+
+```kedi
+> history:
+    enabled: true
+    > compaction:
+        mode: disabled
+```
+
+`threshold` cannot accompany `disabled`. A provider compaction checkpoint seals
+the current cache epoch. Kedi rotates the lane's opaque cache identity once and
+keeps the compacted provider messages as the first state of the new epoch.
+Replaying that checkpoint does not rotate it again.
+
+Kedi includes an adapter-neutral deterministic history processor, lifecycle
+grouping, protected-boundary planner, and transactional checkpoint validation
+foundation. A Kedi-owned semantic summarizer is intentionally not public yet;
+it is tracked in [kedi-lang/kedi#80](https://github.com/kedi-lang/kedi/issues/80).
+
 ## Python API Parse Cache
 
 `@kedi.query` and `@kedi.bind` cache parsed programs automatically. The key is:
