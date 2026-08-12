@@ -12,7 +12,7 @@
 | `> system: text` | Replace active instructions; block form joins lines |
 | `> settings:` | Merge adapter settings by key |
 | `> history: enabled\|disabled` | Enable or disable scoped conversation continuity |
-| `> history:` | Configure history ownership and nested native compaction |
+| `> history:` | Configure history ownership and native compaction settings |
 | `> artifacts:` | Configure scoped large-value storage and compact references |
 | `> approval: allow`, `deny`, or handler | Set lexical tool approval policy |
 | `> mcp:` | Append one MCP server specification |
@@ -24,15 +24,20 @@ names are statically validated; backtick expressions defer validation to
 runtime. Adapter settings unsupported by the selected backend are filtered or
 rejected according to that adapter's contract.
 
+A directive block has one body shape. Configuration directives contain
+unprefixed `name: value` subsettings; composite directives such as `> profile:`
+contain `>`-prefixed subdirectives. Kedi does not mix both forms in one body.
+
 `> artifacts:` fields are `enabled`, `store`, `path`, `threshold`, `ttl`,
 `idle_ttl`, `preview_chars`, `read_max_chars`, `session_quota`,
 `max_artifacts`, and `cleanup_interval`. The policy is lexical and enabled by
 default. See [Tool Artifacts](../runtime/tool-artifacts.md).
 
-The expanded `> history:` form requires `enabled: true|false` and may contain
-one nested `> compaction:` block with `mode: native|disabled` and an optional
-positive `threshold`. Compaction is history lifecycle policy, not a model
-setting. See [Caching and Conversation History](../runtime/caching.md).
+The expanded `> history:` form contains only subsettings. It requires
+`enabled: true|false` and accepts `compaction_mode: native|disabled` plus an
+optional positive `compaction_threshold`. Compaction is history lifecycle
+policy, not a model setting. See
+[Caching and Conversation History](../runtime/caching.md).
 
 `> mcp:` fields:
 

@@ -40,14 +40,13 @@ cache epoch. Configure it with the expanded history form:
 ```kedi
 > history:
     enabled: true
-    > compaction:
-        mode: native
-        threshold: `100_000`
+    compaction_mode: native
+    compaction_threshold: `100_000`
 ```
 
-`enabled` is required. `mode: native` delegates compaction to a verified
-provider path. `threshold` is an optional positive input-token count; omission
-uses the integration's default. Current native paths are:
+`enabled` is required. `compaction_mode: native` delegates compaction to a
+verified provider path. `compaction_threshold` is an optional positive
+input-token count; omission uses the integration's default. Current native paths are:
 
 - Pydantic AI `OpenAIResponsesModel` with `OpenAICompaction`;
 - Pydantic AI `AnthropicModel` with `AnthropicCompaction`;
@@ -57,19 +56,18 @@ uses the integration's default. Current native paths are:
 
 Unsupported adapters and models fail before model I/O. Kedi never silently
 changes `native` into an application summarizer. Disable an inherited policy
-without disabling history by setting `mode: disabled`:
+without disabling history by setting `compaction_mode: disabled`:
 
 ```kedi
 > history:
     enabled: true
-    > compaction:
-        mode: disabled
+    compaction_mode: disabled
 ```
 
-`threshold` cannot accompany `disabled`. A provider compaction checkpoint seals
-the current cache epoch. Kedi rotates the lane's opaque cache identity once and
-keeps the compacted provider messages as the first state of the new epoch.
-Replaying that checkpoint does not rotate it again.
+`compaction_threshold` cannot accompany `compaction_mode: disabled`. A provider
+compaction checkpoint seals the current cache epoch. Kedi rotates the lane's
+opaque cache identity once and keeps the compacted provider messages as the
+first state of the new epoch. Replaying that checkpoint does not rotate it again.
 
 Kedi includes an adapter-neutral deterministic history processor, lifecycle
 grouping, protected-boundary planner, and transactional checkpoint validation
