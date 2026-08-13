@@ -57,7 +57,7 @@ as direct child subagents.
 
 - Procedures become typed tools through `> use:`.
 - `> mcp:` attaches external MCP tools.
-- `> use: skills` exposes project-local skill discovery.
+- `> skills:` exposes scoped registry, project, and user skill discovery.
 - `> approval:` controls risky tool calls.
 - `> subagent:` adds bounded delegation tools to a profile.
 

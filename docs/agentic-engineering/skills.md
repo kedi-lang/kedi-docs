@@ -1,7 +1,7 @@
 # Skills
 
-Skills are project-local instruction documents loaded on demand through two
-read-only tools. Kedi does not inject every skill into every prompt.
+Skills are scoped instruction documents loaded on demand through two read-only
+tools. Kedi does not inject every skill into every prompt.
 
 ## Layout
 
@@ -21,30 +21,61 @@ digits, `_`, and `-`.
 ## Enable Skills
 
 ```kedi
-> use: skills
+> skills: enabled
 
 >> Use a relevant project skill if one applies, then return [answer: str].
 = <answer>
 ```
 
-This single-line reserved form registers `list_skills` and `read_skill`.
-The multiline form is always a procedure-tool list and therefore does not
-enable skills.
+The compact directive registers `list_skills` and `read_skill`. Disable an
+inherited policy with `> skills: disabled`.
 
 Profiles can carry the same setting:
 
 ```kedi
 > profile: maintainer:
     > adapter: pydantic
-    > use: skills
+    > skills: enabled
 ```
+
+The expanded form configures discovery:
+
+```kedi
+> skills:
+    enabled: true
+    cwd: workspace
+    max_skills: 40
+    include_registry: true
+    include_all: false
+    exclude_paths: `["~/.agents/skills"]`
+```
+
+`enabled` is required in the expanded form. `cwd` changes the base of the
+project-local source and resolves relative to the Kedi program. `max_skills`
+accepts 1 through 100. `include_registry` controls the Kedi registry source.
+`include_all: false` selects the first source containing a valid skill;
+`include_all: true` merges every source. `exclude_paths` accepts an inline
+Python list and may exclude a source root or individual skill directory.
+
+## Source Priority
+
+Kedi checks sources in this order:
+
+1. `$KEDI_HOME/registry/skills`, normally `~/.kedi/registry/skills`;
+2. `<cwd>/.agents/skills`;
+3. `~/.agents/skills`.
+
+Merged names are deterministic. If sources define the same skill name,
+`read_skill` uses the highest-priority copy. Set `include_registry: false` to
+skip only the registry source.
 
 ## Discovery Tools
 
 `list_skills(all: bool = false, limit: int = 20) -> list[str]` returns valid
 skill identifiers in deterministic sorted order. `limit` must be a positive
-integer no greater than 100. `all` is reserved for future source selection and
-currently uses the same project-local root.
+integer no greater than 100 and is additionally bounded by `max_skills`.
+Source merging is configured by `include_all`; the `all` tool argument remains
+accepted for API compatibility.
 
 `read_skill(skill_name: str) -> str` returns the exact UTF-8 file content for
 one valid listed skill.
@@ -64,9 +95,23 @@ The model does not know a skill's body until it reads that skill. This avoids
 filling every context with unrelated instructions and makes skill usage visible
 in the tool trace.
 
-## Root and Security Checks
+## Install Into the Kedi Registry
 
-The default root is `.agents/skills` beneath the current working directory.
+Install a one-file skill from a local directory or GitHub repository:
+
+```bash
+kedi skills add --path ~/my-skill
+kedi skills add --repo owner/skill-repository
+```
+
+The source must have `SKILL.md` at its root. Kedi copies only that file into
+`~/.kedi/registry/skills/<name>/SKILL.md`. GitHub input uses the
+`OWNER/REPOSITORY` form, performs a credential-free shallow checkout, and
+records the checked-out revision. Installation is user-scoped and never writes
+into the project.
+
+## Resolution and Security Checks
+
 Kedi rejects invalid names, absolute/traversal attempts, symlink escapes,
 missing/non-file targets, non-UTF-8 content, and files larger than 256 KiB.
 
@@ -76,7 +121,7 @@ requested.
 
 These checks protect skill-file resolution. Skill content is still trusted
 instruction text and may attempt to influence agent behavior. Review project
-skills and keep approvals/tool boundaries active.
+and installed skills, and keep approvals/tool boundaries active.
 
 ## When to Use Skills
 
