@@ -26,6 +26,7 @@ part of the base adapter protocol rather than an optional capability.
 | Dynamic native approval handler | yes | no | yes |
 | Foreground subagents | yes | yes | yes |
 | Background subagents | yes | no | yes |
+| Semantic stream events | yes | no | yes |
 
 ## Agent Harnesses
 
@@ -43,6 +44,7 @@ part of the base adapter protocol rather than an optional capability.
 | Dynamic native approval handler | yes | no | no |
 | Foreground subagents | yes | yes | no |
 | Background subagents | yes | yes | no |
+| Semantic stream events | yes | yes | yes |
 <!-- END GENERATED ADAPTER CAPABILITIES -->
 
 ACP is intentionally a raw-text harness. It starts a fresh ACP session for each
@@ -80,6 +82,7 @@ not only the adapter.
 | `native_approval_handler` | Dynamic handler projected natively |
 | `subagents` | `> subagent:` |
 | `background_subagents` | Background lifecycle tools |
+| `stream_events` | Completed semantic commentary/final messages and run lifecycle events |
 
 Raw invokes with no structured fields can run on a text-only adapter. A profile
 may be syntactically valid but capability-invalid for its selected backend;

@@ -44,6 +44,7 @@ CAPABILITIES = (
     ("Dynamic native approval handler", "supports_native_approval_handler"),
     ("Foreground subagents", "supports_subagents"),
     ("Background subagents", "supports_background_subagents"),
+    ("Semantic stream events", "supports_stream_events"),
 )
 
 

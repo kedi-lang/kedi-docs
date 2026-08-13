@@ -29,7 +29,27 @@ jobs:
             exit 1
           fi
 
-      - name: Check out Kedi tool artifacts branch
+      - name: Wait for Kedi stable to reference this documentation revision
+        env:
+          GH_TOKEN: ${{ secrets.KEDI_REPOSITORY_TOKEN }}
+        timeout-minutes: 6
+        run: |
+          for attempt in {1..30}; do
+            revision="$(
+              gh api "repos/kedi-lang/kedi/contents/kedi-docs?ref=stable" \
+                --jq .sha 2>/dev/null || true
+            )"
+            if [ "$revision" = "$GITHUB_SHA" ]; then
+              echo "Kedi stable references documentation revision $GITHUB_SHA"
+              exit 0
+            fi
+            echo "Waiting for Kedi stable to reference $GITHUB_SHA (attempt $attempt/30)"
+            sleep 10
+          done
+          echo "::error::Kedi stable does not reference documentation revision $GITHUB_SHA"
+          exit 1
+
+      - name: Check out Kedi stable
         uses: actions/checkout@v6
         with:
           repository: kedi-lang/kedi

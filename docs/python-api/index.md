@@ -131,12 +131,16 @@ from kedi import (
     ApprovalDecision,
     ApprovalPolicy,
     ApprovalRequest,
+    AgentMessageEvent,
+    AgentRunStateEvent,
+    AgentStreamEvent,
     ArtifactChunk,
     ArtifactHandle,
     ArtifactPolicy,
     ArtifactRef,
     ArtifactReleaseResult,
     ArtifactSearchResult,
+    AsyncAgentEventQueue,
     CacheInfo,
     ConversationState,
     InteractiveSession,
@@ -151,6 +155,7 @@ from kedi import (
     context,
     force,
     interactive,
+    observe_agent_events,
     parallel,
     query,
     reset_config,
@@ -159,6 +164,11 @@ from kedi import (
     type,
 )
 ```
+
+`observe_agent_events(...)` provides adapter-neutral, completed commentary and
+final messages as a non-authoritative side channel. See
+[Stream Events](../agentic-engineering/stream-events.md) for callback and async
+queue examples, event ordering, and failure semantics.
 
 Compiler entry points are in `kedi.lang`:
 

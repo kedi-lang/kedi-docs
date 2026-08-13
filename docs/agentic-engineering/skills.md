@@ -50,12 +50,24 @@ The expanded form configures discovery:
     exclude_paths: `["~/.agents/skills"]`
 ```
 
-`enabled` is required in the expanded form. `cwd` changes the base of the
-project-local source and resolves relative to the Kedi program. `max_skills`
-accepts 1 through 100. `include_registry` controls the Kedi registry source.
-`include_all: false` selects the first source containing a valid skill;
-`include_all: true` merges every source. `exclude_paths` accepts an inline
-Python list and may exclude a source root or individual skill directory.
+`enabled` is required in the expanded form. The remaining settings are:
+
+| Setting | Default | Meaning |
+| --- | --- | --- |
+| `cwd` | program directory | Base directory used to locate the project-local `.agents/skills` source |
+| `max_skills` | `20` | Maximum number of discoverable skills; accepts 1 through 100 |
+| `include_registry` | `true` | Include `$KEDI_HOME/registry/skills` in discovery |
+| `include_all` | `false` | Merge all source roots instead of stopping at the first root containing valid skills |
+| `exclude_paths` | empty | Exclude source roots or individual skill directories after path expansion |
+
+Relative `cwd` values resolve from the Kedi program, not the shell's incidental
+working directory. `exclude_paths` is an inline Python list; `~` is expanded
+before source comparison.
+
+The policy is lexical. A top-level directive affects following calls and
+procedures defined after it. A directive inside a procedure or profile applies
+only in that scope. `> skills: disabled` explicitly turns off an inherited
+policy.
 
 ## Source Priority
 
@@ -109,6 +121,10 @@ The source must have `SKILL.md` at its root. Kedi copies only that file into
 `OWNER/REPOSITORY` form, performs a credential-free shallow checkout, and
 records the checked-out revision. Installation is user-scoped and never writes
 into the project.
+
+`--path` accepts either a skill directory containing `SKILL.md` or a path to
+that file. Reinstalling the same skill name replaces its registry copy only
+after the new source has passed validation.
 
 ## Resolution and Security Checks
 

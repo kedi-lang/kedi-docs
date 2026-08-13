@@ -60,6 +60,8 @@ as direct child subagents.
 - `> skills:` exposes scoped registry, project, and user skill discovery.
 - `> approval:` controls risky tool calls.
 - `> subagent:` adds bounded delegation tools to a profile.
+- semantic stream events expose completed commentary and final messages to
+  terminals, UIs, and orchestration code without changing adapter results.
 
 Each surface is capability-checked against the selected backend. Unsupported
 structured output is an execution error. Tools and MCP currently produce
@@ -83,4 +85,5 @@ Read this section in order:
 7. [MCP Servers](mcp.md)
 8. [Skills](skills.md)
 9. [Subagents](subagents.md)
-10. [Scoping and Capabilities](scoping-and-capabilities.md)
+10. [Stream Events](stream-events.md)
+11. [Scoping and Capabilities](scoping-and-capabilities.md)
