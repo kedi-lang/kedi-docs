@@ -142,6 +142,8 @@ The principal spans are:
 | `await approval <tool>` | `await_approval` | blocking CLI, Python, or native approval decision |
 | `<profile> run` | `run_agent` | a subagent run; replaces the delegation tool wrapper |
 | `<profile> workflow` | `run_workflow` | a dynamic workflow run |
+| `process history` | `process_history` | deterministic Kedi history selection after the reduction threshold is reached |
+| `compact history` | `compact_history` | one actual native or Kedi-owned compaction attempt |
 | `store artifact` | `store_artifact` | material artifact storage |
 | `cleanup artifacts` | `cleanup_artifacts` | scheduled or explicit cleanup |
 
@@ -166,12 +168,20 @@ Kedi uses OpenTelemetry GenAI semantic attributes where they apply:
   `kedi.approval.decision` describe approval without recording arguments;
 - `kedi.subagent.*` and `kedi.workflow.*` carry run identity, depth, budget,
   concurrency, outcome, and child-call counts;
+- `kedi.history.compaction.*` carries mode, trigger, input/output message and
+  token counts, reduction ratio, retained-prefix validation, checkpoint state,
+  and whether the cache epoch changed;
 - `kedi.artifact.*` carries sizes, offsets, lifecycle outcome, and context bytes
   avoided without exposing the payload.
 
 Events mark meaningful transitions such as `agent request prepared`, `tool
 execution started`, `tool output admitted`, `approval requested`, `approval
 pending`, `mcp connected`, `artifact released`, and `context preflight`.
+Compaction uses `compaction triggered`, `checkpoint validated`, `checkpoint
+committed`, `cache epoch advanced`, and `compaction rejected`. A
+`compact history` span means a backend was actually invoked or a validated Kedi
+checkpoint commit was attempted; applying provider request settings alone does
+not emit it. Below-threshold history checks do not create spans.
 
 ## Metrics
 
@@ -192,6 +202,18 @@ Agent metrics include:
 - `kedi.mcp.initializations` and `kedi.mcp.initialization.duration`;
 - adapter, subagent, and workflow duration/count observations carried by their
   respective operations.
+
+History compaction metrics include:
+
+- `kedi.history.compactions` and `kedi.history.compaction.duration`;
+- `kedi.history.compaction.input_tokens` and
+  `kedi.history.compaction.output_tokens`;
+- `kedi.history.compaction.reduction_ratio`;
+- `kedi.history.compaction.failures`.
+
+Compaction metric dimensions are limited to mode, trigger, and result. Provider
+cache-read and cache-write token usage is already reported by agent/model
+telemetry and is deliberately not duplicated by compaction metrics.
 
 Artifact metrics include:
 
