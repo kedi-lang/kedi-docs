@@ -80,7 +80,9 @@ Use `agent=` for process-backed harnesses:
 ```python
 kedi.configure(agent="claude")
 kedi.configure(agent="codex")
-kedi.configure(agent="acp")
+from kedi.agent_adapter.adapters import ACPAdapter
+
+kedi.configure(agent=ACPAdapter(command=("uv", "run", "my-acp-agent")))
 ```
 
 Passing both is an error. Passing a harness name through `adapter=` or a

@@ -103,7 +103,8 @@ ACP accepts `cwd`, `env`, and `timeout`. Codex accepts fields including `cwd`,
 `max_budget_usd`.
 
 ```kedi
-> agent: acp
+> agent:
+    acp: npx @zed-industries/codex-acp
 > settings:
     cwd: /workspace/project
     env: `{"LOG_LEVEL": "INFO"}`

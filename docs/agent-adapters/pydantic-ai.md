@@ -39,6 +39,22 @@ Supported settings are `max_tokens`, `temperature`, `top_p`, `timeout`,
 
 `max` reasoning effort maps to Pydantic AI's `xhigh`.
 
+## CodeMode
+
+Use `> codemode: enabled` to replace application tool schemas with Kedi's
+`search_tools`, `get_tool_schema`, and `execute_code` controls:
+
+```kedi
+> adapter: pydantic
+> codemode: enabled
+```
+
+The outer capability wraps constructor, caller, scoped Kedi, and local MCP
+toolsets together. Nested calls retain validation, approval, required-tool,
+telemetry, cancellation, and artifact behavior. Provider-native MCP and
+external deferred approval are rejected while CodeMode is active. See
+[CodeMode](../agentic-engineering/codemode.md) for the complete contract.
+
 ## Structured Outputs
 
 Kedi builds a dynamic Pydantic model from each output field:
@@ -91,4 +107,3 @@ tracks requests, tool calls, and input/output/total tokens.
 
 `subagent_failure_policy="fail_closed"` is the default. `"recover"` exposes a
 sanitized child error to the parent instead of failing the parent run.
-

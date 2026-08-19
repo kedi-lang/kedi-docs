@@ -60,6 +60,7 @@ nav = [
     { "MCP Servers" = "agentic-engineering/mcp.md" },
     { "Skills" = "agentic-engineering/skills.md" },
     { "Subagents" = "agentic-engineering/subagents.md" },
+    { "CodeMode" = "agentic-engineering/codemode.md" },
     { "Stream Events" = "agentic-engineering/stream-events.md" },
     { "Scoping and Capabilities" = "agentic-engineering/scoping-and-capabilities.md" },
   ] },

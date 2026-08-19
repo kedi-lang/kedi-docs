@@ -58,6 +58,18 @@ tools are exposed through an in-process SDK MCP server and added to
 Native `Read`, `Glob`, `Grep`, `WebFetch`, and `WebSearch` are classified
 read-only. Other native/MCP operations require policy.
 
+## CodeMode
+
+`> codemode: enabled` exposes the three shared CodeMode controls through Kedi's
+in-process Claude SDK MCP server. Kedi procedures and declared stdio/SSE/HTTP
+MCP tools are materialized into the run-scoped catalog and are callable only
+from `execute_code`. Claude's built-in filesystem, search, web, and shell tools
+remain native control-plane tools.
+
+The SDK approval hook skips the three controls; the nested application call is
+the single approval owner. Kedi closes the local MCP clients and Monty session
+on completion, error, or cancellation.
+
 ## Subagent Lifecycle
 
 Claude supports foreground/background children and native resume using the SDK
@@ -69,4 +81,3 @@ and usage constraints.
 The SDK must be installed for this adapter. Exact built-in tool availability
 and model names follow the installed Claude Agent SDK. Kedi validates its own
 setting keys but does not emulate missing SDK capabilities.
-

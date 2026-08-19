@@ -58,6 +58,8 @@ as direct child subagents.
 - Procedures become typed tools through `> use:`.
 - `> mcp:` attaches external MCP tools.
 - `> skills:` exposes scoped registry, project, and user skill discovery.
+- `> codemode: enabled` progressively discloses tools and executes hydrated calls in
+  bounded code.
 - `> approval:` controls risky tool calls.
 - `> subagent:` adds bounded delegation tools to a profile.
 - semantic stream events expose completed commentary and final messages to
@@ -85,5 +87,6 @@ Read this section in order:
 7. [MCP Servers](mcp.md)
 8. [Skills](skills.md)
 9. [Subagents](subagents.md)
-10. [Stream Events](stream-events.md)
-11. [Scoping and Capabilities](scoping-and-capabilities.md)
+10. [CodeMode](codemode.md)
+11. [Stream Events](stream-events.md)
+12. [Scoping and Capabilities](scoping-and-capabilities.md)

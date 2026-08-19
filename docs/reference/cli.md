@@ -26,7 +26,6 @@ source-file identity and adjacent artifacts.
 | --- | --- | --- |
 | `--adapter NAME` | `pydantic` | `pydantic`, `dspy`, `langchain`, `claude`, `codex`, or `acp` |
 | `--adapter-model MODEL` | `groq:qwen/qwen3-32b` | Default model identifier |
-| `--acp-command COMMAND` | unset | ACP stdio command; sets process-local `KEDI_ACP_AGENT_COMMAND` |
 
 The historical option name is `--adapter`, but it accepts both framework
 adapters and harnesses. In Kedi source and the Python API, `adapter` and `agent`

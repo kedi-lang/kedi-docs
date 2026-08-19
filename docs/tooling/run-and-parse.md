@@ -76,14 +76,10 @@ source directives and profiles can override CLI defaults.
 
 ## ACP Commands
 
-```bash
-kedi program.kedi \
-  --adapter acp \
-  --acp-command 'npx @zed-industries/codex-acp'
-```
-
-The option sets `KEDI_ACP_AGENT_COMMAND` for this process. A command embedded
-in an active ACP profile takes precedence.
+ACP commands must be embedded explicitly in source using multiline `> agent:`
+syntax, or supplied through `ACPAdapter(command=...)` in Python. The CLI does
+not accept a global ACP command because one process-level value cannot describe
+multiple ACP profiles.
 
 ## Exit Codes and Rendered Errors
 

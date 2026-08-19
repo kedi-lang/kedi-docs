@@ -13,28 +13,12 @@ newline-delimited JSON-RPC over stdio:
 Command strings are shell-split without invoking a shell. Python may pass a
 sequence to avoid quoting ambiguity.
 
-## Inline and Multiline Agent Directives
+## Explicit Commands
 
-Inline selection uses a separately configured command:
-
-```kedi
-> agent: acp
-```
-
-Multiline selection binds the command in the profile. The command may be plain
-text or a Python expression returning a string or sequence.
-
-## `KEDI_ACP_AGENT_COMMAND`
-
-If no directive/Python command is set, Kedi reads:
-
-```bash
-export KEDI_ACP_AGENT_COMMAND='npx @zed-industries/codex-acp'
-kedi program.kedi --adapter acp
-```
-
-The CLI's `--acp-command` sets the same process environment value. Resolution
-order is profile command, adapter constructor command, then environment.
+ACP does not have an implicit command source. Every runnable ACP configuration
+must bind the command in multiline `> agent:` syntax or construct
+`ACPAdapter(command=...)` in Python. Plain `> agent: acp`, CLI command options,
+and environment command fallbacks are intentionally unsupported.
 
 ## Working Directory and Environment
 
@@ -65,7 +49,8 @@ agent's own default model through its command/environment.
 ACP supports raw text only:
 
 ```kedi
-> agent: acp
+> agent:
+    acp: npx @zed-industries/codex-acp
 >> Inspect the repository and return [answer: str] summarizing the risk.
 = `answer`
 ```

@@ -21,7 +21,7 @@ part of the base adapter protocol rather than an optional capability.
 | Model override | yes | yes | yes |
 | Effort | yes | yes | yes |
 | Settings | yes | yes | yes |
-| Code mode | no | no | no |
+| Code mode | yes | no | yes |
 | Native approvals | yes | no | yes |
 | Dynamic native approval handler | yes | no | yes |
 | Foreground subagents | yes | yes | yes |
@@ -39,7 +39,7 @@ part of the base adapter protocol rather than an optional capability.
 | Model override | yes | yes | no |
 | Effort | yes | yes | no |
 | Settings | yes | yes | yes |
-| Code mode | no | no | no |
+| Code mode | yes | yes | no |
 | Native approvals | yes | yes | no |
 | Dynamic native approval handler | yes | no | no |
 | Foreground subagents | yes | yes | no |
@@ -77,7 +77,7 @@ not only the adapter.
 | `model_override` | Explicit `> model:` |
 | `effort` | Explicit `> effort:` |
 | `settings` | Nonempty `> settings:` |
-| `codemode` | Custom adapter code-execution mode when explicitly exposed |
+| `codemode` | `> codemode: enabled` progressive tool discovery and bounded execution |
 | `native_approvals` | Adapter-owned risky tool loop |
 | `native_approval_handler` | Dynamic handler projected natively |
 | `subagents` | `> subagent:` |
@@ -88,10 +88,10 @@ Raw invokes with no structured fields can run on a text-only adapter. A profile
 may be syntactically valid but capability-invalid for its selected backend;
 that mismatch is an error before Kedi pretends the feature is active.
 
-`codemode` is reserved in the adapter capability protocol for extensions that
-replace ordinary tool exchange with an explicit code-execution surface. No
-built-in adapter currently advertises it, and Kedi does not infer it from
-ordinary tool registration.
+`codemode` replaces ordinary application-tool disclosure with explicit tool
+search, schema hydration, and bounded code execution. Pydantic AI, LangChain,
+Claude Agent SDK, and Codex App Server implement the Kedi-owned surface; Kedi
+does not infer it from ordinary tool registration.
 
 ## Custom Adapters
 

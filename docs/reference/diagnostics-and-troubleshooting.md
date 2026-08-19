@@ -39,7 +39,7 @@ not make imported Python safe.
 | Symptom | Check |
 | --- | --- |
 | Framework/harness mismatch | Use `> adapter:` for frameworks, `> agent:` for harnesses |
-| ACP command missing | Set multiline ACP command, CLI `--acp-command`, or environment variable |
+| ACP command missing | Set an explicit multiline ACP command or construct `ACPAdapter(command=...)` |
 | Structured output unsupported | Choose a structured adapter or use raw `[text] <<` |
 | Tools/MCP/subagents unsupported | Consult [Capability Matrix](capability-matrix.md) |
 | Model setting ignored/rejected | Use a key supported by the active adapter |

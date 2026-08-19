@@ -58,6 +58,18 @@ MCP tools are added to each agent run. External MCP tools are treated as
 mutating by default and upgraded to sensitive when arguments target dotenv
 secret files.
 
+## CodeMode
+
+`> codemode: enabled` replaces LangChain's model-facing application tools with
+`search_tools`, `get_tool_schema`, and `execute_code`. Scoped Kedi tools and
+`MultiServerMCPClient` tools enter one run-scoped catalog. Nested calls retain
+Kedi argument validation and inline approval; the direct-call approval
+middleware does not approve the three controls a second time.
+
+LangChain receives Monty and boundary failures as failed tool results, allowing
+the model to correct a snippet without terminating the complete agent run. See
+[CodeMode](../agentic-engineering/codemode.md) for the shared contract.
+
 ## Subagent Lifecycle
 
 LangChain supports foreground/background child runs. Request limits map to a
@@ -69,4 +81,3 @@ messages is reported to Kedi's budget observer.
 Backend-specific settings still depend on the selected chat model. Native
 approval middleware covers tools represented in the LangChain agent; it cannot
 grant capabilities the provider itself does not expose.
-

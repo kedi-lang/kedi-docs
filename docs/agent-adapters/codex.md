@@ -63,6 +63,17 @@ and Python tools become App Server dynamic tools for the active run.
 Kedi MCP declarations are currently unsupported by `CodexAdapter` and raise;
 this does not mean the Codex installation itself has no MCP configuration.
 
+## CodeMode
+
+`> codemode: enabled` publishes only `search_tools`, `get_tool_schema`, and
+`execute_code` as App Server dynamic tools. Kedi procedures and Python tools
+move behind the run-scoped catalog, while Codex's native filesystem, shell, and
+search tools remain available as harness controls. CodeMode settings and the
+catalog participate in thread reuse identity.
+
+Nested calls use Kedi inline approval exactly once. CodeMode does not add MCP
+support to this adapter; Kedi MCP declarations still fail explicitly.
+
 ## Structured Output
 
 Kedi passes JSON Schema through `turn/start.outputSchema`, parses the returned
@@ -83,4 +94,3 @@ model, instructions, and approval ceilings are rebuilt per child scope.
 - Kedi MCP server declarations are unsupported.
 - Native approval handlers support allow/deny, not argument editing.
 - The `codex` executable and compatible App Server are required.
-

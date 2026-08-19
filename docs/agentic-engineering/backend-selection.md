@@ -66,15 +66,9 @@ Select ACP using an explicit command:
 The command can be plain text or a Python expression evaluating to a string or
 sequence of strings. The structured form binds the command to the `acp` harness.
 
-This short form reads the command from process configuration:
-
-```kedi
-> agent: acp
-```
-
-When no command is embedded, Kedi uses `KEDI_ACP_AGENT_COMMAND`. The CLI
-`--acp-command` option sets the same environment value for that process. A
-missing command is an initialization error, not a no-op.
+ACP commands are always explicit. Use multiline `> agent:` syntax or construct
+`ACPAdapter(command=...)` in Python. Plain `> agent: acp`, CLI command options,
+and environment command fallbacks are unsupported.
 
 ## CLI and Environment Defaults
 
@@ -86,7 +80,6 @@ provide one. The Python API loads `.env` and recognizes:
 | `KEDI_ADAPTER` | Framework adapter shortname |
 | `KEDI_AGENT` | Harness shortname |
 | `KEDI_ADAPTER_MODEL` | Model for either selected backend |
-| `KEDI_ACP_AGENT_COMMAND` | Default ACP stdio command |
 
 `KEDI_ADAPTER` and `KEDI_AGENT` are mutually exclusive.
 

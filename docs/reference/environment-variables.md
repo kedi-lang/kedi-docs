@@ -8,7 +8,6 @@
 | `KEDI_AGENT` | Default harness for the Python API |
 | `KEDI_ADAPTER_MODEL` | Default model for the selected backend |
 | `MODEL_NAME` | CLI fallback model and codegen fallback |
-| `KEDI_ACP_AGENT_COMMAND` | ACP harness stdio command |
 | `KEDI_PARALLEL` | Enable/size default parallel execution |
 
 `KEDI_ADAPTER` and `KEDI_AGENT` are mutually exclusive. Python `configure()`,
