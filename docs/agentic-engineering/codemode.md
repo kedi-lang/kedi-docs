@@ -110,9 +110,10 @@ users, projects = await asyncio.gather(
 {"users": len(users), "projects": len(projects)}
 ```
 
-If any called tool is sequential, Kedi serializes all nested calls in that
-snippet. `restart=True` resets variables in the current run's sandbox without
-affecting another run. Variables and successful tool results persist between
+A sequential tool runs exclusively relative to the other nested calls in that
+snippet. Merely hydrating it does not serialize unrelated independent calls.
+`restart=True` resets variables in the current run's sandbox without affecting
+another run. Variables and successful tool results persist between
 `execute_code` calls in the same run; reuse them instead of repeating completed
 host calls.
 
