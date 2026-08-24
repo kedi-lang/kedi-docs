@@ -9,6 +9,7 @@ statements. The public language surface includes:
 - custom types and procedures;
 - template and raw model calls;
 - assignments and returns;
+- deterministic and model-classified conditionals, conditional loops, and sequential loops;
 - embedded Python;
 - model, profile, tool, MCP, skill, and subagent directives;
 - test, eval, optimization, and generated-procedure blocks.
@@ -75,10 +76,11 @@ Read the section in this order:
 2. [Templates and Invokes](templates-and-invokes.md)
 3. [Substitutions and Calls](substitutions-and-calls.md)
 4. [Outputs and Assignments](outputs-and-assignments.md)
-5. [Procedures](procedures.md)
-6. [Parameters and Returns](parameters-and-returns.md)
-7. [Types](types.md)
-8. [Multiline Syntax and Escaping](multiline-and-escaping.md)
+5. [Control Flow](control-flow.md)
+6. [Procedures](procedures.md)
+7. [Parameters and Returns](parameters-and-returns.md)
+8. [Types](types.md)
+9. [Multiline Syntax and Escaping](multiline-and-escaping.md)
 
 Modules, agent directives, tests, and Python embedding are documented in their
 own sections because each has independent scoping and runtime rules.

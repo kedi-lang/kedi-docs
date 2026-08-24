@@ -30,6 +30,7 @@ nav = [
     { "Templates and Invokes" = "core-language/templates-and-invokes.md" },
     { "Substitutions and Calls" = "core-language/substitutions-and-calls.md" },
     { "Outputs and Assignments" = "core-language/outputs-and-assignments.md" },
+    { "Control Flow" = "core-language/control-flow.md" },
     { "Procedures" = "core-language/procedures.md" },
     { "Parameters and Returns" = "core-language/parameters-and-returns.md" },
     { "Types" = "core-language/types.md" },

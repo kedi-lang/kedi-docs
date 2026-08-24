@@ -68,7 +68,8 @@ Kedi return remains the runtime authority.
 
 `configure(...)` accepts `model`, mutually exclusive `adapter`/`agent`,
 `system`, `effort`, `settings`, `tools`, `env`, `mcp_servers`, `approval`,
-`skills`, `artifacts`, `conversation`, `parallel`, `max_workers`, and
+`skills`, `artifacts`, `conversation`, `parallel`, `max_workers`,
+`loop_iteration_limit`, and
 adapter-specific keyword arguments.
 Each call rebuilds defaults; it does not merge with a previous `configure`.
 
@@ -105,6 +106,42 @@ only `Exception` subclasses are retried.
 Pydantic/dataclass surface. `inject=True` registers it by name for query
 annotations in the defining module; `inject=False` removes that implicit
 registration while the class can still be supplied through `env`.
+
+## Adapter Structured Output
+
+Structured-output adapters accept ordinary prompt text through `template`; this
+low-level argument does not require Kedi template syntax. Choose one output form:
+
+```python
+from typing import Annotated
+
+from pydantic import BaseModel
+
+
+class Review(BaseModel):
+    accepted: bool
+    reason: str
+
+
+dynamic = await adapter.produce(
+    template="Evaluate the proposal.",
+    output_schema={
+        "accepted": Annotated[bool, "Whether the proposal should proceed"],
+        "reason": Annotated[str, "Short justification"],
+    },
+)
+typed = await adapter.produce(
+    template="Evaluate the proposal.",
+    output_type=Review,
+)
+```
+
+The first `Annotated` argument is the field type and the second string is its
+model-facing description. `output_schema` dynamically defines named result
+fields; `output_type` returns the supplied prebuilt type. If both are supplied,
+the field schema takes precedence. Pydantic AI, LangChain, DSPy, Claude, Codex,
+and WebGPU support both forms. ACP does not currently support structured output
+and raises `NotImplementedError` from `produce()`.
 
 ## Artifacts and Sessions
 

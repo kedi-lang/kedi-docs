@@ -38,18 +38,26 @@ for consumers whose environments are managed by another tool.
 
 ## Optional Backend Dependencies
 
-The core distribution includes the Pydantic AI, DSPy, and LangChain adapter
-dependencies. Some harness or runtime surfaces need additional packages:
+The core distribution includes the Pydantic AI adapter. Other adapters,
+provider SDKs, and runtime surfaces are installed only when selected:
 
 ```bash
 uv add "kedi[claude]"
+uv add "kedi[codex-model]"
+uv add "kedi[dspy]"
+uv add "kedi[groq]"
+uv add "kedi[langchain]"
+uv add "kedi[langchain-aws]"
 uv add "kedi[playground]"
 ```
 
-The `claude` extra installs the Claude Agent SDK. The `playground` extra adds
-the browser/playground server dependencies. Codex and ACP connect to external
-agent processes and may require their own executable, authentication, or
-command configuration.
+`dspy` installs the DSPy adapter and optimization instrumentation. `langchain`
+installs the LangChain adapter's common OpenAI, OpenRouter, and MCP
+integrations; add `langchain-aws` only for Bedrock. `groq` installs the provider
+SDK used by Groq-backed Pydantic AI models. `claude` and `codex-model` install
+their corresponding SDK bridges, while `playground` adds browser server
+dependencies. Codex, Claude, and ACP harnesses may also require an executable,
+authentication, or explicit command configuration.
 
 ## Verify the CLI
 
