@@ -105,9 +105,10 @@ The optional `sandbox` module exports `execute_code` and a `sandbox` profile:
 ```
 
 It requires the Python package `pydantic_monty`. Importing the module checks that
-dependency immediately. `execute_code(code, inputs, fail_fast=True)` executes
+dependency immediately. `execute_code(code, inputs={}, fail_fast=False)` executes
 with Monty and returns the native final result; the backtick expression preserves
-that value. With `fail_fast=False`, an execution failure is returned as text.
+that value. Inputs default to an empty mapping. Execution failures are returned as
+text by default so an agent can inspect them; pass `fail_fast=True` to raise instead.
 
 This sandbox is for intentionally constrained generated code. It is not the
 execution mechanism for ordinary Kedi Python blocks, which use the configured
