@@ -6,18 +6,26 @@ fields, tool schemas, evals, and the Python API.
 
 ## Built-In Types
 
-The type environment includes Python and typing primitives such as:
+The type environment includes model-facing Python and typing primitives such as:
 
-- `str`, `int`, `float`, `bool`, `bytes`, and `object`;
-- `list[T]`, `dict[K, V]`, `tuple[...]`, and `set[T]`;
+- `str`, `int`, `float`, `bool`, and `bytes`;
+- `list[T]`, `dict[K, V]`, and `set[T]`;
 - `Union`, `Optional`, `Literal`, and `Annotated`;
 - `datetime`, `date`, `time`, and `timedelta`;
 - `Regex`, `Email`, `HttpUrl`, and `FileUrl`.
 
 ```kedi
-@window(start: datetime, duration: timedelta) -> dict[str, object]:
-  = `{"start": start, "duration": duration}`
+~Window(start: datetime, duration: timedelta)
+
+@window(start: datetime, duration: timedelta) -> Window:
+  = `Window(start=start, duration=duration)`
 ```
+
+Native Kedi annotations reject `tuple`, `Tuple`, `Sequence`, `Mapping`,
+`Iterable`, `object`, `bytearray`, `slice`, and `range`. They remain available
+to ordinary Python expressions and blocks; only their use as Kedi type
+contracts is rejected. Use `list`, `dict`, or a named custom type for
+model-facing schemas.
 
 Unannotated outputs, assignments, parameters, returns, and custom fields default
 to `str`. Add an annotation whenever a value is intentionally not text.

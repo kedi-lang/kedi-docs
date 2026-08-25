@@ -8,7 +8,7 @@
   ]);
   const KEDI_TYPES = new Set([
     "Any", "Annotated", "Literal", "Optional", "Union", "str", "int", "float",
-    "bool", "bytes", "object", "list", "dict", "tuple", "set", "datetime",
+    "bool", "bytes", "list", "dict", "set", "datetime",
     "date", "time", "timedelta", "Regex", "Email", "HttpUrl", "FileUrl"
   ]);
   const PYTHON_KEYWORDS = new Set([
