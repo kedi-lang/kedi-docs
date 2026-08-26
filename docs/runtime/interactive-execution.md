@@ -81,14 +81,85 @@ Configuration is resolved when the session is created. The session owns the
 runtime assembled from that configuration; later calls to `kedi.configure()` do
 not rebuild an existing session.
 
+### Durable Snapshots
+
+`kedi.dump_session(session, path)` writes a pickle-free snapshot only when the
+complete logical session can be restored without replaying executable cells.
+Restore it with `kedi.load_session(path)`. The corresponding
+`InteractiveSession.dump()` and `InteractiveSession.load()` methods expose the
+same operations:
+
+```python
+from pathlib import Path
+
+import kedi
+
+
+snapshot = Path("work.kedi-state")
+with kedi.interactive() as session:
+    session.execute("[base: int] = `40`")
+    session.execute(
+        """
+@add_two() -> int:
+    = `base + 2`
+""".strip()
+    )
+    kedi.dump_session(session, snapshot)
+
+with kedi.load_session(snapshot) as session:
+    assert session.execute("= `add_two()`") == 42
+```
+
+The operation is strict and all-or-nothing. Kedi validates all fragments,
+environment values, active profile state, conversation state, and artifacts
+before publishing the file. `SessionDumpError` reports every unsupported
+boundary found during preflight. It never silently removes a binding, and an
+existing destination remains untouched when validation fails. Successful
+writes use a mode-`0600` temporary file, `fsync`, and atomic replacement.
+
+The snapshot value codec preserves scalar values, bytes, complex and decimal
+numbers, UUIDs, dates and times, paths, regular expressions, standard
+containers with typed keys, and source-backed Kedi type instances. Kedi stores
+fragment sources and digests so procedures, types, profiles, tracebacks, and
+source identities can be rebuilt before native values are installed. The
+document integrity hash, format version, and Kedi version are checked on load.
+
+Kedi rejects state that cannot be restored with equivalent semantics:
+
+- arbitrary Python callables, generators, open resources, concurrency
+  primitives, tasks/futures, classes, and unknown object instances;
+- shared or cyclic mutable object graphs;
+- dynamic approval handlers, process-bound tool/profile bindings, active
+  artifacts, conversation turns, or adapter-native continuation state;
+- imports, inline Python preludes, executable type defaults, and runtime-scoped
+  declarations that would require old code to run during load.
+
+Adapters and executors are not serialized. Supply them when the restored
+session needs those infrastructure dependencies:
+
+```python
+session = kedi.load_session(
+    "work.kedi-state",
+    adapter=adapter,
+    executor=executor,
+)
+```
+
+`load_session()` accepts a keyword-only `session_type=` factory and defaults
+to `InteractiveSession`. An `InteractiveSession` subclass can be supplied when
+the restored object needs application-specific behavior.
+
+Loading compiles source-backed declarations but never re-executes prior
+assignments, templates, tools, LLM requests, filesystem writes, or other
+top-level side effects.
+
 ### Lifecycle and Failure Semantics
 
 Use the context manager form when possible. `close()` is idempotent and releases
 session-owned resources. Executing after close, closing during execution, or
 starting concurrent or re-entrant `execute()` calls raises an error.
 
-The initial execution model is synchronous, non-durable, and
-non-transactional. If a fragment fails:
+The execution model is synchronous and non-transactional. If a fragment fails:
 
 - it is not retried automatically;
 - state committed before the failure remains visible;
@@ -109,7 +180,7 @@ $ kedi --idle
 ( o.o )
  > ^ <
 Kedi 0.4.0 on darwin
-Type "help" for interactive help, ":show" to inspect a value, or ":exit" to leave.
+Type "help" for interactive help, ":show" to inspect a value, ":dump" to save, or ":exit" to leave.
 +++ [base: int] = `40`
 +++ @add_two() -> int:
 ...     = `base + 2`
@@ -158,12 +229,31 @@ The terminal understands these commands:
 | --- | --- |
 | `help` or `help()` | Show concise interactive help |
 | `:show <expression>` | Evaluate and print one value |
+| `:dump` | Save the complete restorable session and print its resume command |
 | `:exit` | Close the session |
 | `Ctrl+C` | Exit silently, including during active execution |
 | `Ctrl+D` | Close the session at the input prompt |
 
 Python's `exit()` and `quit()` have no special terminal meaning. `:exit` is the
 only textual exit command.
+
+The first `:dump` writes an atomic snapshot under `~/.kedi/sessions`; later
+dumps in the same REPL update the same file. Kedi prints the exact resume
+command after every successful dump:
+
+```console
+To resume session, run -- kedi --idle --load <session_path>
+```
+
+Use `--record` to dump automatically before `:exit`, `Ctrl+C`, `Ctrl+D`, or a
+`SystemExit` raised by inline Python. Recording happens before session resources
+close and preserves the `SystemExit` status. `--load` restores a snapshot and
+continues recording changes to that same path:
+
+```bash
+kedi --idle --record
+kedi --idle --load ~/.kedi/sessions/idle-20260826T120000-ab12cd34.kedi-state
+```
 
 Readline history is stored in `~/.kedi_history`. Set `KEDI_HISTORY` to use a
 different path:
@@ -180,6 +270,7 @@ kedi --idle --adapter pydantic --adapter-model openai:gpt-4o-mini
 
 Interactive mode does not accept a source file, `-c/--command`, program
 arguments, `--parse`, `--test`, `--eval`, or `--optimize`.
+`--record` and `--load` require `--idle`.
 
 ## Choosing a Surface
 
@@ -187,4 +278,3 @@ Use `kedi --idle` for direct terminal exploration. Use `kedi.interactive()` when
 an editor, notebook, debugger, or application owns input, output, source names,
 and lifecycle. Use ordinary file execution when a complete program should be
 repeatable from source as one unit.
-

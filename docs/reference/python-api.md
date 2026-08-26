@@ -167,6 +167,16 @@ values, declarations, imports, conversation state, and artifacts. It returns
 the same native result as `KediRuntime.run_main()`. `close()` is idempotent;
 the session is also a context manager.
 
+`dump_session(session, path)` atomically writes a strict, pickle-free snapshot
+or raises `SessionDumpError` without changing the destination.
+`load_session(path, *, session_type=InteractiveSession, adapter=None,
+executor=None, engine=None, conversation_state=None)` restores source-backed
+declarations and saved native state without replaying executable fragments.
+`session_type` is keyword-only and may be an `InteractiveSession` subclass.
+The `InteractiveSession.dump()` and `InteractiveSession.load()` methods expose
+the same operations. Invalid, modified, or incompatible snapshots raise
+`SessionLoadError`.
+
 See [Interactive Execution](../runtime/interactive-execution.md) for supported
 configuration, source identity, failure semantics, restrictions, and the
 `kedi --idle` frontend.
