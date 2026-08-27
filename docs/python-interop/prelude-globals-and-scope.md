@@ -117,8 +117,16 @@ increment()
 ```
 ````
 
-Do not use `nonlocal`: there is no enclosing Python function binding. New names
-created in the block remain local and disappear after the block.
+Do not use `nonlocal`: there is no enclosing Python function binding. Python
+write-back targets the nearest lexical owner and validates all changed values
+before committing any of them. New names created in the block remain local and
+disappear after the block.
+
+Control-flow bodies add Kedi value scopes. If a branch or iteration declares
+`[count] = ...`, later Python in that body updates the child binding and the
+outer `count` remains unchanged. Without that local declaration, Python
+`count = ...` updates the visible outer owner. Use `[count] := ...` for the
+same owner update in native Kedi syntax.
 
 ## Procedure and Closure Scope
 

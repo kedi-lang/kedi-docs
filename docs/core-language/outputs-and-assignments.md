@@ -75,7 +75,7 @@ description. Additional metadata is ignored.
 Use descriptions for constraints the base type cannot express clearly. Do not
 repeat obvious information such as `Annotated[int, "An integer"]`.
 
-## Multiple Outputs and Reassignment
+## Multiple Outputs and Same-Scope Initialization
 
 One template can fill several fields:
 
@@ -86,8 +86,8 @@ Changes: [changes: list[str]].
 ```
 
 All continuation lines in that `>>` block belong to one model request and one
-combined schema. A later output or assignment with the same name replaces the
-value in the current scope:
+combined schema. A later output or `=` initialization with the same name
+replaces the value in the current scope:
 
 ```kedi
 [status] = draft
@@ -95,7 +95,7 @@ value in the current scope:
 = <status>
 ```
 
-Reassignment is intentional but can obscure dataflow. Prefer a new name such as
+This does not update an outer lexical binding. Prefer a new name such as
 `reviewed_status` when both values matter.
 
 ## Native Assignments
@@ -122,6 +122,37 @@ This distinction matters:
 ```
 
 `native` is the integer `42`; `rendered` is the string `"Answer: 42"`.
+
+`=` always declares in the current lexical scope. A declaration inside an
+`if`, `else`, or loop iteration shadows a visible outer name and disappears
+when that child scope ends.
+
+## Reassignment
+
+Use `:=` when the nearest visible Kedi binding must be updated instead of
+shadowed:
+
+```kedi
+[attempts: int] = `0`
+
+> if: `True`:
+  [attempts] := `attempts + 1`
+
+= `attempts`
+```
+
+The target must already exist. `:=` does not accept a type annotation because
+the existing binding owns its type contract; Kedi validates the new value
+against that contract. Unknown and reserved targets fail.
+
+A fenced Python result can be reassigned without changing the target type:
+
+````kedi
+[total: int] = `0`
+[total] := ```
+return sum([1, 2, 3])
+```
+````
 
 ## Typed Assignments
 
