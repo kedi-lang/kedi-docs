@@ -45,6 +45,7 @@ CAPABILITIES = (
     ("Foreground subagents", "supports_subagents"),
     ("Background subagents", "supports_background_subagents"),
     ("Semantic stream events", "supports_stream_events"),
+    ("Agent lifecycle hooks", "hooks"),
 )
 
 
@@ -60,7 +61,12 @@ def _table(adapters: tuple[tuple[str, type[Any]], ...]) -> str:
     ]
     for label, attribute in CAPABILITIES:
         values = (
-            _availability(getattr(adapter.capabilities, attribute)) for _, adapter in adapters
+            _availability(
+                getattr(adapter.capabilities, attribute) is not None
+                if attribute == "hooks"
+                else getattr(adapter.capabilities, attribute)
+            )
+            for _, adapter in adapters
         )
         lines.append("| " + " | ".join((label, *values)) + " |")
     return "\n".join(lines)

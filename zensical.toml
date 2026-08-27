@@ -58,6 +58,7 @@ nav = [
     { "Profiles" = "agentic-engineering/profiles.md" },
     { "Tools and Use" = "agentic-engineering/tools-and-use.md" },
     { "Approvals and Sensitive Operations" = "agentic-engineering/approvals.md" },
+    { "Agent Lifecycle Hooks" = "agentic-engineering/hooks.md" },
     { "MCP Servers" = "agentic-engineering/mcp.md" },
     { "Skills" = "agentic-engineering/skills.md" },
     { "Subagents" = "agentic-engineering/subagents.md" },

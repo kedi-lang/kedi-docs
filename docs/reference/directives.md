@@ -15,6 +15,8 @@
 | `> history:` | Configure history ownership and native compaction settings |
 | `> artifacts:` | Configure scoped large-value storage and compact references |
 | `> approval: allow`, `deny`, or handler | Set lexical tool approval policy |
+| `> hooks: enabled\|disabled` | Enable or disable inherited lexical lifecycle handlers |
+| `> hooks:` | Register handlers for named agent lifecycle events |
 | `> mcp:` | Append one MCP server specification |
 | `> use: name` | Register a tool, apply a profile, or enable `skills` |
 | `> use:` | Register an indented list of procedure/Python tools |
@@ -38,6 +40,10 @@ The expanded `> history:` form contains only subsettings. It requires
 optional positive `compaction_threshold`. Compaction is history lifecycle
 policy, not a model setting. See
 [Caching and Conversation History](../runtime/caching.md).
+
+`> hooks:` fields are `user_prompt_submit`, `pre_tool_use`, `post_tool_use`,
+and `post_tool_use_failure`. Each value is a Python callable or a sequence of
+callables. See [Agent Lifecycle Hooks](../agentic-engineering/hooks.md).
 
 `> mcp:` fields:
 

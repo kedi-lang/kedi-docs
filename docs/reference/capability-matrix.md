@@ -27,6 +27,7 @@ part of the base adapter protocol rather than an optional capability.
 | Foreground subagents | yes | yes | yes |
 | Background subagents | yes | no | yes |
 | Semantic stream events | yes | no | yes |
+| Agent lifecycle hooks | yes | no | yes |
 
 ## Agent Harnesses
 
@@ -45,6 +46,7 @@ part of the base adapter protocol rather than an optional capability.
 | Foreground subagents | yes | yes | no |
 | Background subagents | yes | yes | no |
 | Semantic stream events | yes | yes | yes |
+| Agent lifecycle hooks | yes | yes | yes |
 <!-- END GENERATED ADAPTER CAPABILITIES -->
 
 ACP is intentionally a raw-text harness. It starts a fresh ACP session for each
@@ -83,6 +85,7 @@ not only the adapter.
 | `subagents` | `> subagent:` |
 | `background_subagents` | Background lifecycle tools |
 | `stream_events` | Completed semantic commentary/final messages and run lifecycle events |
+| `hooks` | Agent lifecycle interception; support is declared separately for each event |
 
 Raw invokes with no structured fields can run on a text-only adapter. A profile
 may be syntactically valid but capability-invalid for its selected backend;
@@ -92,6 +95,12 @@ that mismatch is an error before Kedi pretends the feature is active.
 search, schema hydration, and bounded code execution. Pydantic AI, LangChain,
 Claude Agent SDK, and Codex App Server implement the Kedi-owned surface; Kedi
 does not infer it from ordinary tool registration.
+
+Hook support is event-specific. ACP exposes only `user_prompt_submit`; DSPy
+exposes no hook events. Pydantic AI, LangChain, Claude, Codex, and WebGPU expose
+the event matrix documented in
+[Agent Lifecycle Hooks](../agentic-engineering/hooks.md). A generic `yes` in the
+generated table means at least one hook event is supported.
 
 ## Custom Adapters
 

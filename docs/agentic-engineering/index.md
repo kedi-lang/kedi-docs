@@ -61,6 +61,7 @@ as direct child subagents.
 - `> codemode: enabled` progressively discloses tools and executes hydrated calls in
   bounded code.
 - `> approval:` controls risky tool calls.
+- `> hooks:` observes, edits, or denies agent lifecycle boundaries.
 - `> subagent:` adds bounded delegation tools to a profile.
 - semantic stream events expose completed commentary and final messages to
   terminals, UIs, and orchestration code without changing adapter results.
@@ -84,9 +85,10 @@ Read this section in order:
 4. [Profiles](profiles.md)
 5. [Tools and `> use:`](tools-and-use.md)
 6. [Approvals](approvals.md)
-7. [MCP Servers](mcp.md)
-8. [Skills](skills.md)
-9. [Subagents](subagents.md)
-10. [CodeMode](codemode.md)
-11. [Stream Events](stream-events.md)
-12. [Scoping and Capabilities](scoping-and-capabilities.md)
+7. [Agent Lifecycle Hooks](hooks.md)
+8. [MCP Servers](mcp.md)
+9. [Skills](skills.md)
+10. [Subagents](subagents.md)
+11. [CodeMode](codemode.md)
+12. [Stream Events](stream-events.md)
+13. [Scoping and Capabilities](scoping-and-capabilities.md)

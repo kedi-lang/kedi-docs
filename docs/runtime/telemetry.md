@@ -140,6 +140,7 @@ The principal spans are:
 | `call <tool>` | `call_tool` | approved tool execution and output admission |
 | `initialize mcp <server>` | `initialize_mcp` | MCP connection and tool discovery |
 | `await approval <tool>` | `await_approval` | blocking CLI, Python, or native approval decision |
+| `run <event> hooks` | `run_hooks` | one nonempty lifecycle-handler chain |
 | `<profile> run` | `run_agent` | a subagent run; replaces the delegation tool wrapper |
 | `<profile> workflow` | `run_workflow` | a dynamic workflow run |
 | `search tools` | `search_tools` | bounded CodeMode catalog discovery |
@@ -169,6 +170,8 @@ Kedi uses OpenTelemetry GenAI semantic attributes where they apply:
   `kedi.tool.result.artifactized` describe tool execution;
 - `kedi.approval.mechanism`, `kedi.approval.risk`, and
   `kedi.approval.decision` describe approval without recording arguments;
+- `kedi.hook.event`, `kedi.hook.handler_count`, `kedi.tool.origin`, and
+  `kedi.hook.outcome` describe a lifecycle chain without recording payloads;
 - `kedi.subagent.*` and `kedi.workflow.*` carry run identity, depth, budget,
   concurrency, outcome, and child-call counts;
 - `kedi.codemode.*` carries catalog, hydration, code-size, restart, nested-call,
@@ -205,6 +208,8 @@ Agent metrics include:
 - `gen_ai.client.operation.duration` and `gen_ai.client.token.usage`;
 - `kedi.tool.calls` and `kedi.tool.duration`;
 - `kedi.approval.requests` and `kedi.approval.wait.duration`;
+- `kedi.hook.calls`, `kedi.hook.duration`, `kedi.hook.edits`,
+  `kedi.hook.denials`, `kedi.hook.failures`, and `kedi.hook.timeouts`;
 - `kedi.mcp.initializations` and `kedi.mcp.initialization.duration`;
 - `kedi.codemode.operations` and `kedi.codemode.duration`;
 - adapter, subagent, and workflow duration/count observations carried by their

@@ -70,6 +70,7 @@ Adapters advertise kind and capabilities such as:
 - skills;
 - subagent foreground or background execution;
 - approval mediation.
+- event-specific lifecycle hooks.
 
 The parser and LSP combine literal backend selection with this metadata. Dynamic
 backend expressions defer some checks to runtime.

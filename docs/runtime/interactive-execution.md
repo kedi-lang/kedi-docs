@@ -129,10 +129,19 @@ Kedi rejects state that cannot be restored with equivalent semantics:
 - arbitrary Python callables, generators, open resources, concurrency
   primitives, tasks/futures, classes, and unknown object instances;
 - shared or cyclic mutable object graphs;
-- dynamic approval handlers, process-bound tool/profile bindings, active
+- dynamic approval handlers, non-importable lifecycle hook handlers,
+  process-bound tool/profile bindings, active
   artifacts, conversation turns, or adapter-native continuation state;
 - imports, inline Python preludes, executable type defaults, and runtime-scoped
   declarations that would require old code to run during load.
+
+Lifecycle hooks are stored without pickle. A handler is restorable only when
+its module and qualified name resolve back to that exact callable. Importable
+top-level functions are supported; lambdas, local functions, closures, bound
+methods, and handlers from `__main__` make the dump fail during preflight.
+Load only session snapshots you trust. Restoring an import-addressable hook
+imports its Python module, so that module's normal import-time code may run;
+Kedi does not execute the hook handler itself during load.
 
 Adapters and executors are not serialized. Supply them when the restored
 session needs those infrastructure dependencies:
@@ -149,7 +158,8 @@ session = kedi.load_session(
 to `InteractiveSession`. An `InteractiveSession` subclass can be supplied when
 the restored object needs application-specific behavior.
 
-Loading compiles source-backed declarations but never re-executes prior
+Apart from resolving documented import-addressable hook handlers, loading
+compiles source-backed declarations but never re-executes prior
 initializations, assignments, templates, tools, LLM requests, filesystem
 writes, or other top-level side effects.
 
