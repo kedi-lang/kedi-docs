@@ -126,7 +126,7 @@ Control-flow bodies add Kedi value scopes. If a branch or iteration declares
 `[count] = ...`, later Python in that body updates the child binding and the
 outer `count` remains unchanged. Without that local declaration, Python
 `count = ...` updates the visible outer owner. Use `[count] := ...` for the
-same owner update in native Kedi syntax.
+same assignment in native Kedi syntax.
 
 ## Procedure and Closure Scope
 

@@ -14,9 +14,9 @@ replace earlier bindings:
 = <label>
 ```
 
-The final assignment wins. The same rule applies when a procedure, type, value,
-or import reuses a name. Prefer unique public names; relying on replacement is
-mainly useful for deliberate overrides.
+The final same-scope initialization wins. The same rule applies when a
+procedure, type, value, or import reuses a name. Prefer unique public names;
+relying on replacement is mainly useful for deliberate overrides.
 
 ## Indentation and Lexical Blocks
 
@@ -35,9 +35,10 @@ The body must be indented relative to `@greet`. A dedent ends the block.
 ## Top-Level and Procedure Scope
 
 Top-level values are visible to following statements and procedures compiled in
-that environment. Procedure parameters and local assignments live in the
+that environment. Procedure parameters and local initializations live in the
 procedure frame. Inner scopes may shadow outer values without permanently
-changing the caller's frame.
+changing the caller's frame; `:=` explicitly assigns through that lexical
+chain.
 
 Agent configuration has capture semantics in addition to normal lexical scope:
 top-level directives are captured by following procedure definitions, while

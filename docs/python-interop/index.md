@@ -19,7 +19,7 @@ Python API integrations.
 
 ## Values Crossing the Boundary
 
-A sole Python expression in an assignment, return, or native call argument
+A sole Python expression in a variable initialization, assignment, return, or native call argument
 preserves its Python value:
 
 ```kedi

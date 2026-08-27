@@ -1,8 +1,9 @@
-# Outputs and Assignments
+# Outputs, Initialization, and Assignment
 
 Square brackets are write syntax in Kedi. In a `>>` template they declare
-fields the model must produce; on the left of `=` they assign deterministic
-values. Neither form is the same as `<name>`, which reads a value.
+fields the model must produce; on the left of `=` they initialize variables
+with deterministic values. Neither form is the same as `<name>`, which reads a
+value.
 
 ## Output Fields as L-Values
 
@@ -98,9 +99,9 @@ replaces the value in the current scope:
 This does not update an outer lexical binding. Prefer a new name such as
 `reviewed_status` when both values matter.
 
-## Native Assignments
+## Variable Initialization
 
-Assignment does not contact a model:
+Initialization does not contact a model:
 
 ```kedi
 [title] = Release <version>
@@ -127,10 +128,10 @@ This distinction matters:
 `if`, `else`, or loop iteration shadows a visible outer name and disappears
 when that child scope ends.
 
-## Reassignment
+## Assignment
 
-Use `:=` when the nearest visible Kedi binding must be updated instead of
-shadowed:
+Use `:=` to assign a new value to the nearest visible Kedi binding instead of
+shadowing it:
 
 ```kedi
 [attempts: int] = `0`
@@ -145,7 +146,7 @@ The target must already exist. `:=` does not accept a type annotation because
 the existing binding owns its type contract; Kedi validates the new value
 against that contract. Unknown and reserved targets fail.
 
-A fenced Python result can be reassigned without changing the target type:
+A fenced Python result can be assigned without changing the target type:
 
 ````kedi
 [total: int] = `0`
@@ -154,9 +155,9 @@ return sum([1, 2, 3])
 ```
 ````
 
-## Typed Assignments
+## Typed Initialization
 
-A typed assignment validates the resulting value without coercing it:
+A typed initialization validates the resulting value without coercing it:
 
 ```kedi
 [ports: list[int]] = `[8000, 8001]`
@@ -171,7 +172,7 @@ required, do it explicitly in Python:
 [count: int] = `int(raw_count)`
 ```
 
-## Assignment from a Python Block
+## Initialization from a Python Block
 
 Use a fenced block when computing a value requires statements:
 
@@ -186,8 +187,8 @@ return ordered[index]
 = p95\=<p95>
 ````
 
-The block must execute `return` to supply the assignment value. New helper names
-inside the block remain local; the assigned result is the supported way to
+The block must execute `return` to supply the initialization value. New helper names
+inside the block remain local; the initialized result is the supported way to
 surface one of them.
 
 ## Output Capture versus Raw Capture
@@ -212,7 +213,8 @@ its response.
 ## Resolution and Validation Errors
 
 Kedi rejects duplicate output names within an invalid schema, malformed
-identifiers, unknown types, values that do not match assignments, and adapter
+identifiers, unknown types, values that do not match their initialization or
+assignment contracts, and adapter
 schemas the active backend cannot represent. Type validation is strict: a
 numeric-looking string is still a string.
 

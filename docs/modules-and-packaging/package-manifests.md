@@ -17,7 +17,8 @@ syntax. It is not an executable module.
 
 The file must be named exactly `package.kedi` and contain exactly one package
 directive. Comments are allowed; imports, exports, procedures, custom types,
-Python blocks, assignments, and other executable statements are rejected.
+Python blocks, variable initializations, assignments, and other executable
+statements are rejected.
 
 ## Package Name
 

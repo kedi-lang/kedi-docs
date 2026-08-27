@@ -51,9 +51,9 @@ A frame records:
 - `source_snippet`: the hydrated source line used by the renderer.
 
 Frame kinds cover the boundaries that matter to a Kedi author: top-level
-program, procedure, template, assignment, assignment block, return, return
-block, inline Python, fenced Python, Python statement, prelude, and type
-expression.
+program, procedure, template, variable initialization, variable initialization
+block, assignment, assignment block, return, return block, inline Python,
+fenced Python, Python statement, prelude, and type expression.
 
 Frames are nested execution context, not a copy of Python's internal call
 stack. Kedi deliberately omits compiler and executor implementation frames so

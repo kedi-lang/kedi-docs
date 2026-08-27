@@ -33,7 +33,7 @@ are read by the selected adapter; never place API keys in a `.kedi` source file.
 - `<value>` substitutes an existing value into prompt or return text.
 - `<`python_expression`>` evaluates Python and renders its result as text.
 - `[field: Type]` in a `>>` block asks the model for a typed output.
-- `[name: Type] = expression` performs a deterministic assignment.
+- `[name: Type] = expression` performs deterministic variable initialization.
 - `= `python_expression`` returns the native Python value.
 - `[text] << prompt` captures the raw model text; bare `<<` is not an operator.
 

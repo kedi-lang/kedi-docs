@@ -150,8 +150,8 @@ to `InteractiveSession`. An `InteractiveSession` subclass can be supplied when
 the restored object needs application-specific behavior.
 
 Loading compiles source-backed declarations but never re-executes prior
-assignments, templates, tools, LLM requests, filesystem writes, or other
-top-level side effects.
+initializations, assignments, templates, tools, LLM requests, filesystem
+writes, or other top-level side effects.
 
 ### Lifecycle and Failure Semantics
 

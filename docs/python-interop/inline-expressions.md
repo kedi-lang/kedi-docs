@@ -29,7 +29,7 @@ Both Python forms insert the expression's string representation into rendered
 text. Prefer ``<`...`>`` when visually separating Kedi substitutions; a bare
 segment can be clearer when the Python contains `<`, `>`, or brackets.
 
-## Expressions in Assignments
+## Expressions in Variable Initializations
 
 A sole expression preserves its native value:
 
@@ -38,14 +38,14 @@ A sole expression preserves its native value:
 [labels: list[str]] = `["safe", "review"]`
 ```
 
-Literal text around the expression changes the assignment to rendered `str`:
+Literal text around the expression changes the initialization to rendered `str`:
 
 ```kedi
 [message] = threshold\=<`threshold`>
 ```
 
 This rule prevents accidental conversion in typed pipelines. Use a native
-assignment for data and a rendered assignment for presentation.
+initialization for data and a rendered initialization for presentation.
 
 ## Expressions in Returns
 

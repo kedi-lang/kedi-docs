@@ -19,7 +19,7 @@ those explanations.
 
 ## Values and Types
 
-- Output fields, assignments, field descriptions, and multiple outputs
+- Output fields, variable initializations, assignments, field descriptions, and multiple outputs
 - Built-in, inline Python, generic, and custom types
 - Runtime type validation and native-versus-rendered values
 

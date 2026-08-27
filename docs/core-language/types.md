@@ -1,8 +1,9 @@
 # Types
 
 Kedi types are runtime contracts, provider schemas, and editor information.
-They are used in output fields, assignments, procedure signatures, custom
-fields, tool schemas, evals, and the Python API.
+They are used in output fields, variable initializations, procedure signatures,
+custom fields, tool schemas, evals, and the Python API. Assignments reuse the
+target binding's established type contract.
 
 ## Built-In Types
 
@@ -27,8 +28,9 @@ to ordinary Python expressions and blocks; only their use as Kedi type
 contracts is rejected. Use `list`, `dict`, or a named custom type for
 model-facing schemas.
 
-Unannotated outputs, assignments, parameters, returns, and custom fields default
-to `str`. Add an annotation whenever a value is intentionally not text.
+Unannotated outputs, variable initializations, parameters, returns, and custom
+fields default to `str`. Add an annotation whenever a value is intentionally
+not text.
 
 ## Container, Union, and Literal Types
 
@@ -187,8 +189,8 @@ keeps the schema portable while retaining model guidance.
 
 Unknown type names fail loudly; they do not fall back to `str`. Values are
 validated without implicit string-to-number coercion. Errors also identify
-duplicate fields, invalid default ordering, incompatible assignment or return
-values, and unsupported adapter schema formats.
+duplicate fields, invalid default ordering, incompatible initialization,
+assignment, or return values, and unsupported adapter schema formats.
 
 Types declared later are not available to earlier prelude or runtime
 expressions. Define or import a type before the statement that resolves it.

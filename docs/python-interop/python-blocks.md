@@ -36,7 +36,7 @@ return sum(1 for record in records if record["ok"])
 ```
 ````
 
-The block result is validated against the assignment annotation. There is no
+The block result is validated against the initialization annotation. There is no
 implicit coercion: returning `"1"` for `[healthy: int]` is an error.
 
 A direct procedure return can also be a block:
@@ -52,7 +52,7 @@ A direct procedure return can also be a block:
 ````
 
 Use this form when the entire block computes the procedure result. Use an
-assignment block when later Kedi statements need the value.
+initialization block when later Kedi statements need the value.
 
 ## Side-Effect-Only Blocks
 
@@ -86,7 +86,7 @@ belong together or need control flow.
 
 ## Existing and New Names
 
-Python blocks receive visible Kedi names as globals. Reassigning an existing
+Python blocks receive visible Kedi names as globals. Assigning to an existing
 Kedi variable updates that binding:
 
 ````kedi
@@ -101,7 +101,7 @@ Kedi variable updates that binding:
 
 `value` becomes `"ready"`. `temporary` is local to that execution and is not
 available as a Kedi variable or in a later block. Surface new results through a
-block assignment or create the Kedi L-value before the block.
+block initialization or create the Kedi L-value before the block.
 
 ## Local Imports and Helpers
 

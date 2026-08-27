@@ -29,7 +29,8 @@ boundary converts them to strings.
 
 `>>` with output fields produces a typed schema call. `[name] << ...` produces
 raw response text. `>>` without output fields still invokes the adapter and
-discards its response. Assignments and Python expressions do not call a model.
+discards its response. Initializations, assignments, and Python expressions do
+not call a model.
 
 ## Execution Engines
 

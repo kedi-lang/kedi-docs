@@ -66,17 +66,9 @@ A template condition has no trailing `:`. Plain text, `<name>` substitutions,
 procedure calls, and inline Python values use normal Kedi rendering semantics.
 `[output]` fields are rejected because a condition does not create a binding.
 
-Kedi asks the active adapter for an annotated `bool` with this request:
-
-```text
-Return true only if the following claim can be established as true from the available context; otherwise return false.
-Claim: {rendered claim}
-```
-
-The call uses the active profile's model, system instructions, settings, tools,
-MCP servers, history, caching, limits, retries, cancellation, streaming, and
-telemetry. A claim that cannot be established must be classified as `false`.
-No internal classification result is added to the Kedi environment.
+Kedi evaluates the rendered claim using the current agent profile and its
+available context. A claim that cannot be established is treated as `false`.
+The evaluation does not create a Kedi binding.
 
 The trailing colon distinguishes a deterministic condition from a claim even
 when both contain one inline Python segment:

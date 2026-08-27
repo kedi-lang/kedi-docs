@@ -15,10 +15,10 @@ Declare a procedure with `@name(parameters):` and indent its body:
 = <greet(Ada)>
 ```
 
-The name must be a valid Python identifier. The body can contain assignments,
-templates, Python blocks, directives, nested types, nested procedures, and a
-return. Call it with `<greet(Ada)>` in rendered Kedi text or `greet("Ada")` in a
-Python expression.
+The name must be a valid Python identifier. The body can contain variable
+initializations, assignments, templates, Python blocks, directives, nested
+types, nested procedures, and a return. Call it with `<greet(Ada)>` in rendered
+Kedi text or `greet("Ada")` in a Python expression.
 
 ## Procedure Bodies and Returns
 
@@ -40,7 +40,7 @@ still describe one coherent operation.
 
 ## Local Variables
 
-Parameters and assignments belong to the procedure invocation:
+Parameters and variable initializations belong to the procedure invocation:
 
 ```kedi
 [prefix] = global
@@ -77,8 +77,9 @@ Procedures can form pipelines:
   = <classify(<normalized>)>
 ```
 
-A sole call on an assignment right-hand side preserves the called procedure's
-native return type. Text around the call renders the assignment as `str`.
+A sole call on an initialization or assignment right-hand side preserves the
+called procedure's native return type. Text around the call renders the value
+as `str`.
 
 ## Nested Procedures
 
@@ -119,9 +120,9 @@ The result is `"title [approved]"`, not `"title [draft]"`. Closure lookup walks
 the current local scope, outer procedure scopes, imports, and top-level globals.
 A nested parameter shadows a captured name.
 
-Assignments made through nested lexical scopes can update a captured Kedi
-binding. This is different from Python block rules, where rebinding from a
-nested Python function requires `global`.
+An explicit `:=` assignment made through nested lexical scopes can update a
+captured Kedi binding. This is different from Python block rules, where
+rebinding from a nested Python function requires `global`.
 
 ## Recursion
 

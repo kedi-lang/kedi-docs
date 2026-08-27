@@ -20,8 +20,8 @@ execution reaches it.
 
 ## Source Order
 
-Assignments, imports, directives, and executable statements take effect where
-they appear:
+Initializations, assignments, imports, directives, and executable statements
+take effect where they appear:
 
 ```kedi
 [stage] = draft
@@ -56,8 +56,8 @@ as globals, but new Python locals do not become Kedi bindings.
 ```
 
 `count` is a native integer; `message` is rendered text. A sole Python
-expression or procedure call on an assignment/return boundary can preserve its
-native result. Mixed literal text always renders.
+expression or procedure call on an initialization, assignment, or return
+boundary can preserve its native result. Mixed literal text always renders.
 
 This distinction drives dependency tracking and type validation. Avoid
 stringifying a collection merely to pass it to another typed procedure.

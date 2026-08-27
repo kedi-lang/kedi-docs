@@ -63,7 +63,7 @@ Kedi dedents the block relative to its Kedi indentation before Python executes.
 Do not indent the Python an extra level merely because it is inside a fence.
 
 Use fenced blocks for statements. A single backtick line is a side-effect
-statement; backticks inside an assignment or return are expressions.
+statement; backticks inside an initialization, assignment, or return are expressions.
 
 ## Return Continuations
 

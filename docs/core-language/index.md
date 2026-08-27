@@ -8,7 +8,7 @@ statements. The public language surface includes:
 - imports, exports, and package metadata;
 - custom types and procedures;
 - template and raw model calls;
-- assignments and returns;
+- variable initialization, assignment, and returns;
 - deterministic and model-classified conditionals, conditional loops, and sequential loops;
 - embedded Python;
 - model, profile, tool, MCP, skill, and subagent directives;
@@ -30,13 +30,14 @@ This performs a model call and captures `count`. By contrast:
 [count: int] = `len(notes.splitlines())`
 ```
 
-is deterministic Python assignment and does not contact a model. Use a template
+is deterministic variable initialization and does not contact a model. Use a template
 when the transformation needs model judgement; use Python when the answer is
 deterministic and locally computable.
 
 ## Dataflow at a Glance
 
-Angle brackets read values; square brackets introduce or assign values:
+Angle brackets read values; square brackets introduce output fields or binding
+targets:
 
 ```kedi
 [topic] = API compatibility
@@ -46,14 +47,16 @@ Angle brackets read values; square brackets introduce or assign values:
 
 `<topic>` is an R-value substitution. `[summary: str]` is an L-value output
 capture. The same bracket syntax can appear on the left of `=` for native
-assignment, where no model is involved.
+variable initialization, where no model is involved. `:=` assigns to an
+existing binding.
 
 ## Types and Structured Results
 
-Types can annotate outputs, assignments, parameters, returns, and custom type
-fields. Kedi resolves built-in names, Python type expressions, and custom types,
-then validates values at runtime. Adapters receive structured schemas when they
-support them.
+Types can annotate outputs, variable initializations, parameters, returns, and
+custom type fields. An assignment inherits the target binding's existing type
+contract. Kedi resolves built-in names, Python type expressions, and custom
+types, then validates values at runtime. Adapters receive structured schemas
+when they support them.
 
 ## Procedures and Scope
 
@@ -64,8 +67,9 @@ Procedures create reusable lexical scopes:
   = `value.strip().lower() if lower else value.strip()`
 ```
 
-Parameters and local assignments do not leak to callers. Top-level agent state
-is captured by following procedures; directives inside a procedure affect only
+Parameters and local initializations do not leak to callers. Explicit
+assignments can update a visible outer binding. Top-level agent state is
+captured by following procedures; directives inside a procedure affect only
 the remainder of that procedure's lexical block.
 
 ## Complete Language Map
@@ -75,7 +79,7 @@ Read the section in this order:
 1. [Source Structure](source-structure.md)
 2. [Templates and Invokes](templates-and-invokes.md)
 3. [Substitutions and Calls](substitutions-and-calls.md)
-4. [Outputs and Assignments](outputs-and-assignments.md)
+4. [Outputs, Initialization, and Assignment](outputs-and-assignments.md)
 5. [Control Flow](control-flow.md)
 6. [Procedures](procedures.md)
 7. [Parameters and Returns](parameters-and-returns.md)

@@ -6,7 +6,8 @@
 | --- | --- |
 | `@name(params) -> Type:` | Define a lexically scoped procedure |
 | `~Name(fields)` | Define a Pydantic-compatible custom type |
-| `[name: Type] = value` | Deterministic assignment |
+| `[name: Type] = value` | Deterministic variable initialization |
+| `[name] := value` | Assign to the nearest visible binding |
 | `>> prompt [field: Type]` | Structured model call |
 | `[name] << prompt` | Raw text model call and capture |
 | `>> prompt` with no fields | Raw model call whose response is discarded |
@@ -34,8 +35,8 @@ scope; tabs compare as width four, but spaces are recommended.
 | `[field: `TypeExpr`]` | Resolve the output type from Python |
 
 Angle brackets are reads; square brackets are writes. Substitution always
-renders into surrounding text. A Python assignment or native return preserves
-the object.
+renders into surrounding text. A sole Python expression in an initialization,
+assignment, or native return preserves the object.
 
 Adjacent continuation lines after one `>>` are newline-joined into one model
 call. Outputs become visible after the whole block completes. A new `>>` starts
@@ -80,8 +81,9 @@ instance.
 
 ## Python Forms
 
-- Backticks inside an assignment, return, argument, substitution, annotation,
-  model, setting, or directive are Python expressions.
+- Backticks inside an initialization, assignment, return, argument,
+  substitution, annotation, model, setting, or directive are Python
+  expressions.
 - A standalone backtick line is a Python statement.
 - Triple-backtick blocks contain Python statements. Add `=` before the opening
   fence when the block should return a value.

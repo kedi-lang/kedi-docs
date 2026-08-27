@@ -93,7 +93,7 @@ normalized to underscores. The first repeated option wins.
 - The test checks deterministic formatting without spending model tokens.
 - The eval scores semantic extraction with explicit expected data.
 
-The top-level assignment passes native values through Python expressions.
+The top-level initialization passes native values through Python expressions.
 Writing `<incident>` inside a prompt would intentionally serialize it for the
 model instead.
 

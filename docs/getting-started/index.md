@@ -66,7 +66,7 @@ kedi brief.kedi --topic "distributed locks"
 
 Unknown CLI options after the source file are normalized into the reserved
 `args` object. For example, `--dry-run` becomes `args.dry_run`. The `args`
-binding cannot be reassigned from Kedi or embedded Python.
+binding cannot be assigned from Kedi or embedded Python.
 
 You can also parse inline source:
 
@@ -86,5 +86,5 @@ provider errors, or approval decisions.
   adapters, and generated artifacts.
 - [Templates and Invokes](../core-language/templates-and-invokes.md) defines
   the exact `>>` and `<<` semantics.
-- [Outputs and Assignments](../core-language/outputs-and-assignments.md)
+- [Outputs, Initialization, and Assignment](../core-language/outputs-and-assignments.md)
   explains when brackets capture model output and when they assign native data.
