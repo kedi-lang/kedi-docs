@@ -101,10 +101,36 @@ Parallel Kedi execution may call `produce_sync` concurrently. Keep per-run
 state in `ContextVar` or explicit context managers, protect process clients and
 writes, and never store active tools in one unscoped mutable list.
 
+Calls that share one Kedi conversation are sequenced as complete transactions.
+An adapter's conversation scope receives its native resume state before model
+execution and writes the next native state only after a successful run. Do not
+commit continuation state, tool results, or cleanup ownership in a detached
+background callback after the adapter call has returned.
+
+Kedi constructs the current user prompt before request assembly. A
+`user_prompt_submit` edit is therefore the prompt seen by transport, telemetry,
+budgeting, cache identity, and history. Adapters must not independently rebuild
+the Kedi template prompt or append a second copy of capability instructions.
+Provider-native tool calls and results remain native messages; do not serialize
+them into user-prompt text to emulate history.
+
+For stateful adapters:
+
+- advertise `stateful_history` only when successful continuation can be resumed;
+- advertise `history_replay` only when Kedi can preserve the complete causal
+  message sequence, including tool calls and results;
+- keep mutable provider sessions and live clients in the conversation execution
+  context, never in a semantic request snapshot;
+- leave `native_artifacts` false unless adapter-native and MCP tool results are
+  admitted before they enter model-visible history;
+- preserve cancellation and early-close rollback for Kedi-local state even when
+  the remote provider cannot roll back its own session side effects;
+- keep cache prefixes ordered and rotate the cache epoch only after an accepted
+  compaction checkpoint.
+
 ## Error Translation
 
 Raise clear exceptions for provider protocol errors, invalid structured output,
 unsupported profile fields, timeouts, and disconnects. Preserve original
 exceptions as causes when useful. Never convert a failed structured response
 to an empty value or silently rerun through raw text.
-

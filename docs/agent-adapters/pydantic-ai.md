@@ -84,6 +84,18 @@ All Kedi MCP transports are mapped to Pydantic AI toolsets:
 
 Application and MCP toolsets are approval-required before execution.
 
+## Native Tool Artifacts
+
+When artifacts are enabled, constructor tools, caller-provided tools, and local
+MCP toolsets cross Kedi's artifact-admission boundary before Pydantic AI commits
+their successful results to message history. Large values therefore become the
+same compact `ArtifactRef` objects used by Kedi-defined tools.
+
+Admission preserves Pydantic AI's native `tool_call_id`, validation, retries,
+approval flow, and streaming result handling. Failed tool results remain native
+errors, and a tool already wrapped by Kedi is not admitted twice. The exact
+returned ref ID must be used with `read_artifact`; IDs must not be predicted.
+
 ## Approval Integration
 
 Pydantic's deferred-tool capability is used to resolve Kedi approval requests.
