@@ -238,7 +238,9 @@ The multiline editor is one-shot: execution or an error returns to the normal
 `+++` prompt. Terminal meta commands are recognized only at the primary prompt;
 text such as `:exit` inside the editor is treated as Kedi source. The complete
 fragment is executed once, so earlier lines cannot partially change session
-state before submission.
+state before submission. Terminal copy and paste preserves pasted newlines,
+indentation, and blank lines without submitting the fragment. Press Enter twice
+after pasting to execute it.
 
 ### Syntax Highlighting
 
