@@ -190,7 +190,7 @@ $ kedi --idle
 ( o.o )
  > ^ <
 Kedi 0.4.0 on darwin
-Type "help" for interactive help, ":show" to inspect a value, ":dump" to save, or ":exit" to leave.
+Type "help" for interactive help, ":show" to inspect a value, ":multiline" for a multiline fragment, ":dump" to save, or ":exit" to leave.
 +++ [base: int] = `40`
 +++ @add_two() -> int:
 ...     = `base + 2`
@@ -211,6 +211,47 @@ more input. The REPL enters continuation mode for:
 Press Tab to insert indentation at the continuation prompt. Submit an empty
 continuation line to execute the buffered fragment exactly once. A complete
 single-line fragment executes immediately.
+
+### Explicit Multiline Input
+
+Use `:multiline` when you want to compose a complete fragment before any part
+of it executes:
+
+```console
++++ :multiline
+... [values: list[int]] = `[1, 2, 3]`
+... > loop [value]: `values`:
+...   `print(value)`
+...
+1
+2
+3
++++
+```
+
+Enter creates a new line. Press Enter again on the new empty line to submit the
+fragment. Kedi keeps the editor open while the source has an open block,
+delimiter, inline expression, or Python fence. `Alt+Enter` forces submission,
+which is useful when you want the parser to diagnose incomplete source.
+
+The multiline editor is one-shot: execution or an error returns to the normal
+`+++` prompt. Terminal meta commands are recognized only at the primary prompt;
+text such as `:exit` inside the editor is treated as Kedi source. The complete
+fragment is executed once, so earlier lines cannot partially change session
+state before submission.
+
+### Syntax Highlighting
+
+Enable live Kedi and embedded-Python highlighting explicitly:
+
+```bash
+kedi --idle --highlight
+```
+
+Highlighting changes terminal presentation only. It does not start the Kedi
+language server or add diagnostics, completion, or hover. Very large fragments
+fall back to plain input to keep editing responsive. Highlighted input uses the
+same `~/.kedi_history` file as ordinary and multiline input.
 
 ### Inspecting Values
 
@@ -238,6 +279,7 @@ The terminal understands these commands:
 | Input | Behavior |
 | --- | --- |
 | `help` or `help()` | Show concise interactive help |
+| `:multiline` | Compose and submit one complete multiline fragment |
 | `:show <expression>` | Evaluate and print one value |
 | `:dump` | Save the complete restorable session and print its resume command |
 | `:exit` | Close the session |
@@ -280,7 +322,7 @@ kedi --idle --adapter pydantic --adapter-model openai:gpt-4o-mini
 
 Interactive mode does not accept a source file, `-c/--command`, program
 arguments, `--parse`, `--test`, `--eval`, or `--optimize`.
-`--record` and `--load` require `--idle`.
+`--record`, `--load`, and `--highlight` require `--idle`.
 
 ## Choosing a Surface
 

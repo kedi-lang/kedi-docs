@@ -5,7 +5,7 @@
 ```text
 kedi SOURCE [OPTIONS] [PROGRAM_OPTIONS]
 kedi -c SOURCE_TEXT [OPTIONS] [PROGRAM_OPTIONS]
-kedi --idle [RUNTIME_BACKEND_OPTIONS] [--record] [--load SESSION_PATH]
+kedi --idle [RUNTIME_BACKEND_OPTIONS] [--record] [--load SESSION_PATH] [--highlight]
 kedi parse SOURCE
 kedi SOURCE --parse
 kedi install [PACKAGE.KEDI]
@@ -35,18 +35,21 @@ remain separate type-safe concepts.
 
 `kedi --idle` starts a process-local incremental session. It uses `+++` for a
 new fragment and `...` for continuation input. Enter an empty continuation line
-to execute a buffered multiline fragment. `:show <expression>` inspects a
-value, `help` displays command help, and `:exit`, `Ctrl+C`, or `Ctrl+D` closes
-the session.
+to execute a buffered multiline fragment. `:multiline` opens a one-shot editor
+that submits on a complete double Enter; `Alt+Enter` forces submission.
+`:show <expression>` inspects a value, `help` displays command help, and
+`:exit`, `Ctrl+C`, or `Ctrl+D` closes the session.
 
 `:dump` writes a strict snapshot and prints
 `kedi --idle --load <session_path>`. `--record` performs that dump automatically
 before the REPL exits. `--load` restores the supplied snapshot and keeps
 recording subsequent changes to the same file.
 
-Interactive mode accepts `--adapter` and `--adapter-model`. It rejects a source
+`--highlight` enables live Kedi and embedded-Python syntax highlighting while
+preserving the shared REPL history. Interactive mode accepts `--adapter` and
+`--adapter-model`. It rejects a source
 file, `-c/--command`, program arguments, `--parse`, `--test`, `--eval`, and
-`--optimize`. `--record` and `--load` require `--idle`. See
+`--optimize`. `--record`, `--load`, and `--highlight` require `--idle`. See
 [Interactive Execution](../runtime/interactive-execution.md)
 for state persistence, native results, imports, history, and complete terminal
 behavior.
