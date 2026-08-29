@@ -63,12 +63,14 @@ runtime session before choosing another interpreter.
 
 ## Cell Semantics
 
-Kedi cells execute in source order. A successful cell receives an execution
-number, keeps its source editor, and displays its output directly below the
-source. It can be edited and run again; each rerun is a new incremental
-execution against the current runtime state. The notebook does not append an
-empty cell after execution. New cells are created only with an Add cell
-control. Markdown cells render locally and never enter the Kedi runtime.
+Kedi cells execute in source order. A cell number represents the cell's current
+position in the notebook, not its execution count. Rerunning a cell leaves that
+number unchanged; adding, moving, or deleting cells recomputes affected
+positions. A successful cell keeps its source editor and displays its output
+directly below the source. It can be edited and run again; each rerun is a new
+incremental execution against the current runtime state. The notebook does not
+append an empty cell after execution. New cells are created only with an Add
+cell control. Markdown cells render locally and never enter the Kedi runtime.
 
 A cell whose first non-whitespace character is `!` is a terminal cell. You can
 also create one explicitly from the cell type menu. Every non-empty line in a
