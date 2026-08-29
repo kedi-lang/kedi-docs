@@ -115,6 +115,7 @@ nav = [
     { "VS Code" = "tooling/vscode.md" },
     { "Zed" = "tooling/zed.md" },
     { "Browser and Playground" = "tooling/browser-and-playground.md" },
+    { "Local Notebook" = "tooling/notebook.md" },
   ] },
   { "Examples" = [
     "examples/index.md",
