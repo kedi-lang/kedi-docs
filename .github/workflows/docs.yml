@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
       - name: Check Kedi repository access
         env:
@@ -50,7 +50,7 @@ jobs:
           exit 1
 
       - name: Check out Kedi stable
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: kedi-lang/kedi
           ref: stable
@@ -69,7 +69,7 @@ jobs:
           echo "revision=$revision" >> "$GITHUB_OUTPUT"
 
       - name: Check out pinned tree-sitter-kedi
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: kedi-lang/tree-sitter-kedi
           ref: ${{ steps.tree-sitter-kedi.outputs.revision }}
@@ -78,7 +78,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: "3.x"
 
@@ -98,7 +98,7 @@ jobs:
         run: python scripts/build_docs.py
 
       - name: Publish gh-pages branch
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-gh-pages@329bcc8f12caed2cefe5a5b80781499a6f3b361b # v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
