@@ -116,6 +116,7 @@ nav = [
     { "Zed" = "tooling/zed.md" },
     { "Browser and Playground" = "tooling/browser-and-playground.md" },
     { "Local Notebook" = "tooling/notebook.md" },
+    { "Terminal-Bench 2.1" = "tooling/terminal-bench.md" },
   ] },
   { "Examples" = [
     "examples/index.md",

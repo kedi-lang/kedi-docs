@@ -43,3 +43,10 @@ registry package or an explicit credential-free GitHub source.
 Use parse-only checks first, deterministic tests second, evals for measured
 quality, and optimization only after metrics are trustworthy.
 
+## Terminal-Bench
+
+The optional Harbor bridge runs Kedi as a custom agent against the official
+Terminal-Bench 2.1 task containers and graders. It provides an immutable run
+manifest, bounded terminal and process tools, non-interactive benchmark
+approval, durable evidence, and Harbor-native resume. See
+[Terminal-Bench 2.1](terminal-bench.md).

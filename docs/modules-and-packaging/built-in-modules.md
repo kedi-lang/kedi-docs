@@ -61,6 +61,8 @@ The `filesystem` module exports:
 | `path_exists` | Check file or directory existence |
 | `list_directory` | Return sorted direct child names |
 | `create_directory` | Create a directory tree |
+| `remove_file` | Delete one file |
+| `remove_directory` | Delete a directory tree |
 | `get_file_info` | Return basic path metadata |
 | `filesystem` | Read/write agent profile |
 | `readonlyfs` | Read-only agent profile |
@@ -90,9 +92,11 @@ approval policy still decides.
 `old_text` that occurs exactly once. `append` adds content. Prefer `apply_patch`
 over whole-file writes for auditable agent edits.
 
-The public profiles intentionally omit destructive deletion tools. `readonlyfs`
-registers reads and metadata only; `filesystem` adds writes, patching, and
-directory creation.
+`readonlyfs` registers reads and metadata only. `filesystem` additionally
+registers writes, patching, directory creation, and the destructive
+`remove_file` and `remove_directory` tools. Removal cannot target the filesystem
+root, its anchor, or the user's home directory, and agent approval policy still
+applies to destructive calls.
 
 ## `sandbox`
 
