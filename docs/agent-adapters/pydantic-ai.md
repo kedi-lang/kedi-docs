@@ -117,5 +117,10 @@ MCP, skills, model, and instruction scopes remain isolated.
 Pydantic run usage is reported to Kedi's subagent budget observer. The adapter
 tracks requests, tool calls, and input/output/total tokens.
 
+Unless `retries` is supplied explicitly, `PydanticAdapter` allows three
+bounded retries for correctable tool-call failures. The output-validation
+retry budget remains Pydantic AI's default. An explicit integer or
+`AgentRetries` value overrides Kedi's tool retry default.
+
 `subagent_failure_policy="fail_closed"` is the default. `"recover"` exposes a
 sanitized child error to the parent instead of failing the parent run.
