@@ -2,10 +2,10 @@
 
 ## Installation
 
-Kedi includes LangChain, OpenAI/OpenRouter integrations, and MCP adapters:
+Install the optional LangChain integrations:
 
 ```bash
-uv add kedi
+uv add 'kedi[langchain]'
 ```
 
 Other providers may require their own LangChain integration package.
@@ -28,8 +28,91 @@ Kedi supports common constructor/runtime fields including `temperature`,
 `parallel_tool_calls`, callbacks, metadata/tags, streaming controls,
 OpenAI-compatible endpoint fields, and `reasoning`/`reasoning_effort`.
 
-For `openrouter:` model names, effort is written to
-`reasoning={"effort": ...}`; other models receive `reasoning_effort`.
+For `openrouter:` model names, or models with an existing `reasoning` mapping,
+effort is written to `reasoning={"effort": ...}` while retaining the other
+reasoning options. Other models receive `reasoning_effort`.
+
+The Python constructor's `model_settings` accepts native options without the DSL
+settings filter. An existing model is copied for each run: request fields such
+as `reasoning` are applied, and its `model_kwargs` are merged with constructor
+kwargs, constructor `model_settings`, then active profile settings. Original
+objects are not mutated. Explicit cache keys override generated history keys.
+
+Configure endpoint, credentials, timeout and retries when constructing a native
+model. Changing those fields on an already initialized model would leave its
+existing clients unchanged, so Kedi rejects that combination. String models can
+receive those construction settings through the adapter.
+
+## Codex Responses Sessions
+
+```python
+from kedi import codex_responses_model
+from kedi.agent_adapter import LangChainAdapter
+from kedi.agent_adapter.conversation import ConversationState
+
+model = codex_responses_model(
+    "gpt-5.6-luna", adapter="langchain", connection="websocket",
+)
+adapter = LangChainAdapter(model, model_settings={"reasoning": {"effort": "high"}})
+conversation = ConversationState(session_id="release-review")
+try:
+    async with adapter.responses_session():
+        for prompt in ("Review release amber.", "Recheck the selected release."):
+            async with conversation.adapter_turn_async("langchain") as context:
+                with adapter.conversation_scope(context):
+                    answer = await adapter.invoke(prompt=prompt, instructions="Review the evidence.")
+                context.record_exchange(prompt, answer)
+finally:
+    conversation.close()
+```
+
+Install `kedi[codex-model,langchain]` and an updated `codex-auth-helper` build
+with its `websocket` extra. This LangChain support is not in the original
+published helper 1.6.1 release. Authentication uses the existing Codex login.
+
+HTTP remains the default. Kedi owns one transport session for the complete
+agent run, including tool turns. An explicit `responses_session()` shares the
+connection across sequential calls, but does not manage message history itself.
+Child Kedi runs use isolated sessions. Exceptions, cancellation and early stream
+close release resources. Changes to history, instructions, schemas, tools or
+settings invalidate response-ID continuation and send full input.
+
+Updated helpers give each adapter run its own routing turn, matching Pydantic.
+HTTP and WebSocket echo server-provided `x-codex-turn-state` within the run's tool
+loop and clear it for the next run, without closing a shared connection. It is not
+stored in history or metrics and does not guarantee a provider cache hit. Older
+helpers remain compatible without this feature.
+
+Explicit HTTP and handshake 401s have bounded same-account reload/refresh recovery.
+Account changes require a new client, and permanent auth failures or exhausted
+401s do not trigger HTTP fallback. Same-file refresh locking is in-process;
+accepted requests and uncertain sends are not replayed by auth recovery.
+
+The helper maps active system messages to Codex instructions and retains the
+factory instruction when no active system message exists. Native LangChain tool,
+structured-output and stream-event conversion remain in use. HTTP invocation
+also consumes streaming responses internally.
+
+Do not set `use_previous_response_id` or supply response IDs manually. WebSocket
+requires async native model calls or Kedi's sync wrappers; HTTP response-header
+capture is unavailable in this mode. With helper 1.8.0, ordinary
+`ainvoke` buffers each model response and retries transient WebSocket failures
+with full history. Completed local tools are not rerun by recovery. The client
+`max_retries` controls reconnects (default two), with bounded backoff;
+`fallback="http"` permits HTTP after retries are exhausted or the initial
+handshake fails. Lost provider work can still incur unreported cost.
+
+The WebSocket factory uses automatic streaming selection. `astream`, explicit
+`streaming=True`, or streaming callbacks use the exposed-stream path, which does
+not replay partial output. Cancellation, permanent auth/permission failures and
+provider-hosted tools also prevent response replay. HTTP defaults are unchanged.
+The model can independently request a tool again; recovery is not an exactly-once
+tool guarantee. Install the pinned helper with `uv add 'kedi[codex-model]'`.
+`transport_observer=` receives content-free transport metrics, including
+receive failures and retry/fallback events.
+
+Connection reuse supports cache reuse, but does not guarantee cache hits or a
+fixed hit percentage. Measure actual provider usage.
 
 ## Structured Outputs
 
@@ -85,9 +168,69 @@ the model to correct a snippet without terminating the complete agent run. See
 
 ## Subagent Lifecycle
 
-LangChain supports foreground/background child runs. Request limits map to a
-LangGraph recursion limit of `request_limit * 2 + 1`. Usage metadata from
-messages is reported to Kedi's budget observer.
+LangChain supports foreground/background child runs. Request, tool-call and token
+limits apply to the native child loop. Graph recursion is an additional guard,
+not a substitute for a request limit. Usage is collected per model response,
+independently of messages retained in history, and reported to Kedi's budget observer.
+
+## Run Limits and Tool Corrections
+
+`LangChainAdapter(default_usage_limits=UsageLimits(...))` uses the same limit
+object as PydanticAdapter. A call's `usage_limits` overrides that default;
+explicit `None` uses normal run defaults. Import `UsageLimits` from `pydantic_ai`.
+
+Request and successful tool-call limits are checked before dispatch, including
+reservations for parallel tools. Input, output, total and per-request input token
+limits use provider-reported usage. These input limits include cached tokens;
+Kedi's separate model-request budget uses uncached input. Provider-exact preflight
+token counting and USD `cost_limit` are unsupported here and fail before sending
+a model request rather than silently going unenforced.
+
+Use `config={...}` for native LangGraph configuration. A `recursion_limit` keyword
+is also forwarded into config; neither is inserted into the model's message state.
+Caller callbacks are preserved when Kedi streaming callbacks are added.
+
+Filesystem, terminal, dynamic-workflow, subagent and artifact errors use the same
+Kedi correction messages as Pydantic AI. The model may correct a failed tool call
+up to `tool_retries=3` times per tool per run by default. The adapter does not
+automatically execute the same command again. Unclassified application exceptions
+and cancellation still propagate. Output-validation retries remain framework-native.
+
+## Exact History Archives
+
+Both framework adapters accept the same opt-in policy:
+
+```python
+from kedi.agent_adapter import LangChainAdapter
+from kedi.agent_adapter.compaction import HistoryArchiveSettings
+
+adapter = LangChainAdapter(
+    history_archive=HistoryArchiveSettings(
+        threshold_tokens=32_000,
+        preserve_recent_tokens=12_000,
+        minimum_reduction_tokens=8_000,
+    ),
+)
+```
+
+Supply the model normally and enable Kedi artifacts for the run. Without an
+active artifact manager and enabled policy, archival does nothing.
+
+Old completed tool exchanges are stored losslessly as native message records and
+replaced by a checkpoint containing an artifact reference and tool-outcome counts.
+This is not LLM summarization and does not introduce a DSL compaction mode.
+The original user request, protected messages, unresolved tool-call pairs, earlier
+checkpoints and recent tail remain intact. Provider input growth triggers the
+policy when available; otherwise a conservative local estimate is used.
+
+Graph history is persistently replaced, so archived messages do not return on the
+next tool turn. Each checkpoint changes the cache epoch once. Token and cache-read
+usage remain counted even after the corresponding messages leave history. Storage
+or quota failures leave history unchanged. Exact archives can contain sensitive
+tool output; apply the artifact store's retention/access policy accordingly.
+
+For direct message processing, `LangChainArtifactHistoryProcessor` is exported
+from `kedi.agent_adapter.compaction`; using it alone does not manage graph state.
 
 ## Capability Limits
 

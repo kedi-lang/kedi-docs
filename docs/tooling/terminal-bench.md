@@ -18,6 +18,12 @@ python3.12 -m pip install 'kedi[terminal-bench]'
 separate from Harbor's host environment. During local development, passing a
 wheel built from the exact Kedi commit is the most reproducible path.
 
+The host extra pins `codex-auth-helper==1.8.0` for credential management.
+Codex task runtimes install `codex-auth-helper[websocket]==1.8.0` separately.
+Do not combine `terminal-bench` with `codex-model` or Kedi's development group
+in one environment: Harbor's LiteLLM dependency requires OpenAI `<3`, while
+the WebSocket runtime requires OpenAI `>=3.8.0`.
+
 ## Freeze a Run
 
 Build Kedi, then create the immutable manifest before observing benchmark
@@ -103,19 +109,48 @@ The task-container tool surface includes:
 - sandbox-rooted filesystem reads, writes, directory creation, and structured
   patches;
 - foreground argv and explicit Bash execution;
-- background process start, status, bounded output reads, stdin, and stop;
+- background process start, bounded wait, status, bounded output reads, stdin,
+  and stop;
 - full capped process logs transported through Tool Artifacts;
 - a verification state that becomes stale after later mutations.
 
-Every process belongs to the trial session. Timeout, cancellation, output-limit
-termination, and normal teardown terminate remaining process groups. Provider
-credentials are stripped from terminal subprocess environments. Binary output
-is exposed as base64 by bounded reads; text previews retain head, tail,
-truncation state, byte counts, and the complete capped log path.
+Every process belongs to the trial session. A finite background job can be
+waited on without terminating it when the wait expires; running wait results do
+not repeat output previews. Waiting again on a completed verification process
+does not revalidate a workspace changed since that verification. Timeout,
+cancellation, output-limit termination,
+and normal teardown terminate remaining process groups. Provider credentials
+are stripped from terminal subprocess environments. Binary output is exposed
+as base64 by bounded reads. A truncated text result identifies itself as a
+head/tail excerpt and returns the exact `read_process_output` continuation for
+the complete capped process log. The `output_continuations` field groups these
+instructions by stream, before the potentially large stdout and stderr fields
+in the artifact JSON representation. Commands start in the workspace but may use a
+different path when the task explicitly names one inside its isolated
+container.
 
 Benchmark approval never opens an interactive prompt. Read-only operations and
 declared mutations inside the isolated task container are allowed. Sensitive
 requests and tools outside the explicit benchmark allowlist are denied.
+
+### Execution Deadline
+
+Single-step trials propagate Harbor's task timeout, override, cap, and multiplier
+to the runner. An explicit `runner_timeout_seconds` can shorten this budget,
+not extend it. The deadline starts at the agent's `run` entry and includes
+instruction handoff and runner startup. The host and sandbox must have
+synchronized clocks; Harbor still enforces its own outer timeout. Without
+Harbor metadata, direct integration callers may supply an explicit runner
+timeout. Multi-step phase budgets are not inferred automatically.
+
+Commands cannot consume the finalization reserve. Near the deadline, one
+terminal dictionary result adds `execution_budget`, reporting the remaining
+seconds and reserve. The notice occurs in the last 20% of the runner's remaining
+budget, capped at 120 seconds. It does not trigger an extra model call, replace
+command output, repeat every turn, or change the stable prompt/history prefix.
+The agent deadline does not shorten the bounded lifetime of services explicitly
+retained for verification after successful completion. Cancellation, failure,
+and sandbox teardown still terminate them.
 
 ## History and Artifacts
 
@@ -138,15 +173,17 @@ kedi-terminal-bench manifest \
   --compaction-threshold 100000
 ```
 
-The fixed profile does not enable subagents or dynamic workflows. Those
-capabilities require separate experiments before they can become benchmark
-defaults.
+The fixed profile does not enable skill discovery, subagents, or dynamic
+workflows. Those capabilities are not needed by Terminal-Bench tasks and
+require separate experiments before they can become benchmark defaults.
 
 ## Evidence and Failures
 
 Each trial preserves:
 
 - `kedi-result.json` with state, phase, policy, verification, and usage;
+- `runner-exit.json` with the runner process exit code and timestamp;
+- `setup-runtime.log` with partial installation output and phase timestamps;
 - `terminal-events.jsonl` with process lifecycle and verification changes;
 - bounded command records and complete capped terminal stream files;
 - file-backed artifact payloads;
@@ -156,6 +193,25 @@ Terminal states distinguish completion, agent failure, integration failure,
 timeout, and cancellation. The failure phase distinguishes setup, agent
 execution, and teardown. Kedi usage and cache counters are projected into
 Harbor's `AgentContext` after Harbor syncs the task-container logs to the host.
+
+Runtime installation output is saved while bootstrap, managed-Python creation,
+and package installation are running, including when setup is interrupted.
+The result timestamp, process exit timestamp, and Harbor completion timestamp
+are separate: a sleeping controller or delayed remote-command polling must not
+be mistaken for active model work. Keep the controller awake throughout a run,
+including when tasks execute remotely. Missing exit evidence is not proof of a
+clean shutdown.
+
+After a tracked command exits, Kedi terminates descendants remaining in its
+process group before draining output. To keep a service running, use the
+background process tools and `retain_process`; the tracked main process must
+remain alive. The command's exit code and captured output are preserved.
+
+Remote runner cleanup on cancellation has a 25-second host-side timeout in
+addition to its remote command timeout. A second cancellation also cancels the
+cleanup operation. These bounds avoid an unbounded wait on cooperative network
+clients; they cannot guarantee cleanup of an unreachable sandbox. Harbor still
+owns environment teardown.
 
 The integration does not include benchmark solutions or produce a score by
 itself. Official graders remain the only source of task correctness.

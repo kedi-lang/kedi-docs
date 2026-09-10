@@ -92,6 +92,14 @@ approval policy still decides.
 `old_text` that occurs exactly once. `append` adds content. Prefer `apply_patch`
 over whole-file writes for auditable agent edits.
 
+When invoked as an agent tool, expected edit conflicts (an existing add target,
+empty/missing/ambiguous `old_text`, or an invalid operation) return an explicit
+`Patch rejected; no changes made` result. The agent can inspect the current file
+and correct its edit without exhausting framework validation retries. Direct
+programmatic calls still raise for these conflicts. Permission, path-boundary,
+and unexpected I/O errors still propagate; replacement remains exact-once, never
+fuzzy.
+
 `readonlyfs` registers reads and metadata only. `filesystem` additionally
 registers writes, patching, directory creation, and the destructive
 `remove_file` and `remove_directory` tools. Removal cannot target the filesystem

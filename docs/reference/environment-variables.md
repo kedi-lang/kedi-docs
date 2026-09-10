@@ -8,12 +8,14 @@
 | `KEDI_AGENT` | Default harness for the Python API |
 | `KEDI_ADAPTER_MODEL` | Default model for the selected backend |
 | `MODEL_NAME` | CLI fallback model and codegen fallback |
-| `KEDI_PARALLEL` | Enable/size default parallel execution |
+| `KEDI_PARALLEL` | Override default concurrency or select sequential execution |
 
 `KEDI_ADAPTER` and `KEDI_AGENT` are mutually exclusive. Python `configure()`,
 decorator arguments, source directives, and CLI options can provide more local
 selection. `KEDI_PARALLEL` accepts `0/1`, `true/false`, `on/off`, or a positive
 worker count; invalid values fail rather than silently selecting a mode.
+Unset or empty enables concurrency with eight workers. Use `KEDI_PARALLEL=0`
+for sequential execution; no variable is needed to enable concurrency.
 
 ## Code Generation
 

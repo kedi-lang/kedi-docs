@@ -95,7 +95,7 @@ program must still opt into it with `> use: search_docs`.
 
 ## Runtime Control
 
-Independent template calls are sequential by default:
+Independent template calls run concurrently by default. Adjust the worker bound:
 
 ```python
 with kedi.parallel(max_workers=4):

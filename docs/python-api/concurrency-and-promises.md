@@ -2,11 +2,11 @@
 
 ## Configure Parallel Execution
 
-Python API execution is sequential by default. Enable promise-pipelined
-template calls globally:
+Python API execution uses promise-pipelined concurrent template calls by
+default. Adjust the shared worker bound globally:
 
 ```python
-kedi.configure(parallel=True, max_workers=8)
+kedi.configure(max_workers=4)
 ```
 
 or temporarily:
@@ -16,9 +16,10 @@ with kedi.context(parallel=True, max_workers=4):
     result = run_pipeline("...")
 ```
 
-Parallelism changes scheduling, not language results. If sequential and
-parallel execution produce different values, that is a runtime bug rather than
-a supported race-dependent mode.
+Use `kedi.configure(parallel=False)` or `kedi.context(parallel=False)` to run
+sequentially. Dependencies and input snapshots are preserved in either mode;
+stochastic model outputs and the completion order of independent calls can
+differ. Shared mutable state and externally ordered effects need explicit care.
 
 ## The `parallel()` Context
 
@@ -45,14 +46,16 @@ Pools are process-wide and reused by worker count. Use a positive value.
 
 The CLI/runtime environment also recognizes `KEDI_PARALLEL`:
 
-- unset, empty, `0`, `false`, `no`, or `off`: sequential;
+- unset or empty: parallel with eight workers unless the API sets another bound;
+- `0`, `false`, `no`, or `off`: sequential;
 - `1`, `true`, `yes`, or `on`: parallel with eight workers;
 - a positive integer: parallel with that worker count;
 - a negative integer: sequential;
 - another value: configuration error.
 
-An explicit Python API `parallel` setting supplies the engine used by that
-decorated run.
+An explicit Python API `parallel` setting overrides the environment for
+decorated runs and interactive sessions. An explicit session `engine` takes
+precedence over both.
 
 ## `KediPromise`
 
@@ -121,4 +124,3 @@ internally.
 Python tools can also run under adapter concurrency. Protect mutable shared
 state explicitly. Do not rely on the GIL as an application-level consistency
 guarantee.
-

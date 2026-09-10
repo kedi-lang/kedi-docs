@@ -1,30 +1,32 @@
 # Concurrency
 
-Kedi is sequential by default. Parallel execution is opt-in and accelerates
-independent model templates without changing source syntax or expected results.
+Kedi runs independent model templates concurrently by default on a bounded,
+shared pool of eight workers. Dependent calls wait for the values they need.
+No environment variable or special syntax is required.
 
-## Sequential Default
+## Concurrent Default
 
-Every `>>` or `<<` call blocks until the adapter returns:
+Independent `>>` or `<<` calls can overlap:
 
 ```kedi
 >> First independent result: [first: str].
 >> Second independent result: [second: str].
 ```
 
-This is easiest to debug and is appropriate when latency is unimportant, the
-adapter is not thread-safe, or calls have external ordering effects.
+Select sequential execution for an adapter that is not thread-safe or when
+independent calls have external effects that must occur in source order.
 
-## Enable Parallel Execution
+## Configure Execution
 
 Environment:
 
 ```console
-$ KEDI_PARALLEL=1 kedi program.kedi
+$ KEDI_PARALLEL=4 kedi program.kedi
 ```
 
-Accepted truthy values are `1`, `true`, `yes`, and `on`; false values are `0`,
-`false`, `no`, `off`, or unset. A positive integer sets the worker count.
+Unset or empty keeps concurrency enabled. Accepted truthy values are `1`,
+`true`, `yes`, and `on`; `0`, `false`, `no`, or `off` selects sequential execution.
+A positive integer sets the worker count.
 Invalid values are rejected rather than guessed.
 
 Python:
@@ -32,14 +34,15 @@ Python:
 ```python
 import kedi
 
-kedi.configure(parallel=True)
+kedi.configure(max_workers=4)
 
 with kedi.parallel(max_workers=4):
     run_workflow()
 ```
 
-Use the public form appropriate to the application. `max_workers` must be a
-positive bound.
+Use `kedi.configure(parallel=False)` or `kedi.context(parallel=False)` for
+sequential execution. An explicit Python mode takes precedence over the
+environment. `max_workers` must be a positive bound.
 
 ## Automatic Dependencies
 
@@ -55,6 +58,9 @@ There is no parallel operator. The runtime follows value dependencies:
 
 The service and region calls can start together. Each downstream call begins as
 soon as its own input resolves, so the two chains pipeline independently.
+
+Calls sharing a conversation scope, including an interactive session, retain
+their ordered turns. Concurrency does not bypass conversation ordering.
 
 ## Promises and Forcing
 
@@ -76,8 +82,10 @@ indicates an interpreter/advanced-integration error.
 When a template is scheduled, Kedi snapshots its value environment by value. A
 later assignment on the main thread cannot alter that call's inputs.
 
-Sequential and parallel results must be identical. Parallel mode is not a
-consistency option and must not be used to create races intentionally.
+Dependencies and input snapshots are preserved in either mode. Stochastic
+model outputs can differ between runs, and independent calls or map side
+effects can finish out of order. Protect shared mutable state and select
+sequential execution when external effects require source ordering.
 
 ## Failure Draining
 

@@ -300,9 +300,12 @@ or tail of a value, or another bounded inspection.
   `path`.
 
 An `ArtifactChunk` returns `content`, the requested `offset`, an optional
-`next_offset`, `complete`, `media_type`, `path`, and `offset_from`. Callers must
-use `complete` and `next_offset`; the absence of more text must not be inferred
-from chunk length alone.
+`next_offset`, `complete`, `media_type`, `path`, `offset_from`,
+`requested_max_chars`, `applied_max_chars`, `returned_chars`, and an optional
+`continuation`. A policy may make `applied_max_chars` smaller than the requested
+limit. When `complete` is false, `continuation` contains the exact tool name and
+arguments for the next page. The absence of more text must not be inferred from
+chunk length alone.
 
 ### `run_artifact_code`
 
@@ -616,10 +619,12 @@ Artifact failures are explicit and do not silently expose the full payload:
 | Error | Meaning |
 | --- | --- |
 | `ArtifactPolicyError` | Invalid field, unit, store, duration, or bound |
+| `ArtifactInputError` | Invalid read/search arguments, incompatible modes, or missing JSON path; also a `ValueError` |
 | `ArtifactSerializationError` | Value cannot be represented by the selected store |
 | `ArtifactQuotaExceededError` | Count or byte quota would be exceeded |
 | `ToolOutputTooLargeError` | Artifacts are disabled and a tool result exceeds 100,000 bytes |
-| `ArtifactAccessError` | Reference is unknown or belongs to another session |
+| `ArtifactNotFoundError` | Reference is unknown to the active session |
+| `ArtifactAccessError` | Cross-session access or unsafe store path |
 | `ArtifactReleasedError` | Payload was explicitly released or is pending release |
 | `ArtifactExpiredError` | TTL or idle TTL elapsed |
 | `ArtifactStreamError` | Stream kind, chunk, reuse, or transactional consumption failed |
@@ -630,6 +635,17 @@ Artifact failures are explicit and do not silently expose the full payload:
 Quota failure occurs before publishing a reference. Stream failure aborts the
 transaction. Code-mode failure does not create a derived artifact. None of
 these errors include the rejected raw payload in their message or telemetry.
+
+For agent calls, invalid read/search arguments and unknown, expired, or released
+references become tool-error responses. The model may correct its arguments under
+the adapter's existing retry/turn limits; Kedi does not retry automatically or
+increase those limits. Pattern search requires `path=None`, `offset=0`, and
+`offset_from="start"`. It cannot be combined with JSON selection or pagination.
+
+Direct Python callers still receive typed exceptions. Storage corruption,
+configuration failures and unexpected runtime exceptions are not reclassified
+as correctable artifact arguments. Provider harnesses retain their own ordinary
+tool-failure reporting behavior.
 
 ## Adapter Contract
 
