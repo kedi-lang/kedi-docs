@@ -50,3 +50,7 @@ Terminal-Bench 2.1 task containers and graders. It provides an immutable run
 manifest, bounded terminal and process tools, non-interactive benchmark
 approval, durable evidence, and Harbor-native resume. See
 [Terminal-Bench 2.1](terminal-bench.md).
+
+The frozen Pydantic AI and LangChain 89-task engineering runs, including cost,
+latency, token, cache, request, and tool-call distributions, are reported in
+[Terminal-Bench 2.1 Results](terminal-bench-results.md).

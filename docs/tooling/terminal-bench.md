@@ -91,6 +91,49 @@ Kedi copies the manifest to `kedi-manifest.json` inside the Harbor job. Harbor's
 generated `lock.json` records resolved task hashes, image digests, resources,
 and grader inputs. Preserve both files with any reported result.
 
+For a full-dataset run, freeze the task names explicitly and keep memory-heavy
+tasks in a separate manifest when the sandbox account cannot run two of them
+concurrently. The published 89-task engineering runs used 81 standard tasks at
+concurrency 2 and 8 high-memory tasks at concurrency 1. They were aggregated
+only after both manifests completed and each task appeared exactly once. See
+[Terminal-Bench 2.1 Results](terminal-bench-results.md) for the exact
+configuration, versions, metrics, and limitations.
+
+To compare adapters, generate separate manifests and change only `--adapter`:
+
+```bash
+kedi-terminal-bench manifest \
+  --output runs/pydantic.json \
+  --harbor-revision "$HARBOR_REVISION" \
+  --model codex/gpt-5.6-luna \
+  --adapter pydantic \
+  --effort high \
+  --concurrency 2 \
+  --attempts 1 \
+  --max-retries 0 \
+  --kedi-wheel dist/kedi-0.4.0-py3-none-any.whl \
+  --task task-a \
+  --task task-b
+
+kedi-terminal-bench manifest \
+  --output runs/langchain.json \
+  --harbor-revision "$HARBOR_REVISION" \
+  --model codex/gpt-5.6-luna \
+  --adapter langchain \
+  --effort high \
+  --concurrency 2 \
+  --attempts 1 \
+  --max-retries 0 \
+  --kedi-wheel dist/kedi-0.4.0-py3-none-any.whl \
+  --task task-a \
+  --task task-b
+```
+
+Keep model settings, task revisions, task order, prompt, limits, transport,
+history, artifacts, and sandbox resources unchanged when the adapter is the
+subject of the comparison. Credentials belong in the provider environment,
+not in the manifest.
+
 Resume an interrupted job through Harbor's native resume path:
 
 ```bash
@@ -231,3 +274,51 @@ owns environment teardown.
 
 The integration does not include benchmark solutions or produce a score by
 itself. Official graders remain the only source of task correctness.
+
+## Record With Autobench
+
+[Kedi Autobench](https://github.com/kedi-lang/kedi-autobench) imports completed
+Harbor trials without replacing Harbor as the execution or grading authority.
+Install it outside the task containers, then record the completed job:
+
+```bash
+python3.12 -m pip install kedi-autobench
+
+kedi-autobench-terminal-bench record \
+  --job-dir runs/jobs/pilot-1 \
+  --record-dir runs/records/pilot-1
+
+kedi-autobench-terminal-bench validate \
+  --job-dir runs/jobs/pilot-1 \
+  --record-dir runs/records/pilot-1
+```
+
+The record command maps every Harbor trial to one Autobench run, copies bounded
+and redacted evidence, validates the live result, and replays the persisted
+record before returning. A reward of zero is a valid benchmark outcome, not a
+capture error. Replay inspects the frozen record without rerunning Harbor, Kedi,
+or the model:
+
+```bash
+autobench replay runs/records/pilot-1
+autobench report runs/records/pilot-1
+```
+
+To capture after a command in one operation, use the non-blocking wrapper. The
+wrapped command's exit code remains authoritative even if post-run capture
+fails:
+
+```bash
+kedi-autobench-terminal-bench run \
+  --job-dir runs/jobs/pilot-1 \
+  --record-dir runs/records/pilot-1 \
+  -- kedi-terminal-bench run runs/pilot.json \
+       --kedi-wheel dist/kedi-0.4.0-py3-none-any.whl \
+       --jobs-dir runs/jobs \
+       --job-name pilot-1
+```
+
+Publish the immutable manifest, Harbor `lock.json`, sanitized Harbor evidence,
+Autobench record, dependency versions, source and wheel hashes, aggregation
+script, and checksums together. Never publish provider credentials, dotenv
+files, authentication state, or unsanitized personal paths.
