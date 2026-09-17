@@ -13,10 +13,10 @@ from kedi.agent_adapter import (
     ACPAdapter,
     ClaudeAdapter,
     CodexAdapter,
-    DSPyAdapter,
     LangChainAdapter,
     PydanticAdapter,
 )  # noqa: E402
+from kedi.agent_adapter.dspy_metadata import DSPY_ADAPTER  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 MATRIX_PATH = ROOT / "docs" / "reference" / "capability-matrix.md"
@@ -25,7 +25,7 @@ END_MARKER = "<!-- END GENERATED ADAPTER CAPABILITIES -->"
 
 ADAPTERS = (
     ("Pydantic AI", PydanticAdapter),
-    ("DSPy", DSPyAdapter),
+    ("DSPy", DSPY_ADAPTER),
     ("LangChain", LangChainAdapter),
     ("Claude Agent SDK", ClaudeAdapter),
     ("Codex App Server", CodexAdapter),
