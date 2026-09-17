@@ -168,6 +168,7 @@ quota enforcement and reuses the existing reference.
 ```kedi
 > artifacts:
     enabled: true
+    query_artifacts: disabled
     store: memory
     threshold: 100kb
     ttl: 1h
@@ -202,6 +203,7 @@ current scope. A nested policy overlays only the fields it specifies. Setting
 | Field | Default | Constraint | Meaning |
 | --- | --- | --- | --- |
 | `enabled` | `true` | Boolean | Enables artifact admission and management tools |
+| `query_artifacts` | `disabled` | `enabled` or `disabled` | Exposes bounded lexical retrieval for known artifacts |
 | `store` | `memory` | `memory` or `file` | Payload store for newly admitted values |
 | `path` | `.kedi/artifacts` | String or `Path` | Root directory for the file store |
 | `threshold` | `100kb` | Non-negative byte size | Minimum serialized size for ordinary artifact conversion |
@@ -307,6 +309,77 @@ limit. When `complete` is false, `continuation` contains the exact tool name and
 arguments for the next page. The absence of more text must not be inferred from
 chunk length alone.
 
+### `query_artifact` (opt-in)
+
+Enable lexical passage retrieval in Kedi source where it is needed:
+
+```kedi
+> artifacts:
+    query_artifacts: enabled
+```
+
+The setting is lexical and source ordered. A nested
+`query_artifacts: disabled` removes the tool and its instructions in that scope,
+then the outer setting is restored when the scope ends. The default is
+`disabled`.
+
+Python callers can establish an inherited adapter default when constructing an
+adapter:
+
+```python
+from kedi.agent_adapter import PydanticAdapter, LangChainAdapter
+
+adapter = PydanticAdapter(model, query_artifact=True)
+adapter = LangChainAdapter(chat_model, query_artifact=True)
+```
+
+`ClaudeAdapter` and `CodexAdapter` accept the same option. An explicit Kedi
+artifact policy overrides this constructor default. Disabled scopes expose
+neither the tool nor its instructions.
+Artifacts must also be enabled. Kedi installs the tool in runtime-managed
+runs and bound agent surfaces, just like `read_artifact`. A bare adapter call
+does not create an artifact session by itself.
+
+```text
+query_artifact(ref_id: str, query: str, max_chars: int = -1, top_k: int = 3)
+```
+
+Use this when you know the subject or an identifier but not its exact location
+in an existing artifact. It searches that artifact's text projection using
+Unicode-aware lexical matching and BM25 ranking, with English stemming,
+identifier components, and overlapping passages. It makes no model or embedding
+calls. This is lexical retrieval: it cannot reliably resolve synonyms or infer
+facts absent from the matching text.
+
+- `query` accepts 1-2048 characters and at most 64 distinct searchable terms.
+  Search syntax is treated as text, not as SQL or a user-controlled query language.
+- `top_k` selects at most 1-10 passages, defaulting to 3.
+- `max_chars` limits the **sum of excerpt characters**, not each result.
+  `-1` selects the artifact's `read_max_chars`; larger requests are capped.
+  Metadata is additional to this content budget.
+- Results contain `matches`, `ref_id`, `media_type`, `retrieval`,
+  `requested_max_chars`, `applied_max_chars`, `returned_chars`, `total_chars`,
+  `searched_passages`, and `exhaustive=false`.
+- Each match has the original `content`, zero-based `offset`, exclusive
+  `end_offset`, and a relative `score`. Scores are not confidence estimates.
+  Matches are ranked by relevance and do not overlap. Use `read_artifact` with
+  the returned offsets for surrounding content.
+
+An empty match list does not prove the answer is absent. Retrieval is not an
+exhaustive filter or aggregate; use `run_artifact_code` for those operations.
+There is no need to query an artifact when its preview already answers the task.
+
+The search scans the stored projection using bounded reads and builds a
+temporary SQLite FTS5 index for that call. The index is deleted on completion,
+including on failure; repeated queries rebuild it. Python's SQLite build must
+include FTS5. File-backed payloads are not loaded as complete Python objects.
+Search respects the existing session, release, and expiry lifecycle and records
+an `artifact_query` history event without storing the query text in that event.
+
+Python applications can use the same retrieval directly through
+`manager.query(ref_id, query, max_chars=-1, top_k=3)`. The constructor flag
+controls model-facing tool exposure, not access by trusted Python code.
+
 ### `run_artifact_code`
 
 ```text
@@ -387,6 +460,7 @@ The runtime instructs artifact-aware agents to follow this decision table:
 | --- | --- |
 | Known literal, one bounded range, head, tail, or one JSON path | `read_artifact` |
 | Locate a literal in one artifact | `read_artifact(pattern=...)` |
+| Find passages by keywords or identifiers in one artifact | `query_artifact` (opt-in) |
 | Locate an artifact whose reference is unknown | `search_artifacts` |
 | Filter, aggregate, rank, join, or compare one or more artifacts | `run_artifact_code` |
 | Payload is no longer needed | `release_artifact` |

@@ -97,6 +97,18 @@ Resume an interrupted job through Harbor's native resume path:
 kedi-terminal-bench resume runs/jobs/pilot-1
 ```
 
+The original `kedi-terminal-bench run` command is restart-safe when it is
+repeated with the same manifest, jobs directory, and job name. Once Harbor's
+`lock.json` or `config.json` exists, Kedi uses Harbor's native resume command
+instead of starting a duplicate job. Repeating the command after all trials are
+accounted for is a no-op. Materially different manifests remain rejected.
+
+Keep the Harbor controller on a durable host. Daytona can still supply isolated
+task environments, but the controller itself should not run inside an ephemeral
+task sandbox: provider shutdown can otherwise interrupt the handoff from a
+completed agent to its verifier. The persisted Kedi manifest and Harbor lock let
+a durable controller continue after a process or host restart.
+
 ## Task Runtime
 
 The benchmark profile is deliberately neutral to individual tasks. It tells the
@@ -193,6 +205,10 @@ Terminal states distinguish completion, agent failure, integration failure,
 timeout, and cancellation. The failure phase distinguishes setup, agent
 execution, and teardown. Kedi usage and cache counters are projected into
 Harbor's `AgentContext` after Harbor syncs the task-container logs to the host.
+If timeout or cancellation interrupts aggregate usage reporting, completed
+request and token counters are recovered from the append-only
+`model-requests.jsonl` evidence. Provider cost is recovered only when every
+completed request contains a measured cost; Kedi does not invent a partial cost.
 
 Runtime installation output is saved while bootstrap, managed-Python creation,
 and package installation are running, including when setup is interrupted.

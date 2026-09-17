@@ -14,6 +14,7 @@ kedi.configure(
     adapter="pydantic",
     artifacts={
         "enabled": True,
+        "query_artifacts": "enabled",
         "threshold": "100kb",
         "ttl": "1h",
         "store": "memory",
@@ -42,10 +43,12 @@ policy = ArtifactPolicy.patch(
 kedi.configure(artifacts=policy)
 ```
 
-Mappings use DSL field names such as `threshold`, `ttl`, `idle_ttl`,
+Mappings use DSL field names such as `query_artifacts`, `threshold`, `ttl`, `idle_ttl`,
 `session_quota`, and `cleanup_interval`. A normalized `ArtifactPolicy` exposes
 their internal byte/second forms as `threshold_bytes`, `ttl_seconds`,
 `idle_ttl_seconds`, `session_quota_bytes`, and `cleanup_interval_seconds`.
+`query_artifacts` accepts only `"enabled"` or `"disabled"` and defaults to
+disabled unless an adapter constructor supplies an inherited default.
 
 ## Per-Callable and Scoped Overrides
 

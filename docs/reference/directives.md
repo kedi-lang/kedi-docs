@@ -30,10 +30,11 @@ A directive block has one body shape. Configuration directives contain
 unprefixed `name: value` subsettings; composite directives such as `> profile:`
 contain `>`-prefixed subdirectives. Kedi does not mix both forms in one body.
 
-`> artifacts:` fields are `enabled`, `store`, `path`, `threshold`, `ttl`,
+`> artifacts:` fields are `enabled`, `query_artifacts`, `store`, `path`, `threshold`, `ttl`,
 `idle_ttl`, `preview_chars`, `read_max_chars`, `session_quota`,
 `max_artifacts`, and `cleanup_interval`. The policy is lexical and enabled by
-default. See [Tool Artifacts](../runtime/tool-artifacts.md).
+default. Artifact querying is separately disabled by default and accepts
+`query_artifacts: enabled|disabled`. See [Tool Artifacts](../runtime/tool-artifacts.md).
 
 The expanded `> history:` form contains only subsettings. It requires
 `enabled: true|false` and accepts `compaction_mode: native|disabled` plus an
