@@ -101,6 +101,7 @@ nav = [
     { "Pydantic AI" = "agent-adapters/pydantic-ai.md" },
     { "DSPy" = "agent-adapters/dspy.md" },
     { "LangChain" = "agent-adapters/langchain.md" },
+    { "TypeSafe Jev" = "agent-adapters/typesafe.md" },
     { "Custom Adapters" = "agent-adapters/custom-adapters.md" },
     { "Codex" = "agent-adapters/codex.md" },
     { "Claude" = "agent-adapters/claude.md" },

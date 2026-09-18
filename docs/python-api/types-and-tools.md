@@ -44,6 +44,37 @@ def review(text: str) -> Review:
 The selected adapter receives the Pydantic schema. Validation is performed by
 the adapter/model integration when producing the typed output.
 
+## Validation Constraints
+
+`kedi.Constraints` exposes validation-only metadata, usable in Python models and
+Kedi computed type expressions. It delegates to Pydantic without exposing defaults,
+aliases, or serialization configuration:
+
+```python
+from typing import Annotated
+from kedi import Constraints
+from pydantic import BaseModel
+
+class Review(BaseModel):
+    score: Annotated[
+        float,
+        Constraints(ge=0, le=2),
+    ]
+    title: Annotated[
+        str,
+        Constraints(min_length=1, max_length=100),
+    ]
+```
+
+Supported keywords are `ge`, `gt`, `le`, `lt`, `multiple_of`, `min_length`,
+`max_length`, `pattern`, `strict`, `allow_inf_nan`, `max_digits`, and `decimal_places`.
+Omitted options keep the underlying type's defaults. Constraints must match the
+annotated type; the same validation semantics as Pydantic `Field` apply.
+
+In Kedi, import this helper in a Python prelude, define an `Annotated` alias there,
+and reference it with a backtick type expression. It is not a new native DSL call
+syntax and does not require the optional TypeSafe integration.
+
 ## Pydantic Dataclasses
 
 Pydantic dataclasses are recognized without reconversion:
