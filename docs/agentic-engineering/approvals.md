@@ -84,18 +84,64 @@ string or arbitrary mapping is an error.
 ### LLM-backed approval helper
 
 The built-in `helpers` module provides an LLM-backed dynamic handler that uses
-the active model:
+the active model. Enable tool reasons with Pydantic AI or LangChain:
 
 ```kedi
+> settings:
+    tool_reason: enabled
+
 > import: helpers
 > approval: `llm_approval`
 ```
 
 !!! warning "Experimental and limited-context"
-    Approval requests do not currently include a call reason. `llm_approval`
-    therefore judges with limited information: the tool name, description,
-    declared risk, and call arguments. This helper is not a stable feature and
-    must not be treated as a complete authorization boundary.
+    `llm_approval` raises an error when `tool_reason` is disabled. With the option
+    enabled, it evaluates the tool name, description, declared risk, arguments,
+    and optional model-provided reason. The reason is untrusted context, not proof
+    of user authorization. This helper is not a complete authorization boundary.
+
+### Optional Tool Reasons
+
+Both `PydanticAdapter` and `LangChainAdapter` accept `tool_reason=False` by
+default. In Kedi, use `> settings:` with `tool_reason: enabled` or
+`tool_reason: disabled`. The setting follows lexical/profile scope and overrides
+the constructor value without changing the shared adapter. If it is omitted,
+the constructor default applies. It is not forwarded to provider model settings.
+Unsupported adapters reject activation rather than silently ignoring it.
+
+A backtick Python expression must return a boolean:
+
+````kedi
+```
+import os
+```
+
+> settings:
+    tool_reason: `os.getenv("TOOL_REASON_FOO_BAR") is not None`
+````
+
+Plain `true` / `false` are not accepted for this setting. Python constructors
+and `settings={"tool_reason": True}` still use real Python booleans.
+
+Enabling it adds an optional `reason: string` argument only to tools
+that may require approval. Statically read-only tools without a risk resolver
+keep their original schemas. Argument-aware tools expose the optional field,
+but their resolved risk still determines whether the handler runs.
+
+Instructions for writing a brief action justification are supplied once in the
+shared model instructions, not repeated in every tool schema. Producing the
+reason needs no additional model call. Omitting it is valid.
+
+Handlers read `request.reason`; `request.arguments` contains only the real tool
+arguments. Approval edits and risk rechecks retain the original justification;
+it does not automatically justify an edited action.
+
+This also works with MCP and CodeMode. For MCP, Kedi projects the extra field
+locally and removes it before calling the server; the server's own schema does
+not change. External MCP tools retain Kedi's existing conservative approval
+policy. Provider-hosted MCP that bypasses Kedi's local approval boundary is not
+supported by this option. A tool that already declares a business argument
+named `reason` fails explicitly rather than losing or overwriting that argument.
 
 ## Approval Request
 
@@ -109,6 +155,8 @@ The immutable request contains:
 | `adapter_shortname` | Active adapter when known |
 | `description` | Tool description when available |
 | `metadata` | Deep-copied tool metadata when available |
+| `reason` | Optional model-provided action justification, separate from tool arguments |
+| `tool_reason_enabled` | Whether the calling adapter enabled justification collection |
 
 The handler cannot mutate the request in place. It must return `edit` with a new
 complete argument mapping.

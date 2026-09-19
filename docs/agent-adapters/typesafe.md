@@ -180,6 +180,40 @@ Reuse model instances for warm connections. Close owned models using their conte
 manager or `aclose`; caller-supplied clients remain caller-owned. Configure transport
 timeout on the constructor. Unsupported generation settings are rejected.
 
+## Capture Decisions from Python Calls
+
+`kedi.capture_decisions()` collects the completed template decisions produced by
+`@kedi.query` and `@kedi.bind` calls without changing their return types:
+
+```python
+import kedi
+
+@kedi.query(adapter="pydantic", model="typesafe/jev-latest")
+def review(ticket: str) -> bool:
+    """kedi
+    >> Does <ticket> describe a duplicate charge? [duplicate: bool]
+    = `duplicate`
+    """
+
+with kedi.capture_decisions() as run:
+    duplicate = review("I was charged twice for the same invoice.")
+
+for decision in run.decisions:
+    print(decision.field_path, decision.probability, decision.threshold)
+```
+
+`decisions` is a tuple of immutable `DecisionInfo` views, one per output binding,
+in call completion order. Multiple fields share their `call_id`. These historical
+snapshots remain accessible after the function returns. Nested capture scopes
+also contribute to their enclosing scope; separate concurrent scopes are isolated.
+Use regular `with` around `await` calls and await desired work before exiting.
+Exit does not wait for pending work; the capture stops accepting records.
+
+Capturing makes no additional model calls. Response-cache hits, failed calls, and
+outputs without provider evidence do not create decision records. Successfully
+completed decisions remain available if a later call raises. This captures typed
+template outputs, not implicit control-flow claims or arbitrary SDK calls.
+
 ## Explicit Tool Routing
 
 Both framework integrations support opt-in selection of registered tools. Jev may
