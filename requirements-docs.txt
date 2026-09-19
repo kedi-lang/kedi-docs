@@ -1,1 +1,2 @@
 zensical==0.0.51
+email-validator==2.3.0
