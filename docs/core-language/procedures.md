@@ -26,12 +26,13 @@ Statements execute in source order. A return statement starts with `=`:
 
 ```kedi
 @summarize(text: str) -> str:
-  >> One-sentence summary of <text>: [summary: str].
+  >> A one-sentence summary of <text> is [summary: str].
   = <summary>
 ```
 
-Execution stops at the first reached return. If an untyped procedure reaches the
-end without a value, it returns an empty string. For non-string behavior, add an
+Execution continues after `=`; the last reached return determines the result.
+If an untyped procedure reaches the end without a value, it returns an empty
+string. For non-string behavior, add an
 explicit return annotation and return a native value.
 
 Keep deterministic transformation in Python and model judgement in `>>`
@@ -116,7 +117,8 @@ outer value:
   = <render()>
 ```
 
-The result is `"title [approved]"`, not `"title [draft]"`. Closure lookup walks
+Calling `make_report("Release")` returns `"Release: approved"`, not
+`"Release: draft"`. Closure lookup walks
 the current local scope, outer procedure scopes, imports, and top-level globals.
 A nested parameter shadows a captured name.
 
@@ -233,7 +235,7 @@ reStructuredText forms such as `:param name:` and `:return:`, but Google style
 is the recommended form for new code.
 
 Document externally visible procedures and every procedure exposed with
-`> tool:`. Include semantic constraints that types cannot express; do not
+`> use:`. Include semantic constraints that types cannot express; do not
 duplicate the signature verbatim.
 
 ## Failure Behavior

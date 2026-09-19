@@ -1,8 +1,22 @@
-# Agentic Engineering
+# Agents and Orchestration { #agentic-engineering }
 
 Kedi treats model execution as scoped agent configuration rather than a global
 string. A scope can select a framework or harness, model, reasoning effort,
 instructions, settings, tools, MCP servers, skills, approvals, and child agents.
+
+Choose the language construct by who controls the next step:
+
+| Construct | Who selects the next step? | What it provides |
+| --- | --- | --- |
+| Procedure | The Kedi program | Explicit statements, arguments, return types, and captured configuration. |
+| Profile | No execution by itself | Reusable configuration applied to later calls or used by a child agent. |
+| Tool-using model call | The model, within the exposed tool surface | A request that may call tools before returning its result. |
+| Subagent | The parent requests work; the child owns its conversation | An isolated task with its own profile and a bounded lifecycle. |
+| Dynamic workflow | The parent writes orchestration code | Sandboxed composition of the permitted child agents. |
+
+Start with a procedure when the sequence is known. Add a tool-using call where
+the model needs to choose an action. Use a child agent when a task needs a
+separate conversation and capability boundary, not merely a different prompt.
 
 ## Framework Adapters and Agent Harnesses
 
@@ -28,7 +42,7 @@ scope:
 
 ```kedi
 > adapter: pydantic
-> model: groq:qwen/qwen3-32b
+> model: openai:gpt-5.6-luna
 > effort: low
 > system: Use tools only when they improve factual accuracy.
 ```
@@ -44,7 +58,7 @@ Profiles name reusable state:
 ```kedi
 > profile: reviewer:
     > adapter: pydantic
-    > model: groq:qwen/qwen3-32b
+    > model: openai:gpt-5.6-luna
     > system: Review evidence before making a claim.
 
 > use: reviewer
@@ -77,18 +91,39 @@ specific instructions, only required tools, bounded child agents, and the least
 permissive approval and sandbox settings. A broader model is not a substitute
 for a clear contract.
 
-Read this section in order:
+## In This Section
 
-1. [Backend Selection](backend-selection.md)
-2. [Models and Reasoning](models-and-reasoning.md)
-3. [Instructions and Settings](instructions-and-settings.md)
-4. [Profiles](profiles.md)
-5. [Tools and `> use:`](tools-and-use.md)
-6. [Approvals](approvals.md)
-7. [Agent Lifecycle Hooks](hooks.md)
-8. [MCP Servers](mcp.md)
-9. [Skills](skills.md)
-10. [Subagents](subagents.md)
-11. [CodeMode](codemode.md)
-12. [Stream Events](stream-events.md)
-13. [Scoping and Capabilities](scoping-and-capabilities.md)
+**Profiles and Configuration**
+
+- [Instructions and Settings](instructions-and-settings.md)
+- [Profiles and Composition](profiles.md)
+- [Agent Scope and Capabilities](scoping-and-capabilities.md)
+
+**Tools and Permissions**
+
+- [Procedure and Python Tools](tools-and-use.md)
+- [MCP Tools](mcp.md)
+- [Skills](skills.md)
+- [Approval Policies](approvals.md)
+- [Tool Reasons and LLM Approval](tool-reasons.md)
+
+**Lifecycle**
+
+- [Lifecycle Hooks](hooks.md)
+- [Stream Events](stream-events.md)
+
+**Subagents and Workflows**
+
+- [Subagents and Workflows](subagents.md)
+- [Typed Child Results](subagent-results.md)
+- [Foreground and Background Runs](subagent-lifecycle.md)
+- [Limits, Isolation and Safety](subagent-limits.md)
+- [Continuations and Persistence](subagent-continuations.md)
+- [Dynamic Workflows](dynamic-workflows.md)
+- [Python Embedding](subagent-python.md)
+- [Reviewed Evidence Workflow](reviewed-evidence.md)
+
+**CodeMode**
+
+- [CodeMode](codemode.md)
+- [Sandbox Limits and Recovery](codemode-sandbox.md)

@@ -1,4 +1,4 @@
-# Runtime
+# Context and Runtime { #runtime }
 
 The runtime turns Kedi source into a validated program, compiles declarations
 and scopes, executes deterministic statements, and crosses the model boundary
@@ -34,9 +34,11 @@ not call a model.
 
 ## Execution Engines
 
-Sequential execution is the default. Parallel mode schedules independent model
-templates concurrently and discovers dependencies from value reads. Both modes
-must produce identical values and failures.
+Bounded concurrency is the default, using a shared pool of eight workers.
+Independent model calls can overlap; dependent calls wait for their inputs.
+Select sequential execution when external effects require source ordering.
+The value and type contracts remain the same, but stochastic outputs, completion
+order, and the first observed concurrent failure need not be identical.
 
 ## Interactive Execution
 
@@ -74,3 +76,30 @@ instrumentor exposes runtime, agent, and artifact spans and metrics while
 keeping content and source capture disabled by default. See
 [Telemetry](telemetry.md) for configuration, Logfire integration, privacy
 controls, span hierarchy, and metric names.
+
+## In This Section
+
+**Execution**
+
+- [Execution and Dataflow](execution-and-dataflow.md)
+- [Concurrency](concurrency.md)
+- [Incremental Execution](interactive-execution.md)
+
+**Context Management**
+
+- [Artifacts](tool-artifacts.md)
+- [History and Caching](caching.md)
+- [Conversation History](history.md)
+- [Compaction](compaction.md)
+- [Provider Prefix Caching](prefix-cache.md)
+- [Artifact Admission](artifact-policy.md)
+- [Artifact Retrieval](artifact-retrieval.md)
+- [Artifact Reduction](artifact-reduction.md)
+- [Artifact Lifetime](artifact-lifecycle.md)
+- [Artifact Safety](artifact-safety.md)
+
+**Observability**
+
+- [Telemetry](telemetry.md)
+- [Errors and Tracebacks](errors-and-debugging.md)
+- [Troubleshooting](../reference/diagnostics-and-troubleshooting.md)

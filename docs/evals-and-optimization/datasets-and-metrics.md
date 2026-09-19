@@ -12,13 +12,13 @@ A training dataset is Python code that returns an iterable:
   > data: samples:
     = ```
     return [
-      ("one two", 2),
-      ("one two three", 3),
+      ("one two", {"count": 2}),
+      ("one two three", {"count": 3}),
     ]
     ```
 
   > metric: exact(samples):
-    = `word_count(samples) == expected`
+    = `word_count(samples) == expected["count"]`
 ````
 
 The name after `> data:` is local to the eval suite and is referenced by the
@@ -34,11 +34,11 @@ Use the same dataset name for held-out rows:
 
 @eval: word_count:
   > data: samples:
-    = `[("training example", 2)]`
+    = `[("training example", {"count": 2})]`
   > test_data: samples:
-    = `[("held out example", 3)]`
+    = `[("held out example", {"count": 3})]`
   > metric: exact(samples):
-    = `word_count(samples) == expected`
+    = `word_count(samples) == expected["count"]`
 ```
 
 `--eval` prefers `test_data: samples` over `data: samples`. Prompt optimizers
@@ -73,7 +73,7 @@ No `expected` binding is created for raw rows.
 
 ## Input and Expected Tuples
 
-The portable convention for supervised data is `(input, expected)`:
+The portable convention for supervised data is `(input, expected_dict)`:
 
 ````kedi
 @join_words(words: list[str]) -> str:
@@ -96,6 +96,19 @@ Using a dictionary as the expected value is the least ambiguous shape across
 normal evals and optimization. `None` is useful for optimizer-side analytical
 metrics, but normal `--eval` does not inject an `expected` variable when the
 expected value is `None`.
+
+Direct evaluation uses these shape rules, independently of procedure types:
+
+| Two-item tuple | Dataset variable | `expected` |
+| --- | --- | --- |
+| `(input, dictionary)` | input | dictionary |
+| `(input, None)` | input | not injected |
+| `(tuple_input, scalar)` | tuple input | scalar, except `None` |
+| Other pairs, including `("text", "label")` | entire pair | not injected |
+
+Here scalar excludes lists, dictionaries and tuples. A two-element list is a
+raw row, not a supervised tuple. Optimization splits every two-item tuple;
+expected dictionaries avoid this difference between the two paths.
 
 For a procedure with multiple parameters, make the input itself a tuple:
 
@@ -167,8 +180,10 @@ Return a float for partial credit:
 = `matched_fields / total_fields`
 ```
 
-Kedi does not clamp scores to `[0, 1]`; the metric defines the scale. GEPA and
-human readers work best when a consistent `0.0` to `1.0` range is used.
+The direct evaluator does not clamp scores to `[0, 1]`; the metric defines the
+scale. Use finite values on a consistent `0.0` to `1.0` scale. The development
+mock optimizer clamps its own scores, so out-of-range metrics are not portable
+between evaluation and optimizer paths.
 
 ## Score and Feedback Results
 
@@ -199,7 +214,7 @@ An analytical metric computes quality without a gold label:
 
 ````kedi
 @compress(text: str) -> str:
-  >> Rewrite <text> in fewer words: [summary]
+  >> A shorter version of <text> is [summary]
   = `summary`
 
 @eval: compress:

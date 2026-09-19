@@ -1,11 +1,15 @@
 # Tools and `> use:`
 
-`> use:` either exposes a callable as an agent tool, applies a profile, or
-enables the reserved project-skill surface. Resolution depends on its form.
+`> use:` exposes a callable as an agent tool or applies a profile. Its block
+form registers tools only.
 
 ## Expose a Procedure
 
-```kedi
+````kedi
+```
+release_index = {"1.4.0": "Adds typed child results and fixes cancellation cleanup."}
+```
+
 @lookup_release(version: str) -> str:
   ###
   Return release notes for one exact version.
@@ -13,10 +17,15 @@ enables the reserved project-skill surface. Resolution depends on its form.
   = `release_index[version]`
 
 > use: lookup_release
+> approval: allow
 
->> Find release 1.4.0 and return [answer: str] summarizing it.
+>> A summary of release 1.4.0 is [answer: str].
 = <answer>
-```
+````
+
+This fixture exposes one local lookup and explicitly permits its invocation.
+Kedi procedures default to mutating risk even when their body only reads data;
+use a risk-annotated Python tool when it should be read-only by contract.
 
 Kedi converts the procedure signature and docstring into a tool name,
 description, JSON argument schema, and validated callable. Custom Kedi types
@@ -31,8 +40,7 @@ For `> use: name`, Kedi resolves in this order:
 
 1. a visible Kedi procedure;
 2. a visible Python callable;
-3. a profile;
-4. the reserved name `skills`.
+3. a profile.
 
 A procedure or callable therefore wins over a profile with the same name.
 Avoid collisions even though the resolution is deterministic.
@@ -52,7 +60,7 @@ The block form always lists tools and never applies profiles:
 ```kedi
 > use:
     lookup_release
-    search_changelog
+    current_time
 ```
 
 Every entry must resolve to a Kedi procedure or Python callable. Use this form
@@ -65,9 +73,14 @@ environment can be registered:
 
 ````kedi
 ```
+from datetime import datetime
+from zoneinfo import ZoneInfo
+import kedi
+
+@kedi.tool(risk="read_only")
 def current_time(*, timezone: str) -> str:
     """Return the current time for one IANA timezone."""
-    ...
+    return datetime.now(ZoneInfo(timezone)).isoformat()
 ```
 
 > use: current_time
@@ -102,7 +115,7 @@ Tool frames are lexical:
   @outer_tool(query: str) -> str:
     = inner
   > use: outer_tool
->> Use the available tool and return [answer: str].
+  >> Based on the available tool's result, the answer is [answer: str].
   = <answer>
 ```
 
@@ -121,6 +134,11 @@ argument-aware resolver that only elevates risk. Every risky invocation is
 processed through the active approval policy before execution.
 
 See [Approvals](approvals.md) for defaults and edited-argument validation.
+
+The protected path is canonicalization, pre-tool hooks, risk/approval checks,
+edit revalidation, execution, then a success/failure hook. Registration does
+not execute a tool, and a model's decision to call one does not authorize it.
+For model-provided justifications, see [Tool Reasons](tool-reasons.md).
 
 ## Adapter Support
 

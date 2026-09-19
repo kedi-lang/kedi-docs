@@ -152,6 +152,8 @@ procedure is likewise unavailable after its enclosing invocation returns.
 Each ordinary block gets a fresh local namespace:
 
 ````kedi
+[marker] = ordinary blocks follow a Kedi statement
+
 ```
 temporary = "not persistent"
 ```
@@ -179,8 +181,8 @@ independent model templates may run concurrently, but each scheduled call
 captures its value environment by value. A later write cannot change the inputs
 of an already scheduled call.
 
-Bare Python reads create dependency joins and resolve pending values. Results
-must be equivalent between sequential and parallel execution; parallel mode is
-a performance option, not a semantic option. A visible `KediPromiseLeak`
+Bare Python reads create dependency joins and resolve pending values. The
+declared value/type contracts remain the same, but stochastic answers and
+independent side-effect ordering need not match. A visible `KediPromiseLeak`
 indicates an interpreter bug or unsupported advanced promise manipulation, not a
 value the application should serialize.

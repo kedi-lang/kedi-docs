@@ -101,8 +101,9 @@ runtime check when an optional feature needs a package.
 
 ## Unknown and Duplicate Fields
 
-Supported fields are `version`, `source`, `python`, and
-`python_dependencies`. Unknown fields, duplicate scalar fields, multiple
+Supported fields are `author`, `contact`, `license`, `version`, `source`,
+`python`, and `python_dependencies`. See the [Manifest Reference](../reference/package-manifest.md)
+for their exact validation rules. Unknown fields, duplicate scalar fields, multiple
 dependency blocks, multiple package directives, and a missing package directive
 are errors.
 

@@ -36,23 +36,21 @@ def review_tool(request):
     if request.tool_name != "write_report":
         return ApprovalDecision.allow()
 
-    safe_name = Path(request.arguments["path"]).name
     return ApprovalDecision.edit(
-        {**request.arguments, "path": str(Path("reports") / safe_name)},
-        reason="confine generated reports to reports/",
+        {**request.arguments, "path": "reports/incident-42.md"},
+        reason="use the application's fixed report destination",
     )
 ```
 
 > adapter: pydantic
-> model: groq:qwen/qwen3-32b
+> model: openai:gpt-5.6-luna
 > system: Fetch incident 42, summarize it, and save reports/incident-42.md.
 > use:
     lookup_incident
     write_report
 > approval: `review_tool`
 
->> Complete the requested incident-report workflow and return
-[saved_path: str].
+>> The incident report was saved by write_report at [saved_path: str].
 = <saved_path>
 ````
 
@@ -74,9 +72,18 @@ argument mapping. Kedi then:
 Editing is safer here than trusting a path instruction in the prompt. Prompts
 guide the model; approval policies enforce the call boundary.
 
+This example assumes an application-owned working directory without hostile
+symlinks. Replacing a path argument is not an OS sandbox: Python I/O and a
+symlink at the destination remain outside that guarantee. The writer can
+overwrite the fixed report. Inspect the actual file, not just `saved_path`,
+before treating the workflow as successful.
+
 ## Procedure Tools
 
 A Kedi procedure can be exposed without Python:
+
+The following fragment assumes a `release_index` mapping supplied by a prelude
+or the embedding application.
 
 ```kedi
 @release_notes(version: str) -> str:
@@ -112,3 +119,11 @@ Bundled filesystem tools refuse `.env` and `.env.*` through ordinary reads.
 Their explicit `secret_files=True` path elevates the call to `sensitive`; it
 does not grant authorization by itself. Approval does not intercept arbitrary
 Python file I/O, so embedded Python and imported packages remain trusted code.
+
+## Continue With a Complete Workflow
+
+[Reviewed Evidence](../agentic-engineering/reviewed-evidence.md) adds typed child
+delegation, a separately checked write destination, hooks, and Python embedding.
+Its offline tests inspect actual reads and writes and verify that a denied
+write has no side effect. For opt-in tool-call explanations, see
+[Tool Reasons](../agentic-engineering/tool-reasons.md).

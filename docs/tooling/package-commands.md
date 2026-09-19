@@ -66,3 +66,14 @@ Missing manifests, invalid names/versions/Python ranges, unsafe paths, source
 limits, malformed Git URLs, and registry failures exit nonzero. Package
 dependencies are recorded but not installed into the active Python environment.
 
+## Skills Are Not Packages
+
+```bash
+kedi skills add --path ./release-review
+kedi skills add --repo owner/release-review
+```
+
+Choose one source per command. It must contain a root `SKILL.md`; installation
+copies that skill into the user skill registry, not the module import namespace.
+Installing a skill does not activate it or grant tool permissions. Consult
+[Skills](../agentic-engineering/skills.md) for explicit loading.

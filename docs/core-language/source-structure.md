@@ -82,10 +82,10 @@ The delimiters may be indented with their surrounding Kedi block. They must be
 paired, must occupy their own lines, and `###` cannot appear inside the comment
 body as ordinary text.
 
-## Profile Docstrings
+## Procedure Docstrings
 
-The first block comment inside a procedure or profile is documentation, not
-merely discarded text:
+When the first statement in a procedure body is a block comment, that comment
+becomes the procedure's docstring:
 
 ```kedi
 @slugify(value: str) -> str:
@@ -98,6 +98,22 @@ merely discarded text:
 Procedure docstrings feed Python introspection, editor hovers, virtual stubs,
 and tool descriptions when the procedure is exposed as an agent tool. A block
 comment after another body statement remains a normal comment.
+
+## Profile Docstrings
+
+Profiles also support a docstring when the first member is a block comment:
+
+```kedi
+> profile: reviewer:
+    ###
+    Review a change against repository evidence.
+    ###
+    > system: Cite evidence for each finding.
+```
+
+This documents the profile; it is not a system instruction. A later block
+comment remains an ordinary comment. See [Profile Documentation](../agentic-engineering/profiles.md#profile-documentation)
+for its use in editor hovers and subagent descriptions.
 
 ## Reserved Names
 

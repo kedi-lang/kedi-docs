@@ -1,19 +1,20 @@
 # Evaluation and Optimization
 
-This example improves one extraction prompt with supervised examples and a
-metric that returns both a score and actionable feedback.
+This example exposes one extraction prompt to supervised optimization with a
+metric that returns both a score and actionable feedback. Whether it improves
+requires measurement; the listing is not evidence of a quality gain.
 
 ## Complete Program
 
 ````kedi
 > adapter: pydantic
-> model: groq:qwen/qwen3-32b
+> model: openai:gpt-5.6-luna
 
 @extract_owner(ticket: str) -> str:
   > optimize: owner_prompt:
-    Read the support ticket below.
+    >> Read the support ticket below.
     Ticket: <ticket>
-    Return only the team that owns the next action: [owner]
+    The team that owns the next action is [owner]
   = `owner`
 
 @eval: extract_owner:
@@ -46,21 +47,9 @@ metric that returns both a score and actionable feedback.
 = `extract_owner("Identity: sessions expire immediately after login")`
 ````
 
-The bare prompt lines inside `> optimize:` are intentional. They are legacy
-template syntax accepted only inside `> optimize:` and `> auto:` bodies. They
-are newline-joined into **one model call**, exactly like:
-
-```kedi
-@extract_owner_explicit(ticket: str) -> str:
-  > optimize: owner_prompt:
-    >> Read the support ticket below.
-    Ticket: <ticket>
-    Return only the team that owns the next action: [owner]
-  = `owner`
-```
-
-Do not add `>>` to each continuation line. Bare template lines outside these
-two special directives are parse errors.
+The leading `>>` opens the template. Its continuation lines belong to the
+same template, so this span makes one logical model call. Do not add `>>`
+to each continuation line.
 
 ## Run Tests and Evals
 
@@ -74,6 +63,10 @@ scores.
 
 ## Run GEPA
 
+Install the optional optimization dependencies and configure the selected
+provider. See [GEPA prerequisites](../evals-and-optimization/gepa.md).
+The default optimizer is `mock`, so select `gepa` explicitly for real search.
+
 ```bash
 kedi program.kedi \
   --optimize \
@@ -85,6 +78,11 @@ kedi program.kedi \
 GEPA trains on `data`, validates against matching `test_data`, and stores only
 an optimized prefix. The source prompt and its output schema remain
 authoritative.
+
+These two validation cases influence candidate selection. They are not an
+untouched final test set. Freeze separate held-out cases before comparing the
+baseline and optimized artifact, with the same model and repeated sampling.
+An eval score below one does not by itself produce a nonzero CLI exit status.
 
 Generated files are:
 
@@ -103,3 +101,9 @@ evaluation and optimization. For a procedure with multiple parameters, use
 `((arg1, arg2), expected_dict)`. Metrics should be deterministic, stable, and
 cheap compared with the model call; vague feedback gives the optimizer little
 usable evidence.
+
+For a no-network starting point, run the
+[Validation Workflow](../evals-and-optimization/validation-workflow.md), including
+its intentionally failing variant. Use the
+[Reproducibility Protocol](../evals-and-optimization/reproducibility.md) before
+interpreting an optimization result as an improvement.

@@ -6,10 +6,18 @@ Kedi parsing/compilation can remain on a Python backend while embedded Python
 and model inference are delegated through bridges. This avoids pretending the
 entire Python runtime or provider SDK runs natively in the browser.
 
+For the supported local cell interface, use [Notebook](notebook.md). The bridge
+API and WebGPU demo below are separate integration surfaces; Notebook does not
+depend on the playground repository or this example server.
+
 ## Pyodide Executor
+
+Integration sketch: `bridge` must implement the synchronous request protocol,
+and `program` is an already parsed Kedi program. This is not a browser launcher:
 
 ```python
 from kedi.executors import PyodideExecutor
+from kedi.lang import compile_program
 
 executor = PyodideExecutor(bridge, timeout=60)
 runtime = compile_program(program, executor=executor)
@@ -18,6 +26,10 @@ runtime = compile_program(program, executor=executor)
 `PyodideExecutor` subclasses `PlaygroundExecutor`. Its synchronous bridge
 receives operation, code, referenced environment values, synchronization names,
 and source offset; it returns result, environment updates, stdout, or an error.
+
+The embedding application owns worker startup, timeouts, interruption and
+cleanup. In particular, creating an executor does not download Pyodide or start
+a worker. Notebook supplies that lifecycle for its own browser executor.
 
 ## Supported Language Surface
 
@@ -70,4 +82,3 @@ but not wired into adapters.
 - The demo adapter/HTTP polling bridge is a proof of integration, not a
   production multi-user service.
 - Debug/stdout and opaque references need explicit lifecycle handling.
-

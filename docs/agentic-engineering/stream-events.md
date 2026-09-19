@@ -69,7 +69,7 @@ def render(event: AgentMessageEvent | AgentRunStateEvent) -> None:
         print(f"run {event.run_id}: {event.state}")
 
 
-adapter = PydanticAdapter("openai:gpt-4o-mini")
+adapter = PydanticAdapter("openai:gpt-5.6-luna")
 
 with observe_agent_events(render):
     result = asyncio.run(adapter.invoke(prompt="Inspect the parser."))
@@ -84,6 +84,10 @@ instead of mutating UI state directly from the callback.
 Event observation does not modify prompts, schemas, tools, message history,
 usage accounting, return values, or exception behavior.
 
+Unlike [hooks](hooks.md), observers cannot edit or deny a request. A progress
+message is not a permission decision, a tool receipt, or proof that a task
+succeeded. The completed adapter result remains the application contract.
+
 ## Consume From Async Code
 
 `AsyncAgentEventQueue` is a thread-safe sink that forwards dispatcher events to
@@ -97,30 +101,35 @@ from kedi.agent_adapter import PydanticAdapter
 
 
 async def main() -> str:
-    adapter = PydanticAdapter("openai:gpt-4o-mini")
+    adapter = PydanticAdapter("openai:gpt-5.6-luna")
     events = AsyncAgentEventQueue()
     root_run_id = None
 
     with observe_agent_events(events):
         task = asyncio.create_task(adapter.invoke(prompt="Inspect the parser."))
 
-        while True:
-            event = await events.queue.get()
-            if (
-                isinstance(event, AgentRunStateEvent)
-                and event.state == "started"
-                and event.parent_run_id is None
-            ):
-                root_run_id = event.run_id
+        try:
+            while True:
+                event = await events.queue.get()
+                if (
+                    isinstance(event, AgentRunStateEvent)
+                    and event.state == "started"
+                    and event.parent_run_id is None
+                ):
+                    root_run_id = event.run_id
 
-            if (
-                isinstance(event, AgentRunStateEvent)
-                and event.run_id == root_run_id
-                and event.state in {"completed", "failed", "cancelled"}
-            ):
-                break
+                if (
+                    isinstance(event, AgentRunStateEvent)
+                    and event.run_id == root_run_id
+                    and event.state in {"completed", "failed", "cancelled"}
+                ):
+                    break
 
-        return await task
+            return await task
+        finally:
+            if not task.done():
+                task.cancel()
+            await asyncio.gather(task, return_exceptions=True)
 
 
 print(asyncio.run(main()))
@@ -128,6 +137,10 @@ print(asyncio.run(main()))
 
 Construct the queue inside the target event loop. Pass `loop=` explicitly only
 when construction and consumption occur in different setup code.
+
+This example owns one root invocation. The `finally` block also cancels and
+joins it if the consumer is cancelled. In a multi-run UI, keep separate run
+identities instead of treating the most recently started root as the only run.
 
 ## Event Fields
 

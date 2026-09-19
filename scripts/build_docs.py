@@ -46,7 +46,7 @@ class Page:
 def _page_title(source: Path) -> str:
     for line in source.read_text(encoding="utf-8").splitlines():
         if line.startswith("# "):
-            return line[2:].strip()
+            return re.sub(r"\s*\{\s*#[^}]+\}\s*$", "", line[2:]).strip()
     raise ValueError(f"Missing H1 in {source.relative_to(ROOT)}")
 
 
@@ -101,14 +101,15 @@ def _collect_pages(nav: list[object], docs_dir: Path) -> list[Page]:
             if isinstance(value, str):
                 source = docs_dir / value
                 if source not in seen:
-                    pages.append(Page(section, str(label), source))
+                    title = _page_title(source) if label == "Overview" else str(label)
+                    pages.append(Page(section, title, source))
                     seen.add(source)
             elif isinstance(value, list):
-                visit(value, str(label))
+                visit(value, f"{section} / {label}" if section else str(label))
             else:
                 raise ValueError(f"Unsupported navigation value: {value!r}")
 
-    visit(nav, "Overview")
+    visit(nav, "")
     return pages
 
 
@@ -200,6 +201,7 @@ def _write_llms_full(
                 "---",
                 "",
                 f"Source: {url}",
+                f"Section: {page.section or 'Home'}",
                 "",
                 source,
             ]

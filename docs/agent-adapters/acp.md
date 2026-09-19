@@ -51,7 +51,7 @@ ACP supports raw text only:
 ```kedi
 > agent:
     acp: npx @zed-industries/codex-acp
->> Inspect the repository and return [answer: str] summarizing the risk.
+[answer] << Inspect the repository and summarize the risk.
 = `answer`
 ```
 

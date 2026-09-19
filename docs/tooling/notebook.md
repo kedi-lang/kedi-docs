@@ -13,6 +13,10 @@ notebook in one command:
 uv run --extra notebook kedi notebook
 ```
 
+The checkout must include the notebook submodule. If it is absent, initialize
+it once with `git submodule update --init notebook` before the command above.
+Initial dependency resolution may need network access.
+
 The notebook is currently a local-build surface. This command uses the checked
 out Kedi source and `notebook` submodule rather than a published distribution.
 
@@ -51,55 +55,19 @@ source. Values may be entered individually or imported from an explicit
 receives only configured variable names. Updating a value resets the active
 runtime so later cells inherit the new environment.
 
+`KEDI_NOTEBOOK_SECRETS_PATH` overrides that file location. This is local
+plaintext storage protected by filesystem permissions, not an encrypted vault.
+Do not print secrets into outputs or copy them into cell source.
+
 ## Browser and Host Python
 
-Browser execution through Pyodide 3.14 is selected by default. Embedded Python
-runs in one persistent Web Worker, so Python values created by an earlier cell
-remain available to later cells.
-
-The worker starts loading when the notebook page opens. Runtime startup is
-therefore paid during initial page load rather than deferred to the first cell.
-The ready worker, imported modules, and browser-installed packages are reused
-until the runtime is reset or the page is closed. Core Pyodide, Python standard
-library, Micropip, and Pydantic files are shipped in the notebook wheel; this
-startup does not require a Pyodide CDN. Packages installed later can still need
-network access.
-
-The local server also discovers compatible host Python installations. Select
-one from the runtime menu when code should use packages installed in that
-environment. Add or prioritize an exact executable while starting the server:
-
-```bash
-kedi notebook --python /opt/homebrew/bin/python3.11
-kedi notebook --python ~/.pyenv/versions/3.12.4/bin/python --port 8899
-```
-
-`--python` is repeatable. The selected executable is a base interpreter, not an
-environment that Kedi modifies directly. On first use, the notebook creates a
-project-specific virtual environment under `~/.kedi/notebook/venvs`, installs
-the active Kedi checkout and its dependencies, and starts the persistent worker
-from that environment. Its stable `kedi-notebook-py...` name is derived from the
-base interpreter and working directory, so later server runs reuse it. Set
-`KEDI_NOTEBOOK_ENV_HOME` to choose another environment root. Host execution is
-not sandboxed and has the notebook server process's filesystem permissions.
-
-After selecting a host runtime, use the package action beside the runtime menu
-to inspect installed distributions or install newline-separated Python
-requirements. Pip output streams in the dialog. These packages persist in the
-managed environment and are available to both Kedi cells and host terminal
-cells. The selected base interpreter remains unchanged.
-
-The runtime cannot be changed after the first Kedi cell runs. Start a new
-runtime session before choosing another interpreter.
-
-Use the square interrupt action while a Kedi or terminal cell is running. The
-active worker is terminated and replaced, so the cell remains editable and
-rerunnable while its previous live state is discarded. Host execution is also
-limited to 120 seconds. Sessions with no activity expire after 30 minutes.
+See [Notebook Runtimes](notebook-runtimes.md) for the complete contract.
 
 ## Cell Semantics
 
-Kedi cells execute in source order. A cell number represents the cell's current
+Kedi cells execute when selected and run, against the current session state.
+Earlier cells are not automatically replayed to satisfy dependencies. A cell
+number represents the cell's current
 position in the notebook, not its execution count. Rerunning a cell leaves that
 number unchanged; adding, moving, or deleting cells recomputes affected
 positions. A successful cell keeps its source editor and displays its output
@@ -140,30 +108,28 @@ Starting a new runtime clears live execution state and marks Kedi and terminal
 source cells as unexecuted. There is no hidden replay and no automatic run-all
 operation.
 
+### Two Dependent Cells
+
+Run this setup cell first:
+
+```kedi
+[values: list[int]] = `[2, 3, 5]`
+```
+
+Then run the result cell:
+
+```kedi
+= `sum(value * value for value in values)`
+```
+
+The result is `38`. After resetting the runtime, running only the second cell
+fails because `values` does not exist. Rerun the setup cell, then the result
+cell. Editing, hiding, moving or deleting a cell does not undo its earlier
+effects on the live runtime.
+
 ## Notebook Files
 
-The Save command offers two `.kedinb` modes:
-
-- **Just notebook** stores the title, cell layout, kinds, and source. Opening it
-  restores unexecuted drafts.
-- **Save progress** also stores retained outputs/results and a strict,
-  pickle-free `InteractiveSession` snapshot containing the current KediEnv.
-  Opening it restores that logical session when the next cell runs.
-
-Neither mode includes Secret Manager or process environment values. A progress
-save also does not serialize the Python worker or claim that external side
-effects are reproducible. If live Kedi state cannot be represented without
-changing its semantics, Save progress fails instead of writing a partial
-snapshot.
-
-Opening or creating a document asks before replacing unsaved work. Notebook
-files are limited to 5 MB and 1,000 cells. Individual cell source is limited to
-1 MB, and retained inline output is limited to 200,000 characters with an
-explicit truncation marker.
-
-`InteractiveSession.dump()` and `load()` expose the same strict snapshot
-boundary to Python callers. Snapshot creation rejects state it cannot restore
-without replay.
+See [Notebook Files and Recovery](notebook-files.md) for the complete contract.
 
 ## Editing
 

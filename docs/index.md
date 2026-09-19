@@ -1,21 +1,68 @@
-# Kedi Programming Language
+---
+manual_home: true
+hide:
+  - toc
+---
 
-Kedi is a typed orchestration language for building LLM programs whose prompts,
-dataflow, structured outputs, tools, tests, and agent configuration live in one
-readable source format. Use it through `.kedi` programs or embed the same runtime
-semantics through its Python API.
+<span id="the-kedi-language" hidden></span>
 
-It combines runtime substitution and typed output capture with reusable
-procedures, deterministic Python, model and agent configuration, tools, MCP,
-skills, approvals, subagents, tests, evaluations, and prompt optimization.
-Model calls run through framework adapters such as Pydantic AI, DSPy, or
-LangChain, or harness adapters such as Codex, Claude, and ACP.
+# The Kedi language { #kedi-programming-language }
+
+A language for typed programs with natural language. Learn the syntax, follow
+the runtime, and find the rules behind your programs.
+
+<div class="kedi-manual-intro" markdown="1">
+
+[Start with installation](getting-started/installation.md){ .kedi-start-link }
+
+</div>
+
+<!-- manual-directory -->
+
+<aside class="kedi-manual-specimen" markdown="1">
+
+## A template, at a glance
+
+With an adapter and model configured:
+
+```kedi
+>> The capital of France is [city: str].
+
+= <city>
+```
+
+<div class="kedi-example-output">
+<span>Illustrative output</span>
+<samp>Paris</samp>
+</div>
+
+## Read the notation
+
+| Syntax | Meaning |
+| --- | --- |
+| `>>` | Begin a model template |
+| `[city: str]` | Capture a typed output |
+| `<city>` | Substitute a value |
+
+## Keep close
+
+- [Syntax index](reference/syntax.md)
+- [Directive index](reference/directives.md)
+- [Errors and diagnostics](reference/diagnostics-and-troubleshooting.md)
+
+</aside>
+
+<div class="kedi-manual-overview" markdown="1">
 
 ## Why Typed LLM Programs
 
 Prompts are useful for fuzzy transformations; Python is useful for deterministic
 logic. Kedi keeps both in one dataflow without pretending they are the same
 thing.
+
+This definition is a fragment: it does not call a model until the procedure is
+invoked. The [first program](getting-started/first-program.md) supplies model
+selection, command-line inputs, and a complete executable entry point.
 
 ```kedi
 ~Ticket(category: str, urgency: int)
@@ -43,16 +90,24 @@ explicit output contract:
 Raw capture is an escape hatch for deliberately unstructured text, not the
 default form of a Kedi model call.
 
+Typed does not mean factually correct. Validation checks the declared contract;
+it cannot prove that a model's answer is true. Deterministic checks, evidence,
+and [evaluation](evals-and-optimization/index.md) address different questions.
+
 ## Choose a Starting Point
 
-- New to Kedi: begin with [Start with Kedi](getting-started/index.md).
-- Learning the DSL: use the [Core Language](core-language/index.md) guide.
+- New to Kedi: begin with [Learn Kedi](getting-started/index.md).
+- Learning the DSL: use the [Language Reference](core-language/index.md).
 - Embedding Kedi in Python: use the [Python API](python-api/index.md).
 - Building tool-using or delegated agents: use
-  [Agentic Engineering](agentic-engineering/index.md).
+  [Agents and Orchestration](agentic-engineering/index.md).
 - Looking up exact syntax or behavior: use the [Reference](reference/index.md).
 
-## Core Language, Python API, and Agent Adapters
+After the first program, use [Projects and Execution](getting-started/projects-and-execution.md)
+to split it across files, then choose a task from the [Cookbook](examples/index.md).
+You do not need tools, profiles, or delegated agents to use typed templates.
+
+## Language, Python API, and Model Integrations { #core-language-python-api-and-agent-adapters }
 
 The same runtime semantics are available through two authoring surfaces:
 
@@ -82,3 +137,5 @@ The documentation distinguishes:
 
 Those choices are called out in examples because replacing one with another can
 change types, validation, or whether a model response is retained.
+
+</div>

@@ -10,7 +10,7 @@ value.
 An output field embedded in a template is an L-value:
 
 ```kedi
->> Incident severity: [severity: str]. Summary: [summary: str].
+>> The incident severity is [severity: str]. The summary is [summary: str].
 = <severity>: <summary>
 ```
 
@@ -27,13 +27,13 @@ values that Python can determine exactly.
 An untyped output defaults to `str`:
 
 ```kedi
->> Concise headline: [headline].
+>> A concise headline is [headline].
 ```
 
 A typed output asks the adapter for a native value and validates it:
 
 ```kedi
->> Priority: [priority: int]. Owners: [owners: list[str]]. Blocked: [blocked: bool].
+>> The priority is [priority: int]. The owners are [owners: list[str]]. It is [blocked: bool] that the work is blocked.
 ```
 
 Kedi does not merely include the annotation in the prompt. It resolves the type,
@@ -52,7 +52,7 @@ from typing import Literal
 Priority = Literal["low", "medium", "high"]
 ```
 
->> Ticket priority: [priority: `Priority`].
+>> The ticket priority is [priority: `Priority`].
 ````
 
 For ordinary built-in or custom Kedi types, prefer the direct form
@@ -65,13 +65,15 @@ Use `Annotated[T, "description"]` to explain a field to the model while keeping
 `T` as its runtime type:
 
 ```kedi
->> Country code: [code: Annotated[str, "Uppercase ISO 3166-1 alpha-2 country code"]].
+>> The country code is [code: Annotated[str, "Uppercase ISO 3166-1 alpha-2 country code"]].
 ```
 
 The description becomes JSON Schema metadata for adapters that expose schemas.
-The second argument must be a single-line string literal. `Annotated[T]` is
-accepted as `T` but triggers an editor warning because it carries no
-description. Additional metadata is ignored.
+The native description form uses a single-line string literal. `Annotated[T]`
+is accepted as `T` but triggers an editor warning because it carries no
+description. Python type aliases can carry additional non-string validation or
+decision metadata; Kedi preserves that metadata. See
+[Validation Constraints](types.md#validation-constraints).
 
 Use descriptions for constraints the base type cannot express clearly. Do not
 repeat obvious information such as `Annotated[int, "An integer"]`.
@@ -81,9 +83,8 @@ repeat obvious information such as `Annotated[int, "An integer"]`.
 One template can fill several fields:
 
 ```kedi
->> Release version: [version: str].
-Release date: [date: date].
-Changes: [changes: list[str]].
+>> Version [version: str] was released on [date: date].
+It includes [changes: list[str]].
 ```
 
 All continuation lines in that `>>` block belong to one model request and one
@@ -92,7 +93,7 @@ replaces the value in the current scope:
 
 ```kedi
 [status] = draft
->> Document status after review: [status: str].
+>> The document status after review is [status: str].
 = <status>
 ```
 
@@ -196,7 +197,7 @@ surface one of them.
 Use `>>` output fields when you need typed or multiple structured values:
 
 ```kedi
->> Detected language: [language: str]. Confidence: [confidence: float].
+>> The detected language is [language: str]. The confidence is [confidence: float].
 ```
 
 Use raw capture when the complete model response should remain an unstructured

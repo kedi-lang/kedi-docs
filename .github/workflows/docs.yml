@@ -152,8 +152,8 @@ jobs:
 
       - name: Build documentation
         run: |
-          python -m unittest discover -s tests -v
           python scripts/build_docs.py
+          python -m unittest discover -s tests -v
 
       - name: Assemble homepage, documentation, and compatibility routes
         env:
@@ -167,6 +167,11 @@ jobs:
 
       - name: Verify combined publication in a browser
         run: node .homepage-source/scripts/verify-publication.mjs public-site
+
+      - name: Test documentation layout and navigation
+        run: |
+          npm ci --ignore-scripts
+          npm run test:browser
 
       - name: Publish gh-pages branch
         uses: peaceiris/actions-gh-pages@329bcc8f12caed2cefe5a5b80781499a6f3b361b # v4

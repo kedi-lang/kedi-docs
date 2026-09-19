@@ -2,6 +2,11 @@
 
 All stable high-level names below are imported from `kedi`.
 
+Use the [public export inventory](../python-api/public-exports.md) for all root
+exports and the [parameter reference](../python-api/public-parameters.md) for
+the exact configuration surfaces. Examples with `...` below are signature
+sketches, not executable programs.
+
 ## Public Selection Types
 
 - `FrameworkAdapterName` is
@@ -32,6 +37,7 @@ import kedi
     env=...,
     mcp_servers=(),
     approval=...,
+    hooks=...,
     skills=...,
     artifacts=...,
     conversation=...,
@@ -68,7 +74,7 @@ Kedi return remains the runtime authority.
 
 `configure(...)` accepts `model`, mutually exclusive `adapter`/`agent`,
 `system`, `effort`, `settings`, `tools`, `env`, `mcp_servers`, `approval`,
-`skills`, `artifacts`, `conversation`, `parallel`, `max_workers`,
+`hooks`, `skills`, `artifacts`, `conversation`, `parallel`, `max_workers`,
 `loop_iteration_limit`, and
 adapter-specific keyword arguments.
 Each call rebuilds defaults; it does not merge with a previous `configure`.
@@ -189,7 +195,9 @@ returns the same callable. Policies are `ApprovalPolicy.allow()`,
 `"allow"`/`"deny"`.
 
 `ApprovalRequest` fields are `tool_name`, immutable deep-copied `arguments`,
-`risk`, `adapter_shortname`, `description`, and immutable optional `metadata`.
+`risk`, `adapter_shortname`, `description`, immutable optional `metadata`,
+`reason`, and `tool_reason_enabled`. The reason is a model-provided explanation,
+not evidence that a call is safe; it is not passed to the underlying tool.
 Handlers return:
 
 ```python
@@ -200,6 +208,17 @@ kedi.ApprovalDecision.edit(arguments, reason=None)
 
 Only edit may carry replacement arguments. Edited calls are reclassified and
 validated before execution.
+
+## Hooks and Decision Evidence
+
+`@kedi.on(event)` accepts an event name or a sequence of names. Handlers can
+observe events or return the supported decision for that event; consult
+[Hooks from Python](../python-api/hooks.md) for ordering and registration scope.
+
+`capture_decisions()` retains decision evidence within a capture context.
+`decision_info(binding)` inspects evidence associated with a binding rather than
+re-evaluating it. See [Decision Evidence](../python-api/decisions.md) for lookup
+arguments, record fields, lifetime, mutation invalidation and cache omissions.
 
 ## MCP
 

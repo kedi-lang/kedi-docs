@@ -1,0 +1,26 @@
+<header class="md-header kedi-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <label class="md-header__button md-icon kedi-menu-toggle" for="__drawer" aria-label="Open navigation" aria-controls="kedi-navigation" tabindex="0" role="button">
+      {% include ".icons/lucide/menu.svg" %}
+    </label>
+    <a href="https://kedi-lang.org/" class="kedi-brand" aria-label="kedi homepage">
+      <img src="{{ config.theme.logo | url }}" width="42" height="32" alt="">
+      <span>kedi</span>
+    </a>
+    <a class="kedi-header-label" href="{{ nav.homepage.url | url }}">Language manual</a>
+    <div class="kedi-header-spacer"></div>
+    {% if "search" in config.plugins %}
+      {% set search = config.plugins["search"] | attr("config") %}
+      {% if search.enabled %}
+        {% include "partials/search.html" %}
+      {% endif %}
+    {% endif %}
+    {% if config.theme.palette and not config.theme.palette is mapping %}
+      {% include "partials/palette.html" %}
+      {% include "partials/javascripts/palette.html" %}
+    {% endif %}
+    <a class="md-header__button md-icon kedi-github" href="{{ config.repo_url }}" title="Kedi on GitHub" aria-label="Kedi on GitHub">
+      {% include ".icons/fontawesome/brands/github.svg" %}
+    </a>
+  </nav>
+</header>

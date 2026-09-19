@@ -1,5 +1,6 @@
 # Configuration and Context
 
+
 ## Configure Process Defaults
 
 `kedi.configure(...)` creates a new default configuration in the current
@@ -10,10 +11,10 @@ import kedi
 
 kedi.configure(
     adapter="pydantic",
-    model="openai:gpt-4o-mini",
+    model="openai:gpt-5.6-luna",
     system="Prefer precise, source-grounded answers.",
     effort="low",
-    settings={"temperature": 0.2},
+    settings={"timeout": 120},
     tools=[search_docs],
     env={"audience": "maintainers"},
     approval="deny",
@@ -27,6 +28,7 @@ kedi.configure(
 Calling `configure()` again rebuilds defaults; it does not merge with the
 previous `configure()` call. Pass the complete intended default configuration.
 
+
 ## Temporary Context Overrides
 
 `kedi.context(...)` merges onto the currently active configuration and restores
@@ -34,7 +36,7 @@ it afterward:
 
 ```python
 with kedi.context(
-    model="openai:gpt-4.1",
+    model="openai:gpt-5.6-luna",
     system="Perform a deeper review.",
     effort="high",
 ):
@@ -47,23 +49,25 @@ Artifact mappings overlay inherited policy fields. `artifacts=False` disables
 an inherited policy. Conversation state changes only when an explicit
 `conversation=` is supplied.
 
+
 ## Sync and Async Context Managers
 
 The same object supports both forms:
 
 ```python
-with kedi.context(model="openai:gpt-4o-mini"):
+with kedi.context(model="openai:gpt-5.6-luna"):
     sync_result = summarize("...")
 ```
 
 ```python
-async with kedi.context(model="openai:gpt-4o-mini"):
+async with kedi.context(model="openai:gpt-5.6-luna"):
     async_result = await summarize_async("...")
 ```
 
 Configuration uses `ContextVar`, so an async task inherits the context present
 when it is created. A context does not globally reconfigure unrelated task
 contexts.
+
 
 ## Framework and Harness Selection
 
@@ -90,6 +94,7 @@ framework name through `agent=` also fails with a corrective message.
 `AdapterLike` instances must expose `kind` and `shortname` metadata consistent
 with the parameter used.
 
+
 ## Models, Instructions, Effort, and Settings
 
 These profile fields merge from configuration, context, callable decorator,
@@ -97,11 +102,11 @@ and DSL directives:
 
 ```python
 with kedi.context(
-    model="openai:gpt-4.1",
+    model="openai:gpt-5.6-luna",
     system="Answer for an expert reader.",
     effort="high",
     settings={
-        "temperature": 0.1,
+        "timeout": 120,
         "max_tokens": 2048,
     },
 ):
@@ -115,6 +120,7 @@ pretend every backend supports every field.
 Extra keyword arguments accepted by `configure()` and `context()` are adapter
 construction arguments, not profile `settings`. `query()` and `bind()` expose
 only their declared parameters and do not accept arbitrary adapter kwargs.
+
 
 ## Runtime Environment Precedence
 
@@ -139,6 +145,7 @@ Inside Kedi, `audience` is `"security reviewers"`.
 Tool names are protected separately: a function parameter that collides with a
 registered tool raises `KediExecutionError`.
 
+
 ## `.env` and Environment Selection
 
 `configure()` calls `dotenv.load_dotenv()` before resolving default backend
@@ -154,6 +161,7 @@ When no explicit selection is passed:
 `KEDI_AGENT` and `KEDI_ADAPTER` are mutually exclusive. `context()` does not
 reload `.env`; it starts from active configuration.
 
+
 ## Reset Configuration
 
 Reset the current context to Kedi's built-in defaults:
@@ -166,42 +174,10 @@ The default selection metadata is the Pydantic framework with no explicit
 model. Registered `@kedi.type` classes remain registered, and in-memory caches
 remain intact. Use `kedi.clear_cache()` separately.
 
+
 ## Lifecycle Hooks
 
-Register a hook in the current Python API configuration with `@kedi.on(...)`:
-
-```python
-import kedi
-from kedi import UserPromptSubmitDecision
-
-
-@kedi.on("user_prompt_submit")
-def redact_prompt(event):
-    return UserPromptSubmitDecision.edit(event.content.replace("secret", "[redacted]"))
-```
-
-The decorator accepts one event name or a sequence of names. `configure()`,
-`context()`, `query()`, and `bind()` also accept a `hooks=` event-to-handler
-mapping. Direct Python API registrations are inherited by delegated subagents
-as runtime policy.
-
-Every supported adapter instance exposes the same decorator:
-
-```python
-from kedi.agent_adapter import PydanticAdapter
-
-adapter = PydanticAdapter(model)
-
-
-@adapter.on(("post_tool_use", "post_tool_use_failure"))
-def observe_terminal_tool_event(event):
-    audit(event.event, event.tool_name, event.tool_call_id)
-```
-
-Adapter constructors additionally accept `hook_handler=` for one catch-all
-handler. Adapter handlers run before lexical/profile handlers. See
-[Agent Lifecycle Hooks](../agentic-engineering/hooks.md) for decision types,
-event payloads, ordering, persistence, and backend support.
+See [Lifecycle Hooks](hooks.md).
 
 ## Artifacts and Conversation State
 
@@ -220,6 +196,7 @@ with kedi.session() as conversation:
 Artifacts keep large values out of model context and are enabled by default. A
 session is opt-in and allows separate calls to share portable history and
 artifact ownership. See [Artifacts and Sessions](artifacts-and-sessions.md).
+
 
 ## Invalid Combinations
 

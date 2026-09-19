@@ -22,6 +22,9 @@ intended for deterministic development and tests:
 kedi program.kedi --optimize --optimizer gepa
 ```
 
+The mock optimizer is not a no-model-call mode: its metric can still invoke
+model-backed procedures. Its output is not evidence of prompt quality gains.
+
 `--optimize` works without `--eval`. Add `--eval` when the same command should
 also score the resulting program.
 
@@ -121,6 +124,7 @@ budget.
 
 ## DSPy Dependency
 
+Install the optional dependency with `uv add 'kedi[dspy]'`.
 GEPA is implemented through DSPy. If DSPy is unavailable, Kedi exits with an
 installation error before optimization. The ordinary Pydantic, LangChain,
 Claude, Codex, and ACP runtime adapters do not by themselves provide GEPA.
@@ -128,3 +132,6 @@ Claude, Codex, and ACP runtime adapters do not by themselves provide GEPA.
 GEPA also requires valid credentials for the selected optimizer and reflection
 models. Use `--quiet` to suppress progress reporting, not errors.
 
+Checkpoints can contain example data, responses and feedback. Treat them as
+trusted local state, not files to load from unknown authors. Quiet mode does
+not redact sensitive data; review artifacts before sharing them.

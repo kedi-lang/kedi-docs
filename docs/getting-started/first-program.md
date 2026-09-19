@@ -1,10 +1,34 @@
 # Your First Kedi Program
 
+Complete [Installation](installation.md) first. The first check needs no model;
+the review program then uses the OpenAI provider SDK and `OPENAI_API_KEY`.
+
+## Start Without a Model
+
+Create `label.kedi`:
+
+```kedi
+@label(title: str) -> str:
+  = `"-".join(title.strip().casefold().split())`
+
+= `label(args.title)`
+```
+
+```bash
+kedi label.kedi --title "  Release   Notes  "
+```
+
+This prints `release-notes`. Python performs normalization; no model interprets
+the title. In a uv project, run these commands as `uv run kedi ...`.
+
 ## Create a `.kedi` File
 
 Create `review.kedi`:
 
 ```kedi
+> adapter: pydantic
+> model: openai:gpt-5.6-luna
+
 ~Review(decision: Literal["approve", "revise"], summary: str)
 
 @review_change(title: str, diff_summary: str) -> Review:
@@ -23,6 +47,17 @@ kedi review.kedi \
 ```
 
 ## Add Inputs
+
+The output is a JSON object with `decision` and `summary`, for example:
+
+```json
+{"decision":"revise","summary":"Show tests for traversal and symlink escape cases."}
+```
+
+This is illustrative, not an exact expected answer. The model sees only the
+title and summary, not the code or test results. Its recommendation is advisory:
+schema validation limits the decision to two values but does not prove that the
+change is safe or grant permission to merge it.
 
 `title` and `diff_summary` are typed procedure parameters. The final call uses
 a single-backtick Python expression:
@@ -78,6 +113,28 @@ The top-level expression serializes it deliberately:
 Use a native return when Python or another Kedi procedure needs the object. Use
 a rendered return when the program's final output is text.
 
+## Use the Typed Result
+
+Replace the final expression of `review.kedi` with this block; keep its directives,
+type and procedure definitions above it:
+
+```kedi
+[review: Review] = `review_change(args.title, args.diff_summary)`
+[next_step: str] = Request another revision
+
+> if: `review.decision == "approve"`:
+  [next_step] := Queue for human review
+
+= <next_step>: <`review.summary`>
+```
+
+This branch performs a Python comparison, not another model judgment. The
+trailing `:` makes that explicit. `=` initializes `next_step`; `:=` updates its
+existing outer binding from the branch's child scope. Neither branch publishes
+or merges anything. For natural-language conditions and loop/map dataflow, see
+[Control Flow](../core-language/control-flow.md) and
+[Loops and Map](../core-language/loops-and-map.md).
+
 ## Pass Command-Line Arguments
 
 Application flags belong after the Kedi source:
@@ -101,3 +158,11 @@ Parsing catches malformed syntax, duplicate selective imports, invalid
 directives, and other structural errors. It cannot prove that provider
 credentials exist or that a runtime-computed type is valid. Those checks happen
 during compilation or execution.
+
+## Continue the Program
+
+- Add deterministic checks with [Testing](../evals-and-optimization/test-blocks.md).
+- Move reusable procedures into [Modules](../modules-and-packaging/modules.md).
+- Call the same runtime from [Python](../python-api/embedding.md).
+- Add [Tools](../agentic-engineering/tools-and-use.md) only when external evidence
+  or actions are needed; a template alone does not fetch files or browse the web.

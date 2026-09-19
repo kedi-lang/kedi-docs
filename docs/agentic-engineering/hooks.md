@@ -30,6 +30,8 @@ from pathlib import Path
 
 from kedi import PreToolUseDecision, UserPromptSubmitDecision
 
+audit_events = []
+
 def redact_prompt(event):
     return UserPromptSubmitDecision.edit(
         event.content.replace("customer@example.com", "[email]")
@@ -44,7 +46,7 @@ def constrain_report_path(event):
     )
 
 def observe_tool(event):
-    audit(event.event, event.tool_name, event.tool_call_id)
+    audit_events.append((event.event, event.tool_name, event.tool_call_id))
 ```
 
 > hooks:
@@ -149,10 +151,11 @@ Register one handler for one or several events:
 ```python
 import kedi
 
+audit_events = []
 
 @kedi.on(("post_tool_use", "post_tool_use_failure"))
 def audit_terminal_event(event):
-    audit(event.run_id, event.tool_call_id, event.event)
+    audit_events.append((event.run_id, event.tool_call_id, event.event))
 ```
 
 `kedi.configure()`, `kedi.context()`, `@kedi.query`, and `@kedi.bind` accept a
@@ -166,9 +169,11 @@ handlers. Direct top-level/procedure hook directives and Python API
 registrations are enforcement policy and propagate to descendants. A parent's
 profile-local handler is not copied into an unrelated child profile.
 
-Child events use the child `run_id`, carry `parent_run_id`, and identify the
-child agent/profile. This keeps concurrent subagent chains independent while
-preserving lineage.
+Child events use the child `run_id` and identify the child agent/profile.
+`parent_run_id` links to a parent when a parent run context is available; it
+may be `None` without that context. Do not use its absence alone to classify
+a tool as a top-level call. Stream observation provides run lifecycle context
+for UIs that need a complete parent/child activity tree.
 
 ## Persistence
 
@@ -198,6 +203,11 @@ selection defers that check to runtime.
 Hooks execute trusted Python and can inspect prompt, argument, result, and error
 payloads. Keep audit sinks bounded and redact before forwarding data to another
 system. A post hook cannot undo an effect that already succeeded.
+
+The in-memory lists above are small examples, not durable audit logs. A failing
+post hook may make the run fail after the tool has already performed its effect;
+re-running that tool can duplicate the effect. Keep policy in pre-hooks and
+approval, and use [Stream Events](stream-events.md) for non-blocking UI progress.
 
 Kedi emits one telemetry span for a nonempty hook chain and records event name,
 handler count, adapter, origin, outcome, edit/deny status, duration, failures,

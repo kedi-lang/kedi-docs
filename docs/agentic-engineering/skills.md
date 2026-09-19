@@ -18,12 +18,25 @@ Each skill is exactly one UTF-8 `SKILL.md` under one skill-name directory.
 Skill names start with an alphanumeric character and may contain letters,
 digits, `_`, and `-`.
 
+For example, `.agents/skills/release-review/SKILL.md` can contain:
+
+```markdown
+# Release Review
+
+Compare the supplied change list against the supplied test results.
+Report observed failures separately from tests that were not run.
+Do not claim a deployment occurred without a tool result proving it.
+```
+
+The document provides guidance. It is not executable Kedi, does not create a
+profile, and does not grant permission to read repositories or deploy releases.
+
 ## Enable Skills
 
 ```kedi
 > skills: enabled
 
->> Use a relevant project skill if one applies, then return [answer: str].
+>> Use a relevant project skill if one applies. The result is [answer: str].
 = <answer>
 ```
 
@@ -135,8 +148,9 @@ missing/non-file targets, non-UTF-8 content, and files larger than 256 KiB.
 unreadable content. `read_skill` reports the specific failure when explicitly
 requested.
 
-These checks protect skill-file resolution. Skill content is still trusted
-instruction text and may attempt to influence agent behavior. Review project
+These checks protect skill-file resolution. Skill content is instruction text
+and may attempt to influence agent behavior; file validation does not establish
+that its instructions are trustworthy. Review project
 and installed skills, and keep approvals/tool boundaries active.
 
 ## When to Use Skills

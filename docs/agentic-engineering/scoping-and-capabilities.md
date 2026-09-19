@@ -11,7 +11,7 @@ the selected adapter can honor the resulting contract.
 
 @quick(text: str) -> str:
   > effort: low
-  >> Summary of <text>: [summary: str].
+  >> A summary of <text> is [summary: str].
   = <summary>
 ```
 
@@ -27,13 +27,13 @@ top-level change does not retroactively change a previously declared procedure:
 > model: first-model
 
 @first() -> str:
-  >> Brief answer: [answer: str].
+  >> A brief answer is [answer: str].
   = <answer>
 
 > model: second-model
 
 @second() -> str:
-  >> Brief answer: [answer: str].
+  >> A brief answer is [answer: str].
   = <answer>
 ```
 
@@ -41,15 +41,25 @@ This source-order rule also applies to tools, MCP, instructions, and profiles.
 
 ## Precedence
 
-For each member, effective state is formed from:
+Start with the configured defaults and the captured lexical state. Then apply
+profile applications and direct directives in source order in the current
+scope. They are not separate priority tiers:
 
-1. CLI/Python default profile;
-2. captured outer lexical state;
-3. profiles applied in the current scope;
-4. direct directives in the current scope.
+```kedi
+> profile: concise:
+    > system: Return one sentence.
 
-Later direct declarations win for scalar fields. Collection members follow
-their documented merge rules.
+> system: Return a paragraph.
+> use: concise
+```
+
+Here the profile's one-sentence instruction wins because the profile is applied
+last. Reversing those last two statements makes the paragraph instruction win.
+Collection members follow the [profile merge rules](profiles.md#merge-rules).
+
+Calling a previously defined procedure does not recapture the caller's model or
+tools. To make a procedure use different configuration, declare the override in
+its body or define it under that configuration.
 
 ## Tool Frames
 
@@ -59,6 +69,20 @@ tool receives its schema from that procedure's signature and docstring.
 
 The same profile used in two scopes does not make mutable tool state global.
 Each invocation materializes its active tool surface.
+
+## Configuration Scope and Value Scope
+
+Agent configuration and variable bindings are related but separate. An `if` or
+loop body has its own scope: newly initialized local values do not leak to the
+outer environment. Mutation of an existing outer binding follows the language's
+assignment rules; changing a model directive does not change those rules.
+
+Likewise, a procedure captures agent configuration at definition time, not a
+promise that all referenced mutable Python objects are deep-copied. Child-agent
+conversation isolation does not sandbox arbitrary shared host objects. See
+[Outputs and Assignment](../core-language/outputs-and-assignments.md) for
+binding semantics and [Subagent Isolation](subagent-limits.md#isolated-child-configuration)
+for the child boundary.
 
 ## Capability Metadata
 
@@ -98,7 +122,7 @@ Nested scopes may switch to another framework or harness:
 
 @repository_task(task: str) -> str:
   > agent: codex
->> Complete this repository task: <task>. Return [answer: str].
+  >> Complete this repository task: <task>. The result is [answer: str].
   = <answer>
 ```
 

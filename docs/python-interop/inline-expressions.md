@@ -22,7 +22,7 @@ Wrap an expression in angle brackets or use a bare backtick segment:
 ```kedi
 [services: list[str]] = `["api", "worker"]`
 >> Assess <`len(services)`> services: <`", ".join(services)`>.
-Return [risk: str].
+The deployment risk is [risk: str].
 ```
 
 Both Python forms insert the expression's string representation into rendered
@@ -77,8 +77,9 @@ A backtick call argument passes the native result:
 = `limit([1, 2, 3, 4], count=2)`
 ```
 
-Angle calls render their result as text. Use them for string composition, not
-for preserving a native list:
+An angle call embedded in text renders its result. A sole procedure-call
+segment on a return or initialization preserves its native result. Use the
+following mixed-text form for presentation:
 
 ```kedi
 @format_limit(values: list[int], count: int) -> str:
@@ -116,13 +117,13 @@ allows dynamic values:
 
 ````kedi
 ```
-selected_model = "groq:qwen/qwen3-32b"
+selected_model = "openai:gpt-5.6-luna"
 ```
 
 > model: `selected_model`
 > settings:
     temperature: `0.1`
-    stop: `["END"]`
+    stop_sequences: `["END"]`
 ````
 
 Plain settings already parse booleans, numbers, and `null`; use Python only for

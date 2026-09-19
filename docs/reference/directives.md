@@ -14,11 +14,14 @@
 | `> history: enabled\|disabled` | Enable or disable scoped conversation continuity |
 | `> history:` | Configure history ownership and native compaction settings |
 | `> artifacts:` | Configure scoped large-value storage and compact references |
+| `> codemode: enabled\|disabled` | Enable or disable scoped tool discovery and sandboxed tool execution |
+| `> codemode:` | Configure CodeMode discovery, execution and resource limits |
 | `> approval: allow`, `deny`, or handler | Set lexical tool approval policy |
 | `> hooks: enabled\|disabled` | Enable or disable inherited lexical lifecycle handlers |
 | `> hooks:` | Register handlers for named agent lifecycle events |
 | `> mcp:` | Append one MCP server specification |
-| `> use: name` | Register a tool, apply a profile, or enable `skills` |
+| `> use: name` | Register a tool or apply a profile |
+| `> skills: enabled\|disabled` | Configure scoped skill discovery |
 | `> use:` | Register an indented list of procedure/Python tools |
 
 Framework and harness selection are mutually exclusive in one state. Literal
@@ -69,11 +72,14 @@ transports are documented in [MCP Servers](../agentic-engineering/mcp.md).
 | `> subagent: child` | Permit one direct child profile |
 | `> max_agents: N` | Bound descendant starts for one invocation |
 | `> workflow: delegate\|dynamic` | Select direct or sandboxed dynamic child orchestration |
+| `> output: Type` | Declare a profile's default structured child result; an explicit child-call `final_schema` overrides it |
 
 A profile body may contain adapter or agent selection, model, effort, system,
-settings, approval, MCP, tools, child profiles, and descendant budget. Scalar
-members replace earlier values, settings merge by key, tools/children merge by
-name, and MCP servers append.
+settings, approval, hooks, history, skills, CodeMode, artifact policy, MCP, tools,
+child profiles, descendant budget, workflow mode, and output type. See
+[Profiles and Composition](../agentic-engineering/profiles.md#merge-rules) for
+the member-specific merge rules. Defining or applying a profile is configuration,
+not a model invocation.
 
 `> subagent:`, `> max_agents:`, and `> workflow:` are profile members rather
 than arbitrary runtime spawn commands. `delegate` is the default. `dynamic`
@@ -118,7 +124,7 @@ always trains on data and validates with matching test data.
 ```kedi
 @classify(text: str) -> str:
   > optimize: classification_prompt:
-    Classify <text> as [label].
+    >> The text <text> belongs to the [label] category.
   = `label`
 
 @generated_slug(value: str) -> str:

@@ -1,10 +1,14 @@
 # Terminal-Bench 2.1
 
-Kedi can run as an official Harbor custom agent for Terminal-Bench 2.1. The
+Kedi can run through Harbor's custom-agent interface for Terminal-Bench 2.1. The
 integration owns the Kedi harness, terminal tools, non-interactive approval
 policy, history, artifacts, and durable Kedi records. Harbor continues to own
 the dataset, task containers, resource limits, timeouts, graders, task lock,
 and job resume lifecycle.
+
+This is the current integration guide. The [published engineering runs](terminal-bench-results.md)
+used frozen source snapshots and a dedicated controller/transport setup; the
+commands below are not a bit-for-bit reconstruction of those historical runs.
 
 ## Install
 
@@ -28,6 +32,12 @@ the WebSocket runtime requires OpenAI `>=3.8.0`.
 
 Build Kedi, then create the immutable manifest before observing benchmark
 results:
+
+Use a clean source checkout and its built wheel. Replace the Harbor revision
+with the exact revision you install; the example SHA identifies a historical
+revision, not a dynamically discovered version. `task-a` and `task-b` below are
+placeholders: replace them with real task names from your pinned dataset before
+running. A manifest can be constructed without proving those tasks exist.
 
 ```bash
 uv build
@@ -59,6 +69,11 @@ The manifest records:
 Credential-like model setting keys and token values are rejected. Credentials
 must be supplied through Harbor's provider environment.
 
+For Daytona, configure the account and resource quota on the controller. For
+local execution, select `--environment docker` and verify Docker is running.
+Provider/model credentials and sandbox credentials are separate prerequisites.
+Never place Codex auth JSON in a manifest, image, public bundle or task prompt.
+
 Writing materially different settings to an existing manifest path is refused.
 Its content digest excludes only the creation timestamp.
 
@@ -82,6 +97,11 @@ kedi-terminal-bench run runs/pilot.json \
 Use `--dry-run` to inspect the exact Harbor command without starting a job. If
 the job directory and name are omitted, Kedi uses `./jobs` and a deterministic
 name derived from the manifest digest.
+
+The sample timeout multipliers are 1, not the six-hour agent override used in
+the published runs. A multiplier scales a task's configured timeout; it does
+not set the same absolute duration on every task. Record the final Harbor
+configuration and inspect `--dry-run` before allocating resources.
 
 Before a real job starts, Kedi checks that the selected `harbor` executable
 reports the manifest's pinned Harbor version. A dry run only renders the
@@ -133,6 +153,13 @@ Keep model settings, task revisions, task order, prompt, limits, transport,
 history, artifacts, and sandbox resources unchanged when the adapter is the
 subject of the comparison. Credentials belong in the provider environment,
 not in the manifest.
+
+Installing the WebSocket helper extra or selecting `codex/...` does not itself
+select WebSocket transport. The published run used an explicit WebSocket-first
+factory/controller wrapper. For new custom runtimes, the public
+[Codex model factory](../agent-adapters/codex-models.md) exposes
+`connection="websocket", fallback="http"`; verify the actual transport trace
+before claiming the historical transport configuration was reproduced.
 
 Resume an interrupted job through Harbor's native resume path:
 
@@ -317,6 +344,11 @@ kedi-autobench-terminal-bench run \
        --jobs-dir runs/jobs \
        --job-name pilot-1
 ```
+
+Here "non-blocking" means capture failure does not change the wrapped job's
+exit status. It is not a detached scheduler: the wrapper waits for the command,
+then records its output. Running it on a laptop does not make that laptop
+independent of the run. Keep the controller process on the durable host.
 
 Publish the immutable manifest, Harbor `lock.json`, sanitized Harbor evidence,
 Autobench record, dependency versions, source and wheel hashes, aggregation

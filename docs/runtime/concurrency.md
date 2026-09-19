@@ -9,8 +9,8 @@ No environment variable or special syntax is required.
 Independent `>>` or `<<` calls can overlap:
 
 ```kedi
->> First independent result: [first: str].
->> Second independent result: [second: str].
+>> The first independent result is [first: str].
+>> The second independent result is [second: str].
 ```
 
 Select sequential execution for an adapter that is not thread-safe or when
@@ -26,7 +26,8 @@ $ KEDI_PARALLEL=4 kedi program.kedi
 
 Unset or empty keeps concurrency enabled. Accepted truthy values are `1`,
 `true`, `yes`, and `on`; `0`, `false`, `no`, or `off` selects sequential execution.
-A positive integer sets the worker count.
+A positive integer other than `1` sets the worker count; `1` selects the normal
+parallel default. A negative integer selects sequential execution.
 Invalid values are rejected rather than guessed.
 
 Python:
@@ -50,10 +51,10 @@ There is no parallel operator. The runtime follows value dependencies:
 
 ```kedi
 >> Incident <incident> affects [service: str].
->> Owner of <service>: [owner: str].
+>> The owner of <service> is [owner: str].
 
 >> Incident <incident> occurred in [region: str].
->> Runbook for <region>: [runbook: str].
+>> The runbook for <region> is [runbook: str].
 ```
 
 The service and region calls can start together. Each downstream call begins as

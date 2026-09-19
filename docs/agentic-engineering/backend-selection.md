@@ -7,9 +7,9 @@ different execution and capability contracts.
 
 ```kedi
 > adapter: pydantic
-> model: groq:qwen/qwen3-32b
+> model: openai:gpt-5.6-luna
 
->> Summary of <document>: [summary: str].
+>> A summary of <document> is [summary: str].
 ```
 
 Built-in framework shortnames are `pydantic`, `dspy`, and `langchain`.
@@ -25,7 +25,7 @@ typed tools through the framework's model interface.
     cwd: .
     sandbox: workspace-write
 
->> Inspect the repository and return [answer: str] explaining the failing test.
+>> The repository evidence suggests that [answer: str].
 = <answer>
 ```
 

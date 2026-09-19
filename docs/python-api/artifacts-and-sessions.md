@@ -72,6 +72,10 @@ with kedi.context(artifacts=False):
     report = create_report("typed orchestration")
 ```
 
+The decorator above explicitly enables artifacts, so it overrides that outer
+disabled context for this callable. Omit the decorator's `artifacts=` argument
+when the caller should control the policy.
+
 An artifact-backed result still returns as the original annotated Python value.
 `ArtifactRef` is model-visible transport metadata, not a replacement return
 type for ordinary application code.

@@ -30,7 +30,7 @@ Defaults are single-line Python expressions:
 
 ```kedi
 @format_count(count: int, label: str = `"items"`, compact: bool = `False`) -> str:
-  = `<f"{count}{label}" if compact else f"{count} {label}">`
+  = `f"{count}{label}" if compact else f"{count} {label}"`
 
 = <format_count(`3`)>
 ```
@@ -82,8 +82,10 @@ argument order would be unclear or values are already native.
 Return annotations are enforced:
 
 ```kedi
-@active_ids(rows: list[dict[str, object]]) -> list[int]:
-  = `[row["id"] for row in rows if row.get("active")]`
+~Row(id: int, active: bool)
+
+@active_ids(rows: list[Row]) -> list[int]:
+  = `[row.id for row in rows if row.active]`
 ```
 
 Without `-> ...`, a procedure has a `str` return contract. Returning a native
@@ -146,8 +148,23 @@ boundary.
 
 ## Early Return and No Return
 
-Execution ends at the first reached return. Statements after an unconditional
-return are unreachable and should be removed.
+Kedi uses the last reached return value; `=` does not stop execution. Later
+statements still run, including side effects and model calls. A return inside
+the selected branch contributes a value without exiting the procedure. This is
+different from Python's `return` inside a fenced block, which exits that Python
+block only.
+
+```kedi
+@last_value() -> int:
+  = `1`
+  [value: int] = `2`
+  = `value`
+
+= `last_value()`
+```
+
+This returns `2`. Use conditional bodies to control which work executes; do not
+place costly work after `=` expecting it to be unreachable.
 
 An untyped procedure with no returned value produces `""`. Relying on that is
 appropriate only for side-effect-oriented helpers. Public procedures should

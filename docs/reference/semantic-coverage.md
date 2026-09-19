@@ -1,9 +1,9 @@
 # Semantic Coverage Map
 
-This page owns the documentation coverage checklist for Kedi's public semantics.
-Each item must be explained in a focused guide and represented in the compact
-reference where applicable. It is a maintenance contract, not a substitute for
-those explanations.
+This map summarizes the language and runtime surfaces covered by the manual.
+It is not a claim that every adapter implements every capability. Use the
+[capability matrix](capability-matrix.md) for backend support and
+[Find a Reference](index.md) to reach the contract for a particular operation.
 
 ## Program Structure
 
@@ -37,7 +37,7 @@ those explanations.
 ## Modules and Packaging
 
 - Relative, nested, bundled, and installed module resolution
-- Built-in errors, dependency checks, filesystem profiles, sandboxing, and examples
+- Built-in errors, dependency checks, filesystem profiles, workspace policy, and examples
 - Explicit, star, selective, and transitive exports
 - Source-order collisions and one-time initialization
 - Package metadata, local install, registry add, GitHub sources, and receipts
@@ -67,7 +67,7 @@ those explanations.
 
 - Parse, compile, and execute phases
 - Dataflow dependencies, sequential execution, parallel execution, and snapshots
-- Promise forcing, failure draining, thread safety, and adaptive job management
+- Promise forcing, failure draining, worker limits, and side-effect ordering
 - Parse, response, codegen, and optimization caches
 - Large-value artifact conversion, native lazy resolution, and compact model refs
 - Memory/file stores, TTL, quotas, bounded reads, release, and append-only cache epochs
@@ -95,11 +95,16 @@ those explanations.
 - Pydantic AI, DSPy, LangChain, custom adapters, Codex, Claude, and ACP
 - Language server, VS Code, Zed, browser, and playground execution
 
-## Reference Maintenance Rules
+## Guarantees and Limits {#reference-maintenance-rules}
 
-- Every new parser construct updates Syntax and Directive indexes.
-- Every new CLI option or Kedi-owned environment variable updates its reference.
-- Every public `kedi` export updates the Python API inventory.
-- Every adapter capability change updates both its adapter page and matrix.
-- Every generated artifact and failure mode updates troubleshooting.
-- Every executable snippet remains parser- or Python-AST-checked.
+- Runtime type validation checks declared boundaries; it does not prove that a
+  model's answer is factually correct. See [Types](../core-language/types.md).
+- Python blocks and external harnesses are not sandboxed by Kedi's tool approval
+  policy. See [Approval Policies](../agentic-engineering/approvals.md).
+- Concurrent calls still obey dependencies, and shared mutable state needs
+  application-level coordination. See [Concurrency](../runtime/concurrency.md).
+- A stable request prefix enables provider cache reuse but cannot guarantee a
+  cache hit. See [Prefix Preservation](../runtime/prefix-cache.md).
+- Parsing a listing is not execution, and fixture-backed execution does not
+  measure live model quality. See the [Cookbook](../examples/index.md) and
+  [Reproducible Comparisons](../evals-and-optimization/reproducibility.md).

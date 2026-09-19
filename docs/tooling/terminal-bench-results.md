@@ -13,8 +13,9 @@ infrastructure-only QEMU repair described under [Limitations](#limitations).
 
 | Metric | Pydantic AI adapter | LangChain adapter |
 | --- | ---: | ---: |
-| Official Harbor reward | 68/89 (76.40%) | 68/89 (76.40%) |
-| Total model cost | $4.93781512 | $5.05064428 |
+| Harbor reward-one tasks / attempted | 68/89 (76.40%) | 68/89 (76.40%) |
+| Trials with a verifier reward | 89/89 | 88/89 |
+| Total API-equivalent model cost | $4.93781512 | $5.05064428 |
 | Cost per attempted task | $0.05548107 | $0.05674881 |
 | Cost per solved task | $0.07261493 | $0.07427418 |
 | Input tokens | 119,974,598 | 106,890,221 |
@@ -23,7 +24,7 @@ infrastructure-only QEMU repair described under [Limitations](#limitations).
 | Uncached input tokens | 6,618,822 | 6,790,637 |
 | Output tokens | 1,122,446 | 1,408,771 |
 | Model requests | 3,121 | 3,061 |
-| Tool calls | 3,800 | 3,867 |
+| Runtime-reported tool calls | 3,800 | 3,867 |
 | Observed wall span | 7.88 h | 9.53 h |
 | Sum of task durations | 14.12 h | 17.22 h |
 
@@ -32,9 +33,18 @@ tasks that the other run missed. Equal aggregate reward therefore does not mean
 identical task outcomes. These one-trial differences must not be interpreted as
 causal adapter-quality claims.
 
+LangChain's `model-extraction-relu-logits` trial ended with
+`VerifierTimeoutError` and no verifier reward. It remains in the denominator
+and contributes no solved task; it is not a model-quality failure scored zero.
+The other LangChain outcomes are 68 reward-one and 20 reward-zero trials.
+Pydantic has 68 reward-one and 21 reward-zero trials. No attempt is dropped from
+cost or duration accounting because it failed.
+
 The Wilson 95% interval for either 68/89 single-trial proportion is
 66.61%-84.02%. It describes uncertainty around these observations; it is not a
-five-trial Terminal-Bench leaderboard estimate.
+five-trial Terminal-Bench leaderboard estimate. This binomial interval is only
+a descriptive approximation: tasks have heterogeneous difficulty, and these
+runs do not measure repeated-trial variability within each task.
 
 ## Per-Task Distributions
 
@@ -47,8 +57,8 @@ observations.
 | --- | ---: | ---: | ---: | ---: | ---: |
 | Cost (USD) | $0.02364 | $0.05548 | $0.14343 | $0.19746 | $0.58565 |
 | Duration (s) | 335.7 | 571.0 | 1,269.7 | 1,786.6 | 4,018.4 |
-| Input tokens | 267,611 | 1,348,029 | 3,564,265 | 5,068,932 | 22,352,464 |
-| Output tokens | 8,429 | 12,611 | 35,364 | 43,794 | 60,956 |
+| Input tokens | 267,611 | 1,348,029 | 3,564,265 | 5,068,933 | 22,352,464 |
+| Output tokens | 8,429 | 12,612 | 35,365 | 43,795 | 60,956 |
 | Model requests | 21 | 35.1 | 81.0 | 100.0 | 217 |
 | Tool calls | 30 | 42.7 | 86.6 | 131.8 | 245 |
 
@@ -63,12 +73,31 @@ observations.
 | Model requests | 22 | 34.4 | 69.2 | 91.0 | 161 |
 | Tool calls | 33 | 43.4 | 94.0 | 103.6 | 172 |
 
+Token distribution cells are rounded to the nearest whole token; interpolated
+quantiles need not themselves be observed task values.
+
 Wall span is elapsed time from the first trial start to the final trial finish.
 The sum of task durations counts concurrently running tasks separately. The
 LangChain wall-time difference is an observed end-to-end result and is not, by
 itself, evidence that Kedi adds adapter-specific latency; model trajectories,
 task outcomes, framework execution, and remote infrastructure are not isolated
 by these single runs.
+
+## Matched Outcomes
+
+| Outcome | Tasks |
+| --- | --- |
+| Solved by both | 62 |
+| Solved only by Pydantic in these trials | 6 |
+| Solved only by LangChain in these trials | 6 |
+| Solved by neither in these trials | 15 |
+
+Pydantic-only passes: `gpt2-codegolf`, `mcmc-sampling-stan`, `build-pov-ray`,
+`extract-moves-from-video`, `largest-eigenval`, `make-mips-interpreter`.
+LangChain-only passes: `cancel-async-tasks`, `chess-best-move`,
+`count-dataset-tokens`, `make-doom-for-mips`, `mteb-retrieve`, `protein-assembly`.
+These lists describe these two runs, not the models' best results across earlier
+experiments. Both adapters are Kedi integration surfaces, not competing languages.
 
 ## Batch Breakdown
 
@@ -81,7 +110,7 @@ by these single runs.
 
 ## Frozen Configuration
 
-The shared configuration was:
+The historical shared configuration was (not a claim about today's defaults):
 
 - model `codex/gpt-5.6-luna`, high reasoning effort;
 - Kedi 0.4.0 and `codex-auth-helper` 1.8.0;
@@ -116,7 +145,59 @@ are calculated per completed model request from uncached input, cache-read
 input, and output tokens. The Pydantic total equals the runtime-reported total.
 The LangChain Harbor records contain complete request usage but no provider
 cost field, so the same request-level price calculation supplies its reported
-cost. Cloud sandbox cost is excluded.
+cost. These are API-equivalent estimates for Codex-authenticated usage, not a
+provider invoice or the price of a subscription. Cloud sandbox cost is excluded.
+
+The effective rates for these observations are $0.20 per million uncached input
+tokens, $0.02 per million cache-read tokens, and $1.20 per million output tokens.
+Pricing is applied per request, using its recorded timestamp, rather than
+pricing an entire task as one enormous prompt. The largest observed request
+contains 181,358 input tokens in Pydantic and 179,044 in LangChain; neither
+reaches the 272,000-token long-context threshold. Millions of cumulative tokens
+per task do not imply that any individual request crossed that threshold.
+
+## Metric Definitions and Evidence
+
+- Input includes cached input. Uncached input equals input minus cache-read
+  input; do not add cache-read tokens to input again.
+- Cache-read ratio is `sum(cache_read_tokens) / sum(input_tokens)`, not the mean
+  of per-request or per-task percentages. It does not measure the percentage of
+  requests with a cache hit or prove prefix preservation caused a hit.
+- Cost per attempted task divides total model cost by 89. Cost per solved task
+  divides the same total, including failed-task spending, by 68.
+- Model requests count completed request records with usage. Lost responses
+  without usage cannot be priced from these records and are not assumed free.
+- Tool-call counts above come from runtime usage counters. They are not the same
+  as emitted tool-call parts: the request traces contain 3,849 such parts for
+  Pydantic and 3,867 for LangChain. Do not silently mix these measurement surfaces
+  or interpret either counter as successful tool effects.
+- Duration spans Harbor trial start to finish, including non-model work. It is
+  not model generation latency or pure adapter overhead.
+
+The [content-free metrics projection](../assets/benchmarks/terminal-bench-89x1-metrics.json)
+contains all 178 per-task rows, original archive SHA-256 digests, and unrounded
+aggregates. It excludes prompts, tool payloads, credentials and personal paths.
+It is a derived audit artifact, not a replacement for the immutable Harbor or
+Autobench record. Request-level token sums were checked against Harbor for each
+task. An independent `genai-prices==0.1.7` recalculation at recorded request dates
+reproduced both historical totals exactly.
+
+To reproduce this audit from the original evidence archives in a checkout of
+`kedi-lang/kedi-docs`, install `genai-prices==0.1.7` in a separate analysis
+environment and run:
+
+```bash
+python scripts/verify_benchmark_records.py \
+  --pydantic /path/to/pydantic/daytona-evidence.tar.gz \
+  --langchain /path/to/langchain/daytona-evidence.tar.gz \
+  --output audit-metrics.json
+```
+
+This reads archive members without extracting or executing them. Keep original
+private archives private; only the allowlisted numeric projection is suitable
+for this page. The linked public Pydantic bundle is separately sanitized, so its
+archive bytes and digest need not match the original private archive. The
+projection alone cannot reproduce full request-level evidence or model behavior.
 
 ## Limitations
 
@@ -130,4 +211,3 @@ cost. Cloud sandbox cost is excluded.
   not published.
 - Terminal-Bench measures the complete model, harness, tools, adapter, and
   sandbox system. It does not isolate the value of Kedi's language constructs.
-

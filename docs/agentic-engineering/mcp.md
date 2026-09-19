@@ -4,6 +4,11 @@
 The selected adapter translates the normalized specification into its MCP
 client/toolset surface.
 
+MCP supplies tools, not a new model or a child-agent conversation. A connected
+server's tools still need an adapter that can expose them and an approval
+policy that permits their effects. The commands and `example.com` URLs below
+illustrate configuration shapes; they are not bundled Kedi services.
+
 ## Stdio Transport
 
 ```kedi
@@ -29,12 +34,17 @@ the directive's `env` supplies explicit server variables.
 
 ## Streamable HTTP
 
-```kedi
+````kedi
+```
+import os
+token = os.environ["PROJECT_MCP_TOKEN"]
+```
+
 > mcp:
     transport: streamable-http
     url: https://tools.example.com/mcp
     headers: `{"Authorization": "Bearer " + token}`
-```
+````
 
 `http` is an alias for `streamable-http`. Both normalize to the same transport
 contract and require `url`. `headers` must be a string dictionary.
@@ -48,7 +58,7 @@ runtime environment and avoid rendering them into prompts or logs.
 > mcp:
     transport: sse
     url: https://tools.example.com/events
-    headers: `{"X-Tenant": tenant_id}`
+    headers: `{"X-Tenant": "example-team"}`
 ```
 
 SSE also requires `url` and supports string headers. It remains a separate
@@ -58,11 +68,16 @@ transport from streamable HTTP.
 
 String fields can be plain Kedi strings or Python expressions:
 
-```kedi
+````kedi
+```
+import os
+```
+
 > mcp:
     transport: `os.getenv("MCP_TRANSPORT", "stdio")`
-    command: `os.getenv("MCP_COMMAND")`
-```
+    command: `os.getenv("MCP_COMMAND", "project-mcp")`
+    url: `os.getenv("MCP_URL")`
+````
 
 Use dynamic transport only when deployment configuration truly selects among
 valid shapes. Kedi validates the evaluated specification: stdio cannot omit a
@@ -101,3 +116,15 @@ Invalid transport names, wrong collection types, missing required fields,
 connection failures, protocol errors, and missing optional adapter packages
 surface explicitly. Server lifecycle is adapter-owned; consult the adapter page
 for startup, cleanup, and concurrency behavior.
+
+## Permission Boundary
+
+Do not assume a remote server's self-description makes its tools harmless.
+Kedi's local MCP integration uses its approval boundary; the optional
+[tool reason](tool-reasons.md) is projected locally and removed before the
+server call. CodeMode can include MCP only where the adapter can materialize
+and intercept the local tool path. Provider-hosted MCP that bypasses this path
+has a different contract; see [CodeMode MCP](codemode.md#mcp-tools).
+
+Keep server credentials in configuration, not in the task text. Tool output
+from a server is data, not authorization to enable additional capabilities.

@@ -7,7 +7,7 @@ framework or harness by themselves.
 
 ```kedi
 > adapter: pydantic
-> model: groq:qwen/qwen3-32b
+> model: openai:gpt-5.6-luna
 ```
 
 The model identifier is passed to the selected adapter. Its accepted syntax,
@@ -20,13 +20,13 @@ A model directive applies to following calls in the current lexical scope:
 > model: fast-model
 
 @draft(topic: str) -> str:
-  >> Draft about <topic>: [text: str].
+  >> A draft about <topic> is [text: str].
   = <text>
 
 > model: quality-model
 
 @review(text: str) -> str:
-  >> Review feedback for <text>: [feedback: str].
+  >> Review feedback for <text> is [feedback: str].
   = <feedback>
 ```
 
@@ -36,7 +36,7 @@ Each procedure captures the top-level state present when it is defined.
 
 ````kedi
 ```
-selected_model = "groq:qwen/qwen3-32b"
+selected_model = "openai:gpt-5.6-luna"
 ```
 
 > model: `selected_model`
@@ -80,7 +80,7 @@ An inner scope inherits the outer model and effort until it replaces either:
 
 @deep_review(text: str) -> str:
   > effort: high
-  >> Detailed review of <text>: [result: str].
+  >> A detailed review of <text> is [result: str].
   = <result>
 ```
 

@@ -37,9 +37,9 @@ not text.
 Types can be nested:
 
 ```kedi
->> Model scores: [scores: dict[str, list[float]]].
->> Current state: [state: Literal["open", "closed", "blocked"]].
->> Responsible owner: [owner: str | None].
+>> The model scores are [scores: dict[str, list[float]]].
+>> The current state is [state: Literal["open", "closed", "blocked"]].
+>> The responsible owner is [owner: str | None].
 ```
 
 Choose a shape that the model and adapter can reliably represent. Deeply nested
@@ -116,7 +116,37 @@ to the generated schema:
 
 Descriptions should state semantic constraints or interpretation. They are
 forwarded to model-facing schemas. `Annotated[T]` works as `T` but lacks useful
-metadata and is warned about; extra metadata is ignored.
+metadata and is warned about. The first string metadata item supplies the field
+description when it is the first metadata argument. Non-string metadata from
+Python type aliases is preserved for validation and integrations; it is not
+discarded. Descriptions guide the model but do not enforce a numeric range.
+
+## Validation Constraints
+
+Use `kedi.Constraints` inside a Python type alias when bounds must be enforced:
+
+````kedi
+```
+from typing import Annotated
+from kedi import Constraints
+
+Rating = Annotated[
+    float,
+    "Rating on a zero-to-two scale",
+    Constraints(ge=0, le=2),
+]
+```
+
+[rating: `Rating`] = `1.5`
+= `rating`
+````
+
+The Python alias supplies actual validation metadata. Kedi's native annotation
+grammar does not accept arbitrary constructor calls such as
+`Annotated[float, Constraints(ge=0)]`; define the alias in Python and reference
+it with a backtick type expression. These constraints validate values, not the
+truth of model judgements. See [Jev](../agent-adapters/typesafe.md) for decision
+metadata and supported schemas.
 
 ## Pydantic-Compatible Models
 
@@ -145,7 +175,7 @@ Use a custom type when one output has a meaningful structured shape:
   conditions: list[str] = `[]`
 )
 
->> Request review decision: [decision: Decision].
+>> The request review decision is [decision: Decision].
 = `decision.model_dump_json()`
 ```
 

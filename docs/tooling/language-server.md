@@ -14,6 +14,10 @@ python -m kedi.lsp.server
 
 The server uses stdio and is normally started by an editor extension.
 
+Running it in a terminal waits for LSP protocol messages; it is not an
+interactive Kedi prompt. Use `kedi --idle` for that. The selected Python
+environment must have Kedi installed, independently of the editor extension.
+
 ## Parsing and Diagnostics
 
 Documents are reparsed on open/change; diagnostics clear on close. Reports
@@ -68,3 +72,10 @@ the docstring.
 The server also provides semantic tokens, document symbols, formatting,
 signature help on `(` and `,`, and inlay hints.
 
+## What Diagnostics Do Not Prove
+
+Editor validation is not execution. A clean document does not prove a provider
+is authenticated, tools are available, a model claim is true, or a program's
+side effects are safe. Use deterministic tests and model-backed evals for their
+respective contracts. Python virtual documents are an analysis projection,
+not a second copy of the running program or a sandbox.

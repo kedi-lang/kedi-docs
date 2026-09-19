@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+  {{ super() }}
+  <link rel="preload" href="{{ 'assets/fonts/geist-latin-wght-normal.woff2' | url }}" as="font" type="font/woff2" crossorigin>
+{% endblock %}
+
+{% block content %}
+  <div class="kedi-page-meta">
+    <nav class="kedi-breadcrumb" aria-label="Breadcrumb">
+      <a href="{{ nav.homepage.url | url }}">Language manual</a>
+      {% for ancestor in page.ancestors | reverse %}
+        <span aria-hidden="true">/</span>
+        <span>{{ ancestor.title }}</span>
+      {% endfor %}
+    </nav>
+    <div class="kedi-page-actions"></div>
+  </div>
+  {% if page.meta.manual_home %}
+    {% set directory %}{% include "partials/manual-directory.html" %}{% endset %}
+    <div class="kedi-manual-home">
+      {{ page.content | replace('<!-- manual-directory -->', directory) | safe }}
+    </div>
+  {% else %}
+    {{ super() }}
+  {% endif %}
+  <template id="kedi-code-copy-icon">{% include ".icons/lucide/copy.svg" %}</template>
+  <template id="kedi-chevron-icon">{% include ".icons/lucide/chevron-down.svg" %}</template>
+{% endblock %}

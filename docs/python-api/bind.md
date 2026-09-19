@@ -16,7 +16,7 @@ def summarize(topic: str, audience: str = "developers") -> str:
 `summarize.kedi`:
 
 ```kedi
->> Summary of <topic> for <audience>: [summary: str].
+>> A summary of <topic> for <audience> is [summary: str].
 = `summary`
 ```
 
@@ -103,10 +103,10 @@ entries.
 @kedi.bind(
     file="report.kedi",
     adapter="langchain",
-    model="openai:gpt-4o-mini",
+    model="openai:gpt-5.6-luna",
     system="Cite the supplied records.",
     effort="medium",
-    settings={"temperature": 0.2},
+    settings={"timeout": 120},
 )
 def report(records: list[str]) -> str:
     ...

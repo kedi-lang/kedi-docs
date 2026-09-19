@@ -11,6 +11,9 @@ kedi SOURCE --parse
 kedi install [PACKAGE.KEDI]
 kedi add PACKAGE_NAME
 kedi add git+https://github.com/OWNER/REPOSITORY.git
+kedi skills add --path SKILL_DIRECTORY
+kedi skills add --repo OWNER/REPOSITORY
+kedi notebook [--host HOST] [--port PORT] [--python PATH] [--cwd PATH] [--token TOKEN] [--no-open]
 ```
 
 Use `kedi --help`, `kedi install --help`, or `kedi add --help` for the relevant
@@ -25,7 +28,7 @@ source-file identity and adjacent artifacts.
 | Option | Default | Meaning |
 | --- | --- | --- |
 | `--adapter NAME` | `pydantic` | `pydantic`, `dspy`, `langchain`, `claude`, `codex`, or `acp` |
-| `--adapter-model MODEL` | `groq:qwen/qwen3-32b` | Default model identifier |
+| `--adapter-model MODEL` | `groq:qwen/qwen3-32b` | Default model identifier; examples explicitly select `openai:gpt-5.6-luna` |
 
 The historical option name is `--adapter`, but it accepts both framework
 adapters and harnesses. In Kedi source and the Python API, `adapter` and `agent`
@@ -121,6 +124,31 @@ are ignored. Missing attributes read as `None`.
 `kedi install` accepts zero or one manifest path and defaults to
 `./package.kedi`. `kedi add` accepts exactly one registry name or credential-free
 GitHub `git+https` URL. Package subcommands reject ordinary runtime options.
+
+## Notebook Command { #notebook-command }
+
+`kedi notebook` dispatches to the separately installed `kedi-notebook` package.
+The source checkout supports `uv run --extra notebook kedi notebook` once its
+notebook submodule is initialized. See [Local Notebook](../tooling/notebook.md).
+
+| Option | Default / meaning |
+| --- | --- |
+| `--host` | `HOST` or `127.0.0.1` |
+| `--port` | `PORT` or `8788` |
+| `--python PATH` | Additional base interpreter; repeatable |
+| `--cwd PATH` | Current directory; import and host command base |
+| `--token TOKEN` | `KEDI_NOTEBOOK_TOKEN`; required for non-loopback serving |
+| `--no-open` | Do not open the browser automatically |
+
+Use `kedi-notebook --help` for the notebook server's full option list. These
+are notebook options, not flags for ordinary `kedi program.kedi` execution.
+
+## Skill Installation
+
+`kedi skills add` requires exactly one of `--path` or `--repo`. The source must
+provide a root `SKILL.md`. Installation copies that skill into
+`$KEDI_HOME/registry/skills`; it does not activate it in a program. See
+[Skills](../agentic-engineering/skills.md) for loading and trust boundaries.
 
 ## Exit and Output
 

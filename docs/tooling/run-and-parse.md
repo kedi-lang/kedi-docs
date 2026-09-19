@@ -26,6 +26,18 @@ Unknown `--name value` options after the source become `args.name`:
 kedi greet.kedi --name Ada --verbose
 ```
 
+For that command, `greet.kedi` can be:
+
+```kedi
+[name: str] = `args.name or "world"`
+> if: `args.verbose is True`:
+  = Hello, <name>. Verbose output is enabled.
+> else:
+  = Hello, <name>.
+```
+
+The result is `Hello, Ada. Verbose output is enabled.` No model is involved.
+
 Values are strings; flags are `True`; missing names read as `None`. Hyphens
 normalize to underscores. First occurrence wins when an option repeats.
 Non-option positional extras are ignored.
@@ -37,7 +49,7 @@ All are supported:
 ```bash
 kedi -p program.kedi
 kedi program.kedi --parse
-kedi -p -c '@greet(name: str):'
+kedi -p -c '= Hello from Kedi'
 ```
 
 A successful parse prints `Parsed successfully.` and performs no model call or
@@ -68,11 +80,15 @@ LangChain and `> agent:` for Claude/Codex/ACP.
 ```bash
 kedi program.kedi \
   --adapter pydantic \
-  --adapter-model openai:gpt-4o-mini
+  --adapter-model openai:gpt-5.6-luna
 ```
 
 Environment equivalents are `KEDI_ADAPTER` and `KEDI_ADAPTER_MODEL`. Lexical
 source directives and profiles can override CLI defaults.
+
+A provider API key authenticates requests; it does not select a model. Set the
+model identifier explicitly and install its provider dependency. Deterministic
+programs such as the greeting above need neither credentials nor a model call.
 
 ## ACP Commands
 

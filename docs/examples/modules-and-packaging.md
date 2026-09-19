@@ -79,7 +79,7 @@ kedi install
 
 `consumer/report.kedi`:
 
-```kedi
+````kedi
 > import: catalog:
   Product
   make_product
@@ -88,14 +88,17 @@ kedi install
 > import: catalog/formatting:
   format_currency
 
-[products: list[Product]] = `[
-  make_product("keyboard", 120.0),
-  make_product("mouse", 45.5),
-]`
+[products: list[Product]] = ```
+return [
+    make_product("keyboard", 120.0),
+    make_product("mouse", 45.5),
+]
+```
+
 [total: float] = `inventory_value(products)`
 
 = `format_currency(total)`
-```
+````
 
 Selective imports place the listed names directly in scope; they do not create
 a `catalog` namespace object. Imports resolve at their source position, and a
@@ -114,3 +117,16 @@ Use relative modules while developing one project. Install a package when its
 root import must be available to unrelated projects. Third-party packages can
 execute embedded Python with the importing process's permissions; package
 integrity is not a sandbox.
+
+## Expected Result and Isolation
+
+The consumer prints `$165.50` without any model calls. The sibling-import
+fragment belongs next to `formatting.kedi`, not in `consumer/` as drawn above.
+An importer cannot selectively import `_normalize_name` because it is not exported.
+
+For repeatable installation checks, set `KEDI_HOME` to a temporary directory
+before both installing and running the consumer. This isolates the package
+registry from your normal installation; it is not a Python execution sandbox.
+The [Local Package Tutorial](../modules-and-packaging/local-package.md) walks
+through the receipt and import resolution rules. This catalogue example is also
+executed from its published files in the documentation tests.

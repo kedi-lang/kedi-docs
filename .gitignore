@@ -6,3 +6,6 @@ public-site/
 .kedi-source/
 .tree-sitter-kedi-source/
 __pycache__/
+node_modules/
+test-results/
+playwright-report/

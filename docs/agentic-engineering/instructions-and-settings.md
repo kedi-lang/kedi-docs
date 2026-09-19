@@ -3,6 +3,11 @@
 Instructions define agent behavior; settings define adapter/model mechanics.
 Both are lexical and apply to following calls.
 
+Instructions express desired behavior; they are not permissions or enforced
+invariants. Use typed captures for output validation, tool schemas for argument
+contracts, and [approvals](approvals.md) for effectful operations. Asking a model
+to "never write outside reports" does not replace a path check.
+
 ## Single-Line Instructions
 
 ```kedi
@@ -27,9 +32,13 @@ Continuation lines are newline-joined. Multiline system bodies are read-only
 templates: literal text, `<name>` substitutions, and inline Python
 substitutions are allowed. Output fields and procedure calls are not.
 
+A later `> system:` replaces the previous instruction value; it does not append
+another paragraph. Compute one combined instruction explicitly when both parts
+must survive. [Profile composition](profiles.md#merge-rules) uses the same rule.
+
 ```kedi
 > system:
-    Current mode: <`args.mode`>.
+    Current audience: <audience>.
 ```
 
 An instruction cannot declare `[output]` or call `<helper()>`; compute that
@@ -73,7 +82,7 @@ unmentioned keys remain:
 @patient_call() -> str:
   > settings:
       timeout: 120
->> Complete the task and return [answer: str].
+  >> The completed task's result is [answer: str].
   = <answer>
 ```
 

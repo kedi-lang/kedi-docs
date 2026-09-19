@@ -1,5 +1,5 @@
 [project]
-site_name = "Kedi Programming Language"
+site_name = "kedi Programming Language"
 site_description = "A typed orchestration language for LLM programs."
 site_author = "Kedi Lang"
 site_url = "https://kedi-lang.org/docs/"
@@ -7,151 +7,262 @@ repo_url = "https://github.com/kedi-lang/kedi"
 repo_name = "kedi-lang/kedi"
 docs_dir = "docs"
 site_dir = "site"
-copyright = 'Copyright &copy; 2026 <a href="https://github.com/orgs/kedi-lang/teams/kedi-maintainers">Kedi contributors</a>'
+copyright = 'Copyright &copy; 2026 <a href="https://github.com/orgs/kedi-lang/teams/kedi-maintainers">kedi contributors</a>'
 extra_css = [
   "stylesheets/kedi-highlight.css",
-  "stylesheets/docs-ui.css",
+  "stylesheets/manual.css",
 ]
 extra_javascript = [
   "javascripts/kedi-highlight.js",
   "javascripts/copy-markdown.js",
+  "javascripts/manual.js",
 ]
 nav = [
   { "Home" = "index.md" },
-  { "Start" = [
+  { "Learn Kedi" = [
     "getting-started/index.md",
     { "Installation" = "getting-started/installation.md" },
     { "First Program" = "getting-started/first-program.md" },
     { "Projects and Execution" = "getting-started/projects-and-execution.md" },
+    { "Find a Reference" = "reference/index.md" },
   ] },
-  { "Core Language" = [
+  { "Language Reference" = [
     "core-language/index.md",
-    { "Source Structure" = "core-language/source-structure.md" },
-    { "Templates and Invokes" = "core-language/templates-and-invokes.md" },
-    { "Substitutions and Calls" = "core-language/substitutions-and-calls.md" },
-    { "Outputs, Initialization, and Assignment" = "core-language/outputs-and-assignments.md" },
-    { "Control Flow" = "core-language/control-flow.md" },
-    { "Procedures" = "core-language/procedures.md" },
-    { "Parameters and Returns" = "core-language/parameters-and-returns.md" },
-    { "Types" = "core-language/types.md" },
-    { "Multiline Syntax and Escaping" = "core-language/multiline-and-escaping.md" },
+    { "Source and Syntax" = [
+      { "Source Structure" = "core-language/source-structure.md" },
+      { "Multiline Syntax and Escaping" = "core-language/multiline-and-escaping.md" },
+      { "Syntax Index" = "reference/syntax.md" },
+      { "Directive Index" = "reference/directives.md" },
+    ] },
+    { "Values and Types" = [
+      { "Types and Constraints" = "core-language/types.md" },
+      { "Outputs and Bindings" = "core-language/outputs-and-assignments.md" },
+      { "Scopes and Binding Lifetime" = "core-language/scopes-and-bindings.md" },
+    ] },
+    { "Model Interaction" = [
+      { "Templates and Invokes" = "core-language/templates-and-invokes.md" },
+      { "Substitutions and Calls" = "core-language/substitutions-and-calls.md" },
+    ] },
+    { "Procedures" = [
+      { "Procedures and Closures" = "core-language/procedures.md" },
+      { "Parameters and Returns" = "core-language/parameters-and-returns.md" },
+    ] },
+    { "Control Flow" = [
+      { "Branches and Claims" = "core-language/control-flow.md" },
+      { "Loops and Map" = "core-language/loops-and-map.md" },
+    ] },
+    { "Python Interop" = [
+      "python-interop/index.md",
+      { "Inline Expressions" = "python-interop/inline-expressions.md" },
+      { "Python Blocks" = "python-interop/python-blocks.md" },
+      { "Prelude and Scope" = "python-interop/prelude-globals-and-scope.md" },
+    ] },
+    { "Coverage and Limitations" = "reference/semantic-coverage.md" },
   ] },
-  { "Python Interop" = [
-    "python-interop/index.md",
-    { "Inline Expressions" = "python-interop/inline-expressions.md" },
-    { "Python Blocks" = "python-interop/python-blocks.md" },
-    { "Prelude, Globals, and Scope" = "python-interop/prelude-globals-and-scope.md" },
-  ] },
-  { "Modules and Packaging" = [
+  { "Modules and Packages" = [
     "modules-and-packaging/index.md",
-    { "Modules" = "modules-and-packaging/modules.md" },
-    { "Imports and Exports" = "modules-and-packaging/imports-and-exports.md" },
-    { "Built-In Modules" = "modules-and-packaging/built-in-modules.md" },
-    { "Package Manifests" = "modules-and-packaging/package-manifests.md" },
-    { "Installation and Registries" = "modules-and-packaging/installation-and-registries.md" },
+    { "Module System" = [
+      { "Modules and Resolution" = "modules-and-packaging/modules.md" },
+      { "Imports and Exports" = "modules-and-packaging/imports-and-exports.md" },
+    ] },
+    { "Standard Modules" = [
+      { "Built-In Modules" = "modules-and-packaging/built-in-modules.md" },
+      { "Filesystem" = "modules-and-packaging/filesystem.md" },
+      { "Example Modules" = "modules-and-packaging/example-modules.md" },
+    ] },
+    { "Distribution" = [
+      { "Package Manifests" = "modules-and-packaging/package-manifests.md" },
+      { "Build a Local Package" = "modules-and-packaging/local-package.md" },
+      { "Installation and Registries" = "modules-and-packaging/installation-and-registries.md" },
+      { "Manifest Reference" = "reference/package-manifest.md" },
+    ] },
   ] },
-  { "Agentic Engineering" = [
+  { "Agents and Orchestration" = [
     "agentic-engineering/index.md",
-    { "Backend Selection" = "agentic-engineering/backend-selection.md" },
-    { "Models and Reasoning" = "agentic-engineering/models-and-reasoning.md" },
-    { "Instructions and Settings" = "agentic-engineering/instructions-and-settings.md" },
-    { "Profiles" = "agentic-engineering/profiles.md" },
-    { "Tools and Use" = "agentic-engineering/tools-and-use.md" },
-    { "Approvals and Sensitive Operations" = "agentic-engineering/approvals.md" },
-    { "Agent Lifecycle Hooks" = "agentic-engineering/hooks.md" },
-    { "MCP Servers" = "agentic-engineering/mcp.md" },
-    { "Skills" = "agentic-engineering/skills.md" },
-    { "Subagents" = "agentic-engineering/subagents.md" },
-    { "CodeMode" = "agentic-engineering/codemode.md" },
-    { "Stream Events" = "agentic-engineering/stream-events.md" },
-    { "Scoping and Capabilities" = "agentic-engineering/scoping-and-capabilities.md" },
+    { "Profiles and Configuration" = [
+      { "Instructions and Settings" = "agentic-engineering/instructions-and-settings.md" },
+      { "Profiles and Composition" = "agentic-engineering/profiles.md" },
+      { "Agent Scope and Capabilities" = "agentic-engineering/scoping-and-capabilities.md" },
+    ] },
+    { "Tools and Permissions" = [
+      { "Procedure and Python Tools" = "agentic-engineering/tools-and-use.md" },
+      { "MCP Tools" = "agentic-engineering/mcp.md" },
+      { "Skills" = "agentic-engineering/skills.md" },
+      { "Approval Policies" = "agentic-engineering/approvals.md" },
+      { "Tool Reasons and LLM Approval" = "agentic-engineering/tool-reasons.md" },
+    ] },
+    { "Lifecycle" = [
+      { "Lifecycle Hooks" = "agentic-engineering/hooks.md" },
+      { "Stream Events" = "agentic-engineering/stream-events.md" },
+    ] },
+    { "Subagents and Workflows" = [
+      { "Overview" = "agentic-engineering/subagents.md" },
+      { "Typed Child Results" = "agentic-engineering/subagent-results.md" },
+      { "Foreground and Background Runs" = "agentic-engineering/subagent-lifecycle.md" },
+      { "Limits, Isolation and Safety" = "agentic-engineering/subagent-limits.md" },
+      { "Continuations and Persistence" = "agentic-engineering/subagent-continuations.md" },
+      { "Dynamic Workflows" = "agentic-engineering/dynamic-workflows.md" },
+      { "Python Embedding" = "agentic-engineering/subagent-python.md" },
+      { "Reviewed Evidence Workflow" = "agentic-engineering/reviewed-evidence.md" },
+    ] },
+    { "CodeMode" = [
+      { "Overview" = "agentic-engineering/codemode.md" },
+      { "Sandbox Limits and Recovery" = "agentic-engineering/codemode-sandbox.md" },
+    ] },
   ] },
-  { "Runtime" = [
+  { "Context and Runtime" = [
     "runtime/index.md",
-    { "Execution and Dataflow" = "runtime/execution-and-dataflow.md" },
-    { "Interactive Execution" = "runtime/interactive-execution.md" },
-    { "Concurrency" = "runtime/concurrency.md" },
-    { "Tool Artifacts" = "runtime/tool-artifacts.md" },
-    { "Caching" = "runtime/caching.md" },
-    { "Telemetry" = "runtime/telemetry.md" },
-    { "Errors, Frames, and Tracebacks" = "runtime/errors-and-debugging.md" },
-  ] },
-  { "Evals and Optimization" = [
-    "evals-and-optimization/index.md",
-    { "Test Blocks" = "evals-and-optimization/test-blocks.md" },
-    { "Evaluation Suites" = "evals-and-optimization/evaluation-suites.md" },
-    { "Datasets and Metrics" = "evals-and-optimization/datasets-and-metrics.md" },
-    { "Prompt Optimization" = "evals-and-optimization/prompt-optimization.md" },
-    { "GEPA" = "evals-and-optimization/gepa.md" },
-    { "AI-Generated Procedures" = "evals-and-optimization/ai-generated-procedures.md" },
+    { "Execution" = [
+      { "Execution and Dataflow" = "runtime/execution-and-dataflow.md" },
+      { "Concurrency" = "runtime/concurrency.md" },
+      { "Incremental Execution" = "runtime/interactive-execution.md" },
+    ] },
+    { "Context Management" = [
+      { "Artifacts" = "runtime/tool-artifacts.md" },
+      { "Admission and Configuration" = "runtime/artifact-policy.md" },
+      { "Reading and Querying" = "runtime/artifact-retrieval.md" },
+      { "Reducing Artifact Data" = "runtime/artifact-reduction.md" },
+      { "Storage and Lifetime" = "runtime/artifact-lifecycle.md" },
+      { "Artifact Safety" = "runtime/artifact-safety.md" },
+      { "Conversation History" = "runtime/history.md" },
+      { "Compaction" = "runtime/compaction.md" },
+      { "Provider Prefix Caching" = "runtime/prefix-cache.md" },
+      { "Application Caches" = "runtime/caching.md" },
+    ] },
+    { "Observability" = [
+      { "Telemetry" = "runtime/telemetry.md" },
+      { "Errors and Tracebacks" = "runtime/errors-and-debugging.md" },
+      { "Troubleshooting" = "reference/diagnostics-and-troubleshooting.md" },
+    ] },
   ] },
   { "Python API" = [
     "python-api/index.md",
-    { "Query Decorator" = "python-api/query.md" },
-    { "Bind Decorator" = "python-api/bind.md" },
-    { "Configuration and Context" = "python-api/configuration-and-context.md" },
-    { "Types and Tools" = "python-api/types-and-tools.md" },
-    { "Approvals, MCP, and Skills" = "python-api/approvals-mcp-and-skills.md" },
-    { "Artifacts and Sessions" = "python-api/artifacts-and-sessions.md" },
-    { "Concurrency and Promises" = "python-api/concurrency-and-promises.md" },
-    { "Caching, Runtime, and Executors" = "python-api/caching-runtime-and-executors.md" },
+    { "Calling Kedi" = [
+      { "Query Decorator" = "python-api/query.md" },
+      { "Bind Decorator" = "python-api/bind.md" },
+    ] },
+    { "Configuration" = [
+      { "Configuration and Context" = "python-api/configuration-and-context.md" },
+      { "Public Parameters" = "python-api/public-parameters.md" },
+    ] },
+    { "Integration" = [
+      { "Types and Tools" = "python-api/types-and-tools.md" },
+      { "Permissions and External Tools" = "python-api/approvals-mcp-and-skills.md" },
+      { "MCP Configuration" = "python-api/mcp.md" },
+      { "Skill Discovery" = "python-api/skills.md" },
+      { "Hook Registration" = "python-api/hooks.md" },
+    ] },
+    { "State and Execution" = [
+      { "Artifacts and Sessions" = "python-api/artifacts-and-sessions.md" },
+      { "Decision Evidence" = "python-api/decisions.md" },
+      { "Cache Control" = "python-api/cache-control.md" },
+      { "Concurrency and Promises" = "python-api/concurrency-and-promises.md" },
+      { "Runtime and Executors" = "python-api/caching-runtime-and-executors.md" },
+      { "Embedding and Ownership" = "python-api/embedding.md" },
+      { "Executor Protocol" = "python-api/executors.md" },
+    ] },
+    { "API Reference" = "reference/python-api.md" },
+    { "Public Export Index" = "python-api/public-exports.md" },
   ] },
-  { "Agent Adapters" = [
+  { "Models and Integrations" = [
     "agent-adapters/index.md",
-    { "Pydantic AI" = "agent-adapters/pydantic-ai.md" },
-    { "DSPy" = "agent-adapters/dspy.md" },
-    { "LangChain" = "agent-adapters/langchain.md" },
-    { "TypeSafe Jev" = "agent-adapters/typesafe.md" },
-    { "Custom Adapters" = "agent-adapters/custom-adapters.md" },
-    { "Codex" = "agent-adapters/codex.md" },
-    { "Claude" = "agent-adapters/claude.md" },
-    { "ACP Agents" = "agent-adapters/acp.md" },
+    { "Selection" = [
+      { "Backend Selection" = "agentic-engineering/backend-selection.md" },
+      { "Models and Reasoning" = "agentic-engineering/models-and-reasoning.md" },
+      { "Codex Model Connections" = "agent-adapters/codex-models.md" },
+      { "Capability Matrix" = "reference/capability-matrix.md" },
+    ] },
+    { "Framework Adapters" = [
+      { "Pydantic AI" = "agent-adapters/pydantic-ai.md" },
+      { "LangChain" = "agent-adapters/langchain.md" },
+      { "DSPy" = "agent-adapters/dspy.md" },
+    ] },
+    { "Agent Harnesses" = [
+      { "Codex App Server" = "agent-adapters/codex.md" },
+      { "Claude Agent SDK" = "agent-adapters/claude.md" },
+      { "ACP Agents" = "agent-adapters/acp.md" },
+    ] },
+    { "Decision Models" = [
+      { "TypeSafe Jev" = "agent-adapters/typesafe.md" },
+      { "Claims and Thresholds" = "agent-adapters/jev-claims.md" },
+      { "Criteria and Output Types" = "agent-adapters/jev-criteria.md" },
+      { "Finite Extraction" = "agent-adapters/jev-extraction.md" },
+      { "Decision Evidence" = "agent-adapters/jev-evidence.md" },
+      { "Tool Selection" = "agent-adapters/jev-tools.md" },
+      { "Generate, Evaluate, Route" = "agent-adapters/jev-workflow.md" },
+    ] },
+    { "Extending Kedi" = [
+      { "Custom Adapters" = "agent-adapters/custom-adapters.md" },
+      { "Artifact Integration" = "agent-adapters/artifact-contract.md" },
+    ] },
   ] },
-  { "Tooling" = [
+  { "Testing and Optimization" = [
+    "evals-and-optimization/index.md",
+    { "Validation" = [
+      { "Test Blocks" = "evals-and-optimization/test-blocks.md" },
+      { "Evaluation Suites" = "evals-and-optimization/evaluation-suites.md" },
+      { "Datasets and Metrics" = "evals-and-optimization/datasets-and-metrics.md" },
+      { "Validation Workflow" = "evals-and-optimization/validation-workflow.md" },
+    ] },
+    { "Optimization" = [
+      { "Prompt Optimization" = "evals-and-optimization/prompt-optimization.md" },
+      { "GEPA" = "evals-and-optimization/gepa.md" },
+      { "Reproducible Comparisons" = "evals-and-optimization/reproducibility.md" },
+    ] },
+    { "Generated Implementations" = [
+      { "AI-Generated Procedures" = "evals-and-optimization/ai-generated-procedures.md" },
+    ] },
+  ] },
+  { "Tools and Environments" = [
     "tooling/index.md",
-    { "Run and Parse Commands" = "tooling/run-and-parse.md" },
-    { "Test, Eval, and Optimize Commands" = "tooling/test-eval-and-optimize.md" },
-    { "Package Commands" = "tooling/package-commands.md" },
-    { "Language Server" = "tooling/language-server.md" },
-    { "VS Code" = "tooling/vscode.md" },
-    { "Zed" = "tooling/zed.md" },
-    { "Browser and Playground" = "tooling/browser-and-playground.md" },
-    { "Local Notebook" = "tooling/notebook.md" },
-    { "Terminal-Bench 2.1" = "tooling/terminal-bench.md" },
-    { "Terminal-Bench Results" = "tooling/terminal-bench-results.md" },
+    { "Command Line" = [
+      { "Run and Parse" = "tooling/run-and-parse.md" },
+      { "Test, Eval and Optimize" = "tooling/test-eval-and-optimize.md" },
+      { "Package Commands" = "tooling/package-commands.md" },
+      { "CLI Reference" = "reference/cli.md" },
+      { "Environment Variables" = "reference/environment-variables.md" },
+    ] },
+    { "Editors" = [
+      { "Language Server" = "tooling/language-server.md" },
+      { "VS Code" = "tooling/vscode.md" },
+      { "Zed" = "tooling/zed.md" },
+    ] },
+    { "Interactive Environments" = [
+      { "Terminal REPL" = "tooling/repl.md" },
+      { "Local Notebook" = "tooling/notebook.md" },
+      { "Notebook Runtimes" = "tooling/notebook-runtimes.md" },
+      { "Notebook Files and Recovery" = "tooling/notebook-files.md" },
+      { "Browser and Playground" = "tooling/browser-and-playground.md" },
+    ] },
   ] },
-  { "Examples" = [
+  { "Cookbook" = [
     "examples/index.md",
-    { "Complete Program" = "examples/complete-program.md" },
+    { "Incident Triage Application" = "examples/complete-program.md" },
     { "Structured Extraction" = "examples/structured-extraction.md" },
     { "Tools and Approvals" = "examples/tools-and-approvals.md" },
-    { "Agent Delegation" = "examples/agent-delegation.md" },
+    { "Typed Agent Delegation" = "examples/agent-delegation.md" },
     { "Evaluation and Optimization" = "examples/evaluation-and-optimization.md" },
-    { "Modules and Packaging" = "examples/modules-and-packaging.md" },
+    { "Building a Kedi Package" = "examples/modules-and-packaging.md" },
   ] },
-  { "Reference" = [
-    "reference/index.md",
-    { "Syntax Index" = "reference/syntax.md" },
-    { "Directive Index" = "reference/directives.md" },
-    { "CLI Reference" = "reference/cli.md" },
-    { "Environment Variables" = "reference/environment-variables.md" },
-    { "Package Manifest" = "reference/package-manifest.md" },
-    { "Python API" = "reference/python-api.md" },
-    { "Capability Matrix" = "reference/capability-matrix.md" },
-    { "Diagnostics and Troubleshooting" = "reference/diagnostics-and-troubleshooting.md" },
-    { "Semantic Coverage Map" = "reference/semantic-coverage.md" },
+  { "Benchmarks" = [
+    { "Terminal-Bench 2.1" = [
+      { "Reproduction Guide" = "tooling/terminal-bench.md" },
+      { "Published Results" = "tooling/terminal-bench-results.md" },
+    ] },
   ] },
 ]
 
 [project.theme]
 language = "en"
+custom_dir = "overrides"
+font = false
+logo = "assets/brand/kedi-logo.svg"
+favicon = "assets/brand/kedi-favicon.webp"
 features = [
   "navigation.instant",
-  "navigation.sections",
   "navigation.indexes",
   "navigation.footer",
   "navigation.top",
-  "navigation.tracking",
   "search.highlight",
   "search.suggest",
   "toc.follow",
@@ -162,6 +273,8 @@ features = [
 
 [project.theme.icon]
 repo = "fontawesome/brands/github"
+menu = "lucide/menu"
+search = "lucide/search"
 
 [[project.theme.palette]]
 media = "(prefers-color-scheme)"
@@ -213,6 +326,7 @@ name = "Email Kedi"
 [project.markdown_extensions.tables]
 [project.markdown_extensions.toc]
 permalink = true
+title = "On this page"
 [project.markdown_extensions.pymdownx.details]
 [project.markdown_extensions.pymdownx.highlight]
 anchor_linenums = true

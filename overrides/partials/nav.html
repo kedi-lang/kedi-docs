@@ -1,0 +1,14 @@
+{% import "partials/nav-item.html" as item with context %}
+<nav id="kedi-navigation" class="md-nav md-nav--primary" aria-label="Documentation" data-md-level="0">
+  <div class="md-nav__title kedi-nav-title">
+    <img class="kedi-nav-mascot" src="{{ 'assets/brand/cat.webp' | url }}" width="40" height="48" alt="">
+    <span>The Kedi language</span>
+    <button type="button" class="md-icon kedi-nav-close" aria-label="Close navigation" aria-controls="kedi-navigation">{% include ".icons/lucide/x.svg" %}</button>
+  </div>
+  <ul class="md-nav__list" data-md-scrollfix>
+    {% for nav_item in nav.items %}
+      {% set path = "__nav_" ~ loop.index %}
+      {{ item.render(nav_item, path, 1) }}
+    {% endfor %}
+  </ul>
+</nav>

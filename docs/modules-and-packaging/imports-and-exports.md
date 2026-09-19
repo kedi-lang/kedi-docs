@@ -13,7 +13,9 @@ environment. Exports are explicit so implementation helpers remain private.
 
 The imported module must explicitly export `get_profile`. Imports do not bind a
 `profiles` namespace and do not expose unexported names. The backtick expression
-preserves the native `Profile`; an angle call would render it to `str`.
+preserves the native `Profile`. A sole angle procedure call on a return also
+preserves its native result; surrounding text renders it. An ordinary
+`<name>` value substitution renders to text.
 
 ## Explicit Exports
 

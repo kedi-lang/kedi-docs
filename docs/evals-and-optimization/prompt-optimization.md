@@ -9,12 +9,13 @@ An optimize span is an executable template block inside a procedure:
   > optimize: owner_extraction:
     >> Read the ticket below.
     Ticket: <ticket>
-    Return the responsible person's name: [owner]
+    The responsible person's name is [owner]
   = `owner`
 ```
 
-The whole indented body is newline-joined and sent in **one model call**. Values
-captured as `[owner]` become available only after that call finishes.
+The whole indented body becomes one logical adapter operation. Tool rounds or
+retries may require multiple provider requests. Captures resolve when the
+operation completes.
 
 ## Named Prompt Spans
 
@@ -34,38 +35,26 @@ from the old artifact entry.
 
 ## Explicit and Legacy Block Forms
 
-Both forms below are valid and have identical single-call behavior.
-
-Explicit form:
+Start new optimize templates with `>>`, just like ordinary template blocks:
 
 ```kedi
 @extract(document: str) -> str:
   > optimize: fields:
     >> Read <document>.
-    Return [title] and [author].
+    The document is titled [title] and was written by [author].
   = `<title> + " by " + <author>`
 ```
 
-Legacy bare-line form:
-
-```kedi
-@extract(document: str) -> str:
-  > optimize: fields:
-    Read <document>.
-    Return [title] and [author].
-  = `<title> + " by " + <author>`
-```
-
-The leading `>>` is optional **only inside `> optimize:` and `> auto:` bodies**.
-Bare template text at top level or in an ordinary procedure is a parse error.
-The bare form is not a sequence of separate prompts; all lines still form one
-template call.
+For compatibility, the parser also accepts older bodies without the leading
+`>>`, only inside `> optimize:` and `> auto:`. Use the explicit form in new
+programs. Bare template text at top level or in an ordinary procedure is a
+parse error. Continuation lines belong to the same template, not separate calls.
 
 Substitutions and captures work exactly as they do in `>>` blocks:
 
 - `<document>` reads and renders an existing value.
 - `<helper(document)>` renders a procedure call result.
-- `<`expression`>` renders a Python expression.
+- `` <`expression`> `` renders a Python expression.
 - `[title]` captures a string.
 - `[items: list[str]]` requests and captures a typed value.
 
@@ -76,9 +65,10 @@ A procedure may contain multiple independently named spans:
 ```kedi
 @solve(problem: str) -> int:
   > optimize: parse:
-    >> Parse <problem> into [left: int], [right: int], and [operation].
+    >> The problem <problem> combines [left: int] with [right: int]
+    using [operation].
   > optimize: calculate:
-    >> Calculate <left> <operation> <right>: [answer: int]
+    >> The result of <left> <operation> <right> is [answer: int]
   = `answer`
 ```
 
@@ -98,7 +88,7 @@ Every optimized procedure needs:
 ```kedi
 @extract_owner(ticket: str) -> str:
   > optimize: owner:
-    Find the owner in <ticket>: [owner]
+    >> The owner identified in <ticket> is [owner]
   = `owner`
 
 @eval: extract_owner:
@@ -132,7 +122,11 @@ when at least four training examples exist; otherwise it validates on the full
 training set.
 
 `--optimizer-max-validation-examples N` truncates an explicit test set for
-baseline validation. It does not truncate the training set.
+validation throughout the GEPA run. It does not truncate the training set.
+
+These validation rows participate in candidate selection. The fallback subset
+is not removed from training. Neither provides an untouched final test set;
+see [Reproducible Comparisons](reproducibility.md).
 
 ## Optimized Output Artifacts
 

@@ -7,7 +7,7 @@ after a model call.
 
 ```kedi
 > adapter: pydantic
-> model: groq:qwen/qwen3-32b
+> model: openai:gpt-5.6-luna
 > system: Extract only facts stated in the incident report.
 
 ~Owner(
@@ -26,7 +26,7 @@ after a model call.
 @extract_incident(report: str) -> Incident:
   >> Incident report:
   <report>
-  Normalized incident: [incident: Incident].
+  The normalized incident is [incident: Incident].
   = `incident`
 
 [report: str] = Payment retries failed in checkout. The Payments team owns the follow-up.
@@ -39,6 +39,12 @@ The adjacent lines after `>>` are newline-joined into one model request. Do not
 insert a blank line inside that block: it can terminate template continuation.
 `[incident: Incident]` creates a structured output schema and validates the
 response; it is not an instruction to return an arbitrary JSON string.
+
+Run with the selected provider's credentials configured. The exact title and
+severity may vary. The report names the Payments team but supplies no email:
+the expected result preserves that team, uses `null` for its email, and does not
+invent contact details. Runtime schema validation alone cannot enforce factual
+support; evaluate that separately with source evidence.
 
 ## Native Return Versus Rendering
 
@@ -65,7 +71,7 @@ often simpler:
 ```kedi
 @classify(message: str) -> tuple[str, bool]:
   >> <message> is a [category: Literal["question", "request", "incident"]].
-  Urgent: [urgent: bool].
+  It is [urgent: bool] that this message requires urgent attention.
   = `(category, urgent)`
 ```
 
@@ -85,7 +91,7 @@ CurrentRegion = Literal["eu", "us", "apac"]
 ```
 
 @extract_region(text: str) -> `CurrentRegion`:
-  >> Region mentioned in <text>: [region: `CurrentRegion`].
+  >> The region mentioned in <text> is [region: `CurrentRegion`].
   = `region`
 ````
 
@@ -96,7 +102,7 @@ types.
 
 ## Validate Deterministic Constraints in Python
 
-Do not ask the model to calculate facts your program can enforce:
+When deliberate normalization is desired, use deterministic Python:
 
 ```kedi
 @bounded_confidence(raw: float) -> float:
@@ -106,3 +112,9 @@ Do not ask the model to calculate facts your program can enforce:
 Model schemas validate shape and type. Cross-field business invariants still
 belong in deterministic code, tests, or a Pydantic validator supplied through
 Python.
+
+Clamping changes an out-of-range value; it does not reject one. If rejection is
+the contract, use a constrained type instead. See the runnable
+[Constraints example](../core-language/types.md) for preserved `Annotated`
+metadata and validation failures. Do not describe a model's self-reported
+confidence as a measured probability.

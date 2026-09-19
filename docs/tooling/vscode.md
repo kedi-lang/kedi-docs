@@ -20,9 +20,9 @@ inside `.py` files can also receive experimental semantic tokens.
 
 Resolution prefers:
 
-1. workspace `.venv/bin/kedi-lsp` (or Windows equivalent);
-2. interpreter selected by the Python extension;
-3. explicit `kedi.lsp.pythonPath`;
+1. workspace `.venv/bin/kedi-lsp` or `venv/bin/kedi-lsp` (or Windows equivalents);
+2. explicit `kedi.lsp.pythonPath`;
+3. interpreter selected by the Python extension, when enabled;
 4. `kedi.lsp.serverCommand` on `PATH`.
 
 Use **Kedi: Restart Language Server** after changing environments.
@@ -52,10 +52,13 @@ Open **Output → Kedi Language Server** for client/server failures. Set
 Set `kedi.lsp.usePythonExtension` false and `kedi.lsp.pythonPath` explicitly
 when the selected environment cannot import Kedi.
 
+A workspace-local server still takes precedence over `pythonPath`. Check the
+Output log for the selected executable rather than assuming the active terminal
+and editor use the same environment.
+
 ## Troubleshooting
 
 Confirm the selected interpreter runs `python -m kedi.lsp.server`. Reload the
 window after installing Kedi into a new environment. Pylance shadow documents
 are stored in extension storage, outside the workspace, and may be deleted;
 the extension regenerates them.
-

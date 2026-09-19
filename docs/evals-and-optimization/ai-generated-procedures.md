@@ -134,8 +134,12 @@ Generation fails when the model is unavailable, the contract is underspecified,
 tests cannot be translated, implementation translation fails, merged source is
 invalid, or generated tests do not pass.
 
+Passing generated tests does not prove correctness beyond those tests. The same
+model can misunderstand both the contract and its tests. Keep independent
+handwritten boundary and failure cases, and review generated code before giving
+it access to sensitive resources.
+
 Cached code is executable Kedi/Python. Treat it as generated source: review it,
 decide deliberately whether to commit it, and regenerate after changing a
 procedure's contract. The cache lookup is keyed by procedure name, not a digest
 of the specification.
-

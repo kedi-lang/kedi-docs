@@ -27,26 +27,20 @@ INCIDENTS = {
   ###
   = `INCIDENTS[incident_id]`
 
-@extract_incident(incident_id: int, report: str) -> Incident:
-  >> Report <report> describes [incident: Incident].
-  Its identifier is <incident_id>.
-  = `incident`
-
 @format_incident(incident: Incident) -> str:
   = `f"#{incident.id} [{incident.severity}] {incident.title} - {incident.owner}"`
 
 > profile: analyst:
     > adapter: pydantic
-    > model: groq:qwen/qwen3-32b
-    > system: Use tools for source data. Never invent an incident.
+    > model: openai:gpt-5.6-luna
+    > system: Look up the requested identifier. Infer severity from the report, not invented facts.
     > use: lookup_incident
     > approval: allow
 
-@answer_request(request: str) -> str:
+@extract_incident(incident_id: int) -> Incident:
   > use: analyst
-  >> Answer <request>. Use lookup_incident when an identifier is present.
-  Return [answer: str].
-  = <answer>
+  >> According to lookup_incident, incident <incident_id> is [incident: Incident].
+  = `incident`
 
 @test: format_incident:
   > case: formats_all_fields:
@@ -56,8 +50,7 @@ INCIDENTS = {
     ```
 
 [incident_id: int] = `int(args.incident_id)`
-[source: str] = `lookup_incident(incident_id)`
-[incident: Incident] = `extract_incident(incident_id, source)`
+[incident: Incident] = `extract_incident(incident_id)`
 
 = `format_incident(incident)`
 
@@ -65,12 +58,12 @@ INCIDENTS = {
   > data: reports:
     = ```
     return [
-      ((42, INCIDENTS[42]), {"owner": "Payments"}),
-      ((77, INCIDENTS[77]), {"owner": "Search"}),
+      (42, {"owner": "Payments"}),
+      (77, {"owner": "Search"}),
     ]
     ```
   > metric: owner_accuracy(reports):
-    = `extract_incident(*reports).owner == expected["owner"]`
+    = `extract_incident(reports).owner == expected["owner"]`
 ````
 
 Run incident 42:
@@ -87,7 +80,7 @@ normalized to underscores. The first repeated option wins.
 - `lookup_incident` is deterministic and should not be a model call.
 - `extract_incident` uses a typed capture because understanding prose requires
   a model.
-- `= `incident`` returns the native custom type.
+- ``= `incident` `` returns the native custom type.
 - `format_incident` renders only at the final presentation boundary.
 - The profile captures a stable adapter, model, instructions, tool, and policy.
 - The test checks deterministic formatting without spending model tokens.
@@ -96,6 +89,17 @@ normalized to underscores. The first repeated option wins.
 The top-level initialization passes native values through Python expressions.
 Writing `<incident>` inside a prompt would intentionally serialize it for the
 model instead.
+
+The analyst is used by `extract_incident`, on both the CLI and eval paths.
+Its `allow` policy is limited to this trusted, in-memory procedure tool;
+procedure tools otherwise default to mutating risk. It is not a recommended
+policy for arbitrary filesystem tools. Missing identifiers raise a lookup error,
+and severity remains model judgment rather than a verified incident fact.
+
+Configure the selected provider's credentials before normal execution or eval.
+The documentation tests replace only the model with a local `FunctionModel`,
+then assert that lookup really runs before a typed result reaches the formatter.
+That verifies orchestration, not extraction accuracy with Gemini.
 
 ## Verification Commands
 

@@ -24,6 +24,35 @@ filename. The second prevents the committed adapter table from drifting from
 build also publishes each source page as Markdown and it creates `site/llms.txt`
 plus `site/llms-full.txt`.
 
+## Manual Theme
+
+The custom theme lives in `overrides/`, `docs/stylesheets/manual.css`, and
+`docs/javascripts/manual.js`. It retains Zensical's search, palette switching,
+instant navigation, Markdown rendering, and publication paths. The sidebar
+and homepage directory both use the full `nav` in `zensical.toml`; adding a
+section does not require a second menu definition. The `manual-directory`
+comment in the homepage source is the insertion point for that directory.
+
+The light and dark palettes share locally hosted Geist and Geist Mono fonts
+(license in `docs/assets/fonts/`). The logo and pixel illustration are shared
+with the homepage. Code examples remain static, with syntax highlighting and
+source-only copying; the illustrative output on the index is not an execution
+result. No playground or model calls are loaded by the theme.
+
+After assembling `public-site/` using the command below, browser checks run with:
+
+```sh
+npm ci
+npx playwright install chrome
+npm run test:browser
+```
+
+The tests cover light/dark themes, mobile/tablet/desktop layouts, long reference
+tables, the complete navigation, keyboard access, persistent expanded groups,
+source/Markdown copying, and reading with JavaScript disabled. Screenshots and
+failure traces are written to the ignored `test-results/` directory. The
+deployment workflow runs these checks before publishing.
+
 ## Deploy
 
 Pushes to `main` run `.github/workflows/docs.yml`. The workflow builds the docs
@@ -54,8 +83,8 @@ cover images are excluded and rejected by the combined-site builder.
 To check the publication locally, build the homepage first and run:
 
 ```sh
-python -m unittest discover -s tests -v
 python scripts/build_docs.py
+python -m unittest discover -s tests -v
 python scripts/assemble_site.py --homepage ../website/dist \
   --homepage-sha "$(git -C ../website rev-parse HEAD)" \
   --docs-sha "$(git rev-parse HEAD)" --kedi-sha "$(git -C .. rev-parse HEAD)"

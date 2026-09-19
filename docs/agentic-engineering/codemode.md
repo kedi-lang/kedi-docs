@@ -1,9 +1,14 @@
 # CodeMode
 
-CodeMode reduces the model-facing cost of large tool catalogs and intermediate
-tool outputs. Instead of sending every application tool schema to the model,
+CodeMode lets a model discover tools and process intermediate results without
+putting each intermediate result in its conversation. Instead of sending every application tool schema to the model,
 Kedi exposes three stable control tools and keeps selected tool execution inside
 a bounded Monty sandbox.
+
+This can reduce context traffic for large catalogs or multi-tool computations.
+It is not a universal cost or latency improvement: discovery adds calls, and a
+small shell-centric toolset may gain little. Choose it for the dataflow, not
+as a promise that every task becomes cheaper.
 
 CodeMode is disabled by default and implemented for Pydantic AI, LangChain,
 Claude Agent SDK, and Codex App Server. All four adapters expose the same three
@@ -43,16 +48,37 @@ configuration. `> settings:` does not accept a `codemode` field.
 The equivalent Python API is available on every supported adapter:
 
 ```python
-from kedi.agent_adapter import LangChainAdapter, PydanticAdapter
+from kedi.agent_adapter import PydanticAdapter
 
-adapter = PydanticAdapter(model, codemode=True)
-langchain_adapter = LangChainAdapter(chat_model, codemode=True)
+adapter = PydanticAdapter("openai:gpt-5.6-luna", codemode=True)
 ```
 
 ## Model-Facing Tools
 
 The model sees three CodeMode controls instead of the ordinary application tool
 schemas.
+
+For a small executable fixture, configure a model through the CLI or embedding
+application and expose one read-only tool:
+
+````kedi
+```
+from kedi import tool
+
+@tool(risk="read_only")
+def load_counts() -> list[int]:
+    """Return the counts from the local test fixture."""
+    return [2, 3, 5]
+```
+
+> use: load_counts
+> codemode: enabled
+[answer] << Sum load_counts through CodeMode. Return only the total.
+= <answer>
+````
+
+The expected total is `10`. The controls below describe how a model reaches
+that result; enabling CodeMode does not itself execute the tool.
 
 ### `search_tools`
 
@@ -90,7 +116,9 @@ execute_code(*, code: str, restart: bool = False)
 ```
 
 Only hydrated tools exist in the sandbox. Tool functions are async and accept
-keyword arguments:
+keyword arguments. The following snippets illustrate code generated after the
+named tools have been registered, discovered, and hydrated; they are not host
+Python programs with built-in `list_records` or `list_users` functions:
 
 ```python
 records = await list_records(project="kedi")
@@ -136,23 +164,9 @@ sandbox results.
 
 ## Supported Sandbox Subset
 
-The shared CodeMode instruction teaches the verified Monty subset:
-
-- scalar, list, tuple, dictionary, and string literals;
-- indexing and read-only slicing;
-- arithmetic, comparisons, boolean expressions, and f-strings;
-- `if`/`elif`/`else`, `for`, `while`, `break`, and `continue`;
-- `range`, `enumerate`, `zip`, comprehensions, sorting, filtering, grouping,
-  joining, and aggregation;
-- small helper functions;
-- `asyncio.gather` for independent hydrated tool calls.
-
-Read mapping values with `mapping[key]`. Monty does not expose mapping methods
-such as `mapping.get(...)`.
-
-CodeMode does not provide host filesystem, environment, process, unrestricted
-network, third-party package, `eval`, or `exec` access. It is not general
-CPython execution.
+CodeMode runs restricted Python in Monty, not CPython. See
+[Sandbox and Recovery](codemode-sandbox.md#supported-sandbox-subset) for supported
+constructs, unavailable host capabilities, and recovery rules.
 
 ## Tool Semantics
 
@@ -210,41 +224,18 @@ CodeMode and artifact code have separate responsibilities.
 
 ## Lifecycle and Limits
 
-Every agent run receives an isolated catalog, hydration set, Monty process
-checkout, and variable state. Kedi closes the session and cancels active host
-callbacks on normal completion, errors, cancellation, and early close.
-
-The runtime bounds search pages, discovery payload bytes, hydrated tools, code
-characters, nested call count, nested concurrency, individual result bytes,
-aggregate result bytes, captured output, and execution time. Invalid cursors,
-unhydrated calls, non-JSON nested values, denials, and budget failures are
-model-correctable errors rather than silent fallbacks.
-
-| Setting | Default | Meaning |
-| --- | ---: | --- |
-| `default_search_limit` | `10` | Tool names returned when `search_tools` omits `limit`. |
-| `max_search_limit` | `50` | Maximum accepted search page size. |
-| `max_hydrated_tools` | `64` | Exact schemas that may be hydrated in one run. |
-| `max_discovery_result_bytes` | `256000` | Serialized bound for search and schema results. |
-| `max_code_chars` | `20000` | Maximum source length for one snippet. |
-| `max_nested_calls` | `64` | Host tool calls allowed in one execution. |
-| `max_concurrent_calls` | `8` | Concurrent host tool calls allowed in one execution. |
-| `max_tool_result_bytes` | `256000` | Serialized bound for one nested result. |
-| `max_total_tool_result_bytes` | `1000000` | Aggregate nested-result bound per execution. |
-| `max_print_bytes` | `256000` | Captured standard-output bound. |
-| `request_timeout` | `60` | Timeout in seconds for one nested host tool call. |
-
-CodeMode telemetry records payload-free `search tools`, `get tool schema`, and
-`execute code` spans. It records counts, byte totals, restart state, duration,
-and outcome without recording query text, code, arguments, or tool results.
+Catalogs, hydration, and variable state are isolated per run. See
+[Lifecycle and Limits](codemode-sandbox.md#lifecycle-and-limits) for defaults,
+cleanup, and bounded resource behavior.
 
 ## Native Pydantic Capability
 
 Use the public capability directly for a single native Pydantic run:
 
 ```python
-from kedi.agent_adapter import PydanticCodeModeCapability
+from kedi.agent_adapter import PydanticAdapter, PydanticCodeModeCapability
 
+adapter = PydanticAdapter("openai:gpt-5.6-luna")
 result = adapter.run_sync(
     "Use CodeMode for this task.",
     capabilities=[PydanticCodeModeCapability()],

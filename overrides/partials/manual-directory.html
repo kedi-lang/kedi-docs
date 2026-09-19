@@ -1,0 +1,33 @@
+{% macro collect_pages(items, pages) %}
+  {% for item in items %}
+    {% if item.children %}
+      {{ collect_pages(item.children, pages) }}
+    {% else %}
+      {% set pages.items = pages.items + [item] %}
+    {% endif %}
+  {% endfor %}
+{% endmacro %}
+{% set sections = nav.items | selectattr('children') | list %}
+<section class="kedi-directory" aria-labelledby="manual-contents">
+  <div class="kedi-directory-heading">
+    <h2 id="manual-contents">Inside the manual</h2>
+    <span>{{ sections | length }} sections</span>
+  </div>
+  <ol>
+    {% for section in sections %}
+        {% set pages = namespace(items=[]) %}
+        {% set ignored = collect_pages(section.children, pages) %}
+        {% set first = pages.items | first %}
+        <li>
+          <a href="{{ first.url | url }}">
+            <span class="kedi-section-number">{{ '%02d' | format(loop.index) }}</span>
+            <span class="kedi-section-description">
+              <strong>{{ section.title }}</strong>
+              <span>{{ pages.items | length }} pages{% if pages.items | length > 1 %} · {{ pages.items[1].title }}{% endif %}</span>
+            </span>
+            <span class="kedi-section-arrow" aria-hidden="true">{% include ".icons/lucide/arrow-right.svg" %}</span>
+          </a>
+        </li>
+    {% endfor %}
+  </ol>
+</section>

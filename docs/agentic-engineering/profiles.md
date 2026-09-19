@@ -1,7 +1,13 @@
 # Profiles
 
-Profiles are named, reusable agent-state fragments. They make backend,
-instructions, tools, approval, and delegation reviewable as one unit.
+Profiles are named, reusable agent configuration. A profile describes how a
+model call should run: its backend, instructions, tools, permissions, and optional
+children. Defining or applying a profile does not start a model call, create a
+conversation, or run its tools.
+
+A procedure describes executable steps; a profile supplies configuration to
+those steps. A child profile describes a separate agent invocation that a parent
+may request. These are different roles even when they share the same tools.
 
 ## Define a Profile
 
@@ -11,16 +17,28 @@ instructions, tools, approval, and delegation reviewable as one unit.
     Reviews one change against repository evidence.
     ###
     > adapter: pydantic
-    > model: groq:qwen/qwen3-32b
+    > model: openai:gpt-5.6-luna
     > effort: medium
     > system: Cite the evidence used for every finding.
     > settings:
-        temperature: 0.1
+        timeout: 120
 ```
 
-A profile body may contain `> adapter:`, `> agent:`, `> model:`, `> effort:`,
-`> approval:`, `> system:`, `> settings:`, `> mcp:`, `> use:`,
-`> subagent:`, `> max_agents:`, and `> workflow:`.
+A profile body contains directives, not an executable procedure body:
+
+| Concern | Members | Meaning |
+| --- | --- | --- |
+| Backend | `adapter`, `agent`, `model`, `effort` | Select execution backend and model behavior. |
+| Instructions | `system`, `settings` | Supply instructions and supported runtime/model settings. |
+| Tools | `use`, `mcp`, `skills` | Expose procedures, external tools, and skill discovery. |
+| Permissions and lifecycle | `approval`, `hooks` | Mediate sensitive calls and lifecycle boundaries. |
+| Context | `history`, `artifacts` | Configure conversation retention and artifact handling. |
+| Tool execution | `codemode` | Enable the code-based tool interface. |
+| Child agents | `subagent`, `max_agents`, `workflow`, `output` | Define delegation, its budget, orchestration mode, and a default child result type. |
+
+Choose either `adapter` or `agent` within a profile, not both. Profiles are
+top-level declarations. Tools referenced by the profile must exist; declaring
+their names does not implement them.
 
 ## Profile Documentation
 
@@ -38,7 +56,7 @@ Single-line `> use:` applies a profile when no procedure with that name exists:
 ```kedi
 > use: reviewer
 
->> Review of the current change: [review: str].
+>> A review of the current change is [review: str].
 = <review>
 ```
 
@@ -47,14 +65,24 @@ as a tool. Avoid such collisions.
 
 ## Merge Rules
 
-Applying a profile merges it into active state:
+Applying a profile merges it into the state already active at that location.
+It is not a reset to an empty configuration:
 
-- scalar members such as backend, model, effort, system, approval,
-  `max_agents`, and workflow mode replace earlier values when specified;
-- settings merge by key;
-- tools and subagents merge by name, with later bindings taking precedence;
-- MCP servers append in order;
-- omitted members inherit from the active state.
+| Member | Composition rule |
+| --- | --- |
+| Backend, model, effort, system, approval, output type, maximum starts, workflow mode | A specified value replaces the earlier value. System instructions are replaced, not concatenated. |
+| Settings | Merge by key; later values replace the same key. Nested dictionaries are not recursively merged. |
+| Tools and children | Merge by name. Later bindings win, and reintroduced names move to the end of the ordered list. |
+| MCP servers | Append in declaration/application order. |
+| Hooks | Compose per event; a supplied empty handler list clears that event's local handlers. Inherited enforcement is a separate boundary. |
+| Skills, CodeMode, history/compaction | Supplied configuration replaces the corresponding earlier configuration. |
+| Artifacts | Overlay the explicitly supplied policy fields. |
+| Omitted members | Keep their earlier values. |
+
+An empty tools list is not a request to revoke tools inherited through profile
+composition. For a separate restricted agent, define a child with its own tool
+surface and use [delegation](subagents.md). See [Hooks](hooks.md) for inherited
+handlers that child code cannot disable.
 
 Direct directives after profile application can override profile members:
 
@@ -63,8 +91,40 @@ Direct directives after profile application can override profile members:
 > effort: high
 ```
 
-The result uses the reviewer's backend, model, instructions, and settings with
-high effort.
+The result retains the reviewer's configuration and changes effort to `high`.
+The selected provider must support that effort value.
+
+Profile application and direct directives follow source order. A direct directive
+does not have unconditional priority: a profile applied after it can replace it.
+Procedures capture the configuration at their definition site; see
+[Scoping and Capabilities](scoping-and-capabilities.md).
+
+## Default Child Result Type
+
+```kedi
+~Finding(path: str, explanation: str)
+
+> profile: reviewer:
+    ###
+    Reviews supplied evidence and returns actionable findings.
+    ###
+    > adapter: pydantic
+    > model: openai:gpt-5.6-luna
+    > system: Base findings only on the evidence supplied in the task.
+    > output: list[Finding]
+```
+
+When a parent delegates to `reviewer` without supplying `final_schema`, this
+output type supplies the child's result schema. The returned envelope contains
+`run_id`, `subagent`, `task_summary`, and the validated `final_result`.
+An explicit `final_schema` on the child call takes precedence over `> output:`.
+Without either schema, the child returns its text in `task_summary` and has no
+structured result.
+
+This is a child-result contract, not a way to change the types of unrelated
+template captures. A template's `[finding: Finding]` still declares its own
+output type. The profile type must be representable as JSON Schema; declaring
+two `output` members is an error.
 
 ## Export and Import Profiles
 
@@ -73,7 +133,7 @@ Profiles are module values and can be explicitly exported:
 ```kedi
 > profile: reviewer:
     > adapter: pydantic
-    > model: groq:qwen/qwen3-32b
+    > model: openai:gpt-5.6-luna
 
 > export:
   reviewer
@@ -90,7 +150,7 @@ A profile can name a child profile declared later. Kedi resolves the complete
 profile graph and rejects unknown children and cycles.
 
 Within one profile, framework and harness selection remain mutually exclusive.
-Invalid backend kinds, duplicate or unknown members, invalid settings,
+Invalid backend kinds, unknown members, duplicate output/workflow declarations, invalid settings,
 nonpositive `max_agents`, missing tools, and unsupported required capabilities
 produce diagnostics or compile-time errors.
 

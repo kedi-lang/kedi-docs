@@ -30,7 +30,7 @@ current Kedi scope before execution.
 Use `return` in a block assigned to an L-value:
 
 ````kedi
-[records: list[dict[str, object]]] = `[{"ok": True}, {"ok": False}]`
+[records: list[dict[str, bool]]] = `[{"ok": True}, {"ok": False}]`
 [healthy: int] = ```
 return sum(1 for record in records if record["ok"])
 ```
@@ -42,7 +42,7 @@ implicit coercion: returning `"1"` for `[healthy: int]` is an error.
 A direct procedure return can also be a block:
 
 ````kedi
-@load_config(path: str) -> dict[str, object]:
+@load_config(path: str) -> dict[str, str]:
   = ```
   import json
   from pathlib import Path
@@ -51,7 +51,8 @@ A direct procedure return can also be a block:
   ```
 ````
 
-Use this form when the entire block computes the procedure result. Use an
+This loader expects a JSON object with string values; the return contract
+rejects other shapes. Use this form when the block computes a procedure result. Use an
 initialization block when later Kedi statements need the value.
 
 ## Side-Effect-Only Blocks
@@ -91,7 +92,7 @@ Kedi variable updates that binding:
 
 ````kedi
 @normalize() -> str:
-  [value] = "  Ready "
+  [value] = `"  Ready "`
   ```
   value = value.strip().lower()
   temporary = value.upper()

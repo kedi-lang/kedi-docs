@@ -1,7 +1,8 @@
 # Execution and Dataflow
 
 Kedi executes source in order while preserving lexical declaration state.
-Parallel mode changes scheduling of model work, not the language result.
+Concurrency changes scheduling, not the declared value and type contracts.
+It does not promise identical stochastic outputs or side-effect ordering.
 
 ## Compilation Phases
 
@@ -68,8 +69,8 @@ One `>>` block is one adapter call:
 
 ```kedi
 >> Incident: <incident>.
-Affected service: [service: str].
-Severity: [severity: str].
+The affected service is [service: str].
+The severity is [severity: str].
 ```
 
 Kedi prepares substitutions, builds a combined output schema, invokes the
@@ -81,7 +82,7 @@ Start another `>>` block for a dependency:
 
 ```kedi
 >> Incident <incident> affects [service: str].
->> Recommended owner for <service>: [owner: str].
+>> The recommended owner for <service> is [owner: str].
 ```
 
 ## Procedure Frames and Joins

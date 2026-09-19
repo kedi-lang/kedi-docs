@@ -7,12 +7,15 @@ they are unnecessary for deterministic helper procedures.
 ## Foreground Structured Delegation
 
 ```kedi
+~ResearchAnswer(claim: str, confidence: float, evidence: list[str])
+
 > profile: researcher:
     ###
     Investigate one focused question and distinguish evidence from inference.
     ###
     > adapter: pydantic
-    > model: groq:qwen/qwen3-32b
+    > model: openai:gpt-5.6-luna
+    > output: ResearchAnswer
     > system: Return concise evidence and identify uncertainty.
 
 > profile: coordinator:
@@ -20,26 +23,32 @@ they are unnecessary for deterministic helper procedures.
     Split a request only when independent research is useful.
     ###
     > adapter: pydantic
-    > model: groq:qwen/qwen3-32b
+    > model: openai:gpt-5.6-luna
     > subagent: researcher
     > max_agents: 2
 
 > use: coordinator
 
-~ResearchAnswer(claim: str, confidence: float, evidence: list[str])
-
->> Ask researcher for a structured result, then return
-[answer: ResearchAnswer].
+>> After researcher reviews the evidence, its release recommendation is [answer: ResearchAnswer].
+Pass this evidence to the child: parser tests passed, but the migration check failed.
+Release requires both checks to pass. Ask the child to explain which check blocks release.
 = `answer`
 ```
 
 Kedi gives `coordinator` a `delegate_task` tool. The model supplies
 `subagent="researcher"`, a self-contained `task`, and optionally a
-`final_schema`. The runtime validates structured child output before returning
-it as `final_result`.
+`final_schema`. Here `> output: ResearchAnswer` fixes the child's result contract;
+the parent does not need to invent that schema. The runtime validates structured
+child output before returning it as `final_result`.
 
 The child cannot see the parent's prompt or local Kedi values. Its task must
 include the objective, necessary input, constraints, and expected evidence.
+
+This is evidence analysis, not web research: neither profile has a search tool.
+Expected behavior is to identify the migration failure as the release blocker.
+The confidence field is a model-produced estimate, not a calibrated probability.
+The parent's capture validates its own answer, not equality with the child's
+payload. Use the child envelope directly when exact result preservation matters.
 
 ## Result Contract
 
@@ -96,3 +105,13 @@ Python embedders can persist terminal run state with
 `KediRuntime(..., subagent_state_path=...)`. Completed results and valid
 continuations survive restart. In-flight records become failed after restart;
 Kedi does not pretend to resume a request whose process ownership was lost.
+
+## Executable Composition
+
+For a complete host program that inspects the actual child envelope, use
+[Reviewed Evidence](../agentic-engineering/reviewed-evidence.md). Its tests run
+foreground and dynamic delegation, prove parent/child tool isolation, and reject
+invalid child output before a report is written. Continue with
+[lifecycle rules](../agentic-engineering/subagent-lifecycle.md) and
+[Python embedding](../agentic-engineering/subagent-python.md) for background work
+and persisted conversations.

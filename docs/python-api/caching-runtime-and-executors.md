@@ -1,31 +1,13 @@
 # Caching, Runtime, and Executors
 
+
 ## Inspect Cache State
 
-```python
-info = kedi.cache_info()
-print(info.parse_entries)
-print(info.response_entries)
-```
-
-`CacheInfo` is a frozen dataclass with counts for the process-memory parse and
-response caches. It does not report codegen, optimized prompt, GEPA checkpoint,
-or adapter-provider caches.
+See [Inspect Cache State](cache-control.md).
 
 ## Clear Caches
 
-```python
-kedi.clear_cache()
-```
-
-This clears parsed programs and completed response entries. It also advances a
-cache generation: a request already in flight may finish for its current
-callers, but it cannot repopulate the newly cleared cache.
-
-Response caching is opt-in per `query` or `bind` with `cache=True`. Parse
-caching is always source-hash based. Concurrent identical response misses
-coalesce; failed calls are never stored. A recursive same-thread request for
-the same cache key raises instead of deadlocking.
+See [Clear Caches](cache-control.md).
 
 ## `KediRuntime`
 
@@ -49,6 +31,7 @@ Important public methods include:
 - `drain()` to await every scheduled job;
 - `current_trace_frames()` and `build_execution_error(...)` for diagnostics.
 
+
 ## Compile Programs
 
 Parse and compile explicitly:
@@ -70,6 +53,7 @@ result = runtime.run_main()
 
 A model adapter is optional only when the program never executes a template or
 raw invoke. For model-backed programs, pass an `AgentAdapter`.
+
 
 ## Runtime Input, Output, and Context
 
@@ -102,6 +86,7 @@ embedding Kedi, call `exc.render()` for the formatted Kedi traceback, or inspect
 [Errors, Frames, and Tracebacks](../runtime/errors-and-debugging.md) for the
 complete error model.
 
+
 ## Low-Level Expressions
 
 The root package exports constructors used with `runtime.m(...)`:
@@ -122,97 +107,27 @@ expressions = [
 `runtime.invoke(...)` require an active procedure environment; calling them
 arbitrarily outside Kedi execution raises.
 
+
 ## Custom Executors
 
-Implement the `Executor` protocol from `kedi`:
-
-```python
-from typing import Any, Callable
-from kedi import Executor, ExecutorDebugExporter, KediRuntime
-
-
-class RestrictedExecutor:
-    def set_debug_exporter(
-        self, exporter: ExecutorDebugExporter | None
-    ) -> None: ...
-
-    def evaluate_inline(
-        self, rt: KediRuntime, code: str, local_env: dict[str, Any]
-    ) -> Any: ...
-
-    def execute_block(
-        self, rt: KediRuntime, code: str, local_env: dict[str, Any]
-    ) -> Any: ...
-
-    def execute_side_effects(
-        self,
-        rt: KediRuntime,
-        code: str,
-        env_map: dict[str, Any],
-        *,
-        kedi_line_offset: int = 0,
-    ) -> None: ...
-
-    def execute_prelude(
-        self, rt: KediRuntime, code: str
-    ) -> dict[str, Any]: ...
-
-    def create_dynamic_function(
-        self,
-        name: str,
-        params: list[str],
-        body: Callable[..., Any],
-        defaults: dict[str, Any] | None = None,
-    ) -> Callable[..., Any]: ...
-
-    def evaluate_type_expression(
-        self, rt: KediRuntime, code: str, env: dict[str, Any]
-    ) -> Any: ...
-```
-
-The protocol is runtime-checkable. A custom executor must preserve Kedi's
-environment and return semantics, not merely evaluate isolated strings.
+See [Custom Executors](executors.md).
 
 ## Default Executor
 
-`DefaultExecutor` uses Python `eval` and `exec`:
-
-```python
-from kedi import DefaultExecutor
-
-runtime = compile_program(program, executor=DefaultExecutor())
-```
-
-It is **not sandboxed**. Embedded Python has the host process's authority,
-imports, filesystem access, network access, and credentials. Use a specialized
-executor and operating-system isolation for untrusted Kedi source.
+See [Default Executor](executors.md).
 
 ## Debug Exporters
 
-Attach a Markdown event exporter:
-
-```python
-from kedi import DefaultExecutor, MarkdownDebugExporter
-
-executor = DefaultExecutor(
-    debug_exporter=MarkdownDebugExporter("runtime-debug.md")
-)
-runtime = compile_program(program, executor=executor)
-```
-
-Events include executor step, code, inputs, local environment, outputs, and
-errors. Sanitization makes values printable; it does **not redact secrets**.
-Debug exports can contain prompts, credentials, user data, and tool results.
-Store and share them accordingly.
-
-`default_debug_export_path("program.kedi")` creates a timestamped path in the
-current working directory.
+See [Debug Exporters](executors.md).
 
 ## Subagent State Persistence
 
 Low-level compilation can configure subagents:
 
 ```python
+from kedi import SubagentUsageLimits
+
+limits = SubagentUsageLimits(request_limit=8, tool_calls_limit=16)
 runtime = compile_program(
     program,
     adapter=adapter,
@@ -228,3 +143,6 @@ The state file belongs to the subagent coordinator and is separate from
 response, codegen, and optimization caches. Pending or running work restored
 after process loss is marked interrupted rather than falsely reported as
 completed.
+
+For a complete program, defined tools, execution context, and cleanup, see
+[Embedding Subagent Programs in Python](../agentic-engineering/subagent-python.md).

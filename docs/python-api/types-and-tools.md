@@ -35,7 +35,7 @@ class Review(BaseModel):
 @kedi.query
 def review(text: str) -> Review:
     """kedi
-    >> Review of <text>: [result: Review].
+    >> A review of <text> is [result: Review].
     = `result`
     """
     ...
@@ -148,7 +148,7 @@ class InternalResult:
 @kedi.query(env={"InternalResult": InternalResult})
 def extract(text: str) -> InternalResult:
     """kedi
-    >> Structured representation of <text>: [result: InternalResult].
+    >> The structured representation of <text> is [result: InternalResult].
     = `result`
     """
     ...
@@ -176,7 +176,7 @@ inside Kedi:
 def answer(question: str) -> str:
     """kedi
     > use: lookup_order
->> Use the order lookup when needed. Return [answer: str] for <question>.
+    >> Use the order lookup when needed. The answer to <question> is [answer: str].
     = `answer`
     """
     ...

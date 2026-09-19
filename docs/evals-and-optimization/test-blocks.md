@@ -41,19 +41,19 @@ Each case must call the procedure itself when that is part of the test.
 
 ## Arrange Runtime Values
 
-Cases execute against the compiled Kedi runtime. They can use top-level values,
+Cases execute against the compiled Kedi runtime. They can use prelude values,
 custom types, imported exports, prelude helpers, and compiled procedures:
 
 ````kedi
 ```
 def canonical(value):
     return value.casefold().strip()
+
+prefix = "docs"
 ```
 
-[prefix] = docs
-
 @qualified_name(name: str) -> str:
-  = `<prefix> + ":" + canonical(name)`
+  = `prefix + ":" + canonical(name)`
 
 @test: qualified_name:
   > case: uses_runtime_environment:
@@ -64,6 +64,11 @@ def canonical(value):
 
 Keep setup local to a case unless it is genuinely part of the program's public
 runtime environment.
+
+The validation runner compiles the program but does not execute top-level main
+statements as setup. Put shared fixtures in the prelude or initialize them
+inside each case; a top-level Kedi variable initialization has not run merely
+because the test suite was loaded.
 
 ## Assertions in Python
 
@@ -118,7 +123,7 @@ Backend options still apply because a tested procedure may call a model:
 ```bash
 kedi program.kedi --test \
   --adapter pydantic \
-  --adapter-model groq:qwen/qwen3-32b
+  --adapter-model openai:gpt-5.6-luna
 ```
 
 `--test` cannot be combined with `-c/--command`; validations require a source
@@ -138,4 +143,3 @@ This flag does **not** disable response caching configured through the Python
 API and does **not** ignore `program.kedi.optimized.json`. File-backed tests
 load valid optimized prompt prefixes when that artifact exists, and invalid
 optimization JSON fails loudly.
-

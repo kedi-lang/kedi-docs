@@ -11,7 +11,7 @@ import kedi
 @kedi.query
 def title_for(topic: str) -> str:
     """kedi
->> Short documentation title for <topic>: [title: str].
+    >> A guide to <topic> could be titled [title: str].
     = `title`
     """
     ...
@@ -33,7 +33,7 @@ The Python signature defines call binding:
 @kedi.query
 def explain(topic: str, audience: str = "developers") -> str:
     """kedi
->> Explanation of <topic> for <audience>: [answer: str].
+    >> An explanation of <topic> for <audience> is [answer: str].
     = `answer`
     """
     ...
@@ -68,7 +68,7 @@ does not run.
 Arguments enter the environment as native Python values. Use:
 
 - `<name>` to render a value into prompt text;
-- `<`name`>` when explicit inline Python rendering is useful;
+- `` <`name`> `` when explicit inline Python rendering is useful;
 - bare `name` inside Python code to consume the native object.
 
 ```python
@@ -101,7 +101,7 @@ class Review(BaseModel):
 @kedi.query
 def review(text: str) -> Review:
     """kedi
-    >> Review of <text>: [result: Review].
+    >> A review of <text> is [result: Review].
     = `result`
     """
     ...
@@ -124,7 +124,7 @@ T = TypeVar("T")
 @kedi.query
 def extract(text: str, output_type: type[T]) -> T:
     """kedi
-    >> Structured representation of <text>: [result: `output_type`].
+    >> The structured representation of <text> is [result: `output_type`].
     = `result`
     """
     ...
@@ -140,10 +140,10 @@ Framework adapters use `adapter=`; process-backed harnesses use `agent=`:
 ```python
 @kedi.query(
     adapter="pydantic",
-    model="openai:gpt-4o-mini",
+    model="openai:gpt-5.6-luna",
     system="Return only the requested result.",
     effort="low",
-    settings={"temperature": 0.1},
+    settings={"timeout": 120},
 )
 def extract_name(text: str) -> str:
     """kedi
@@ -168,7 +168,7 @@ they expose matching `kind` and `shortname` metadata.
 def answer(question: str) -> str:
     """kedi
     > use: search_docs
->> Use the documentation when needed. Return [answer: str] for <question>.
+    >> Use the documentation when needed. The answer to <question> is [answer: str].
     = `answer`
     """
     ...
@@ -200,7 +200,7 @@ from kedi import McpServerSpec
 )
 def investigate(question: str) -> str:
     """kedi
->> Investigate <question> with available tools and return [answer: str].
+    >> Based on evidence from available tools, the answer to <question> is [answer: str].
     = `answer`
     """
     ...
@@ -217,7 +217,7 @@ servers are appended to configured servers.
 @kedi.query(cache=True)
 def stable_summary(text: str) -> str:
     """kedi
->> Summary of <text>: [summary: str].
+    >> A summary of <text> is [summary: str].
     = `summary`
     """
     ...

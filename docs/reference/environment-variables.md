@@ -56,6 +56,37 @@ Installed packages live beneath `$KEDI_HOME/registry` or the platform default
 Kedi home. Git package operations set `GIT_TERMINAL_PROMPT=0` so unattended
 installs fail instead of waiting for credentials.
 
+## Filesystem and Interactive State
+
+| Variable | Contract |
+| --- | --- |
+| `KEDI_WORKSPACE_POLICY` | Unset/empty or `strict` enforces workspace containment; `none` disables that containment, not all secret/deletion rules |
+| `KEDI_HISTORY` | REPL input history file, default `~/.kedi_history` |
+| `KEDI_CODEX_AUTH_FILE` | Explicit Codex Responses auth file; see [Codex models](../agent-adapters/codex-models.md) |
+
+See [Filesystem](../modules-and-packaging/filesystem.md) before changing workspace
+policy. It does not sandbox embedded Python or external agents.
+
+## Notebook Server
+
+| Variable | Contract |
+| --- | --- |
+| `HOST`, `PORT` | Notebook bind defaults, `127.0.0.1` and `8788` |
+| `KEDI_NOTEBOOK_TOKEN` | Notebook API bearer token; required off loopback |
+| `KEDI_NOTEBOOK_ENV_HOME` | Root for managed host virtual environments |
+| `KEDI_NOTEBOOK_SECRETS_PATH` | Secret Manager JSON path; default `~/.kedi/notebook/secrets.json` |
+
+Notebook reads `.env` from its working directory without overriding existing
+process values, then applies its Secret Manager entries. Updating Secret Manager
+resets active runtimes. These files and their contents must not be committed.
+
+## Benchmark Instrumentation
+
+`KEDI_HARBOR_LOGFIRE=1` opts the Harbor integration into installing and
+configuring Logfire and Kedi instrumentation. It is disabled when unset or
+different from `1`. Exporting telemetry also depends on Logfire credentials;
+this flag is not authentication. Leave it unset for an uninstrumented run.
+
 ## Provider Credentials
 
 Provider SDKs read their own variables, such as `GROQ_API_KEY`,

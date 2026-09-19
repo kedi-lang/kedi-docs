@@ -1,4 +1,4 @@
-# Evals and Optimization
+# Testing and Optimization { #evals-and-optimization }
 
 Kedi separates four related jobs: deterministic tests, dataset-driven
 evaluation, prompt optimization, and AI-generated procedure implementations.
@@ -9,8 +9,8 @@ have the same purpose or lifecycle.
 
 | Surface | Purpose | Model calls |
 | --- | --- | --- |
-| `@test:` | Assert concrete behavior and regressions | Only those made by the tested procedure |
-| `@eval:` | Score behavior over a dataset | Usually one procedure run per dataset row |
+| `@test:` | Assert concrete behavior and regressions | Determined by case code and called procedures |
+| `@eval:` | Score behavior over a dataset | Determined by metric code and called procedures |
 | `> optimize:` | Mark prompt spans that an optimizer may rewrite | Many candidate and metric calls |
 | `> auto:` | Generate tests and an implementation for a procedure | Test-generation and implementation attempts |
 
@@ -42,18 +42,19 @@ An eval suite declares data and one metric:
 
 ```kedi
 @classify(text: str) -> str:
-  >> Sentiment of <text>: [label: Literal["positive", "negative"]]
+  >> The sentiment of <text> is [label: Literal["positive", "negative"]]
   = `label`
 
 @eval: classify:
   > data: examples:
-    = `[("excellent", "positive"), ("awful", "negative")]`
+    = `[("excellent", {"label": "positive"}), ("awful", {"label": "negative"})]`
   > metric: accuracy(examples):
-    = `classify(examples) == expected`
+    = `classify(examples) == expected["label"]`
 ```
 
-The dataset name becomes the metric's input binding. For conventional
-`(input, expected)` rows, `expected` is also available.
+The dataset name becomes the metric's input binding. Expected dictionaries
+make the row unambiguous in both evaluation and optimization. See
+[dataset row rules](datasets-and-metrics.md#input-and-expected-tuples).
 
 ## Prompt Optimization
 
@@ -64,7 +65,7 @@ the procedure signature, surrounding computation, output schema, or metric.
 @extract_priority(ticket: str) -> str:
   > optimize: classify_priority:
     >> Read this support ticket: <ticket>
-    Return its priority as low, medium, or high: [priority]
+    The ticket's priority is [priority: Literal["low", "medium", "high"]].
   = `priority`
 ```
 
@@ -108,3 +109,22 @@ cache only. `--optimizer-fresh` clears optimization output and GEPA checkpoints.
   can improve.
 - Use `> auto:` when the procedure should be implemented as generated Python,
   not as an LLM prompt at runtime.
+
+## In This Section
+
+**Validation**
+
+- [Test Blocks](test-blocks.md)
+- [Evaluation Suites](evaluation-suites.md)
+- [Datasets and Metrics](datasets-and-metrics.md)
+- [A Complete Validation Workflow](validation-workflow.md)
+
+**Optimization**
+
+- [Prompt Optimization](prompt-optimization.md)
+- [GEPA](gepa.md)
+- [Reproducible Comparisons](reproducibility.md)
+
+**Generated Implementations**
+
+- [AI-Generated Procedures](ai-generated-procedures.md)

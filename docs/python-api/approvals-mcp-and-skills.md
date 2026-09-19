@@ -1,5 +1,6 @@
 # Approvals, MCP, and Skills
 
+
 ## `@kedi.approval`
 
 Decorate a handler to install it as the current Python API configuration's
@@ -22,6 +23,7 @@ def review_call(request: kedi.ApprovalRequest) -> kedi.ApprovalDecision:
 The decorator returns the original handler, so it can also be passed explicitly
 to `context`, `query`, or `bind`.
 
+
 ## Approval Policies
 
 The `approval=` parameter accepts:
@@ -36,6 +38,7 @@ kedi.configure(approval=kedi.ApprovalPolicy.dynamic(review_call))
 Only `"allow"` and `"deny"` are valid strings. With no policy, mutating and
 sensitive tools are denied. Read-only tools are always allowed, even under a
 static deny policy.
+
 
 ## Dynamic Approval Handlers
 
@@ -55,6 +58,7 @@ An async handler requires an async-capable tool path when an event loop is
 already running. Returning any object other than `ApprovalDecision` is an
 invalid decision error.
 
+
 ## Approval Requests and Decisions
 
 `ApprovalRequest` is frozen and contains:
@@ -67,6 +71,8 @@ invalid decision error.
 | `adapter_shortname` | Active adapter when known |
 | `description` | Tool description when known |
 | `metadata` | Optional deep-copied adapter/runtime metadata |
+| `reason` | Model-supplied explanation when tool reasons are enabled; otherwise `None` |
+| `tool_reason_enabled` | Whether the calling tool surface has optional reasons enabled |
 
 Return one explicit decision:
 
@@ -83,111 +89,18 @@ Only `edit` may contain replacement arguments. Edited arguments are
 revalidated and reclassified before execution; an edit is not a bypass around
 tool schemas or risk policy.
 
+
 ## `McpServerSpec`
 
-Import the typed specification from `kedi`:
-
-```python
-from kedi import McpServerSpec
-```
-
-For stdio:
-
-```python
-filesystem_mcp = McpServerSpec(
-    transport="stdio",
-    command="npx",
-    args=("-y", "@modelcontextprotocol/server-filesystem", "/workspace"),
-    env={"LOG_LEVEL": "warning"},
-).normalized()
-```
-
-For streamable HTTP:
-
-```python
-docs_mcp = McpServerSpec(
-    transport="http",
-    url="http://127.0.0.1:8000/mcp",
-    headers={"Authorization": "Bearer token"},
-).normalized()
-```
-
-For SSE, use `transport="sse"` and `url=...`. The Python dataclass accepts the
-canonical values `stdio`, `http`, and `sse`; DSL spelling
-`streamable-http` normalizes to `http`.
-
-Calling `.normalized()` is recommended when constructing specs directly. It
-validates that stdio has a command, remote transports have a URL, and clears
-fields that do not apply to the selected transport.
+See [`McpServerSpec`](mcp.md).
 
 ## Configure MCP Servers
 
-Pass a sequence at any configuration scope:
-
-```python
-kedi.configure(mcp_servers=[docs_mcp])
-
-with kedi.context(mcp_servers=[filesystem_mcp]):
-    result = investigate("...")
-```
-
-Context and per-callable MCP servers append to inherited servers; they do not
-replace or deduplicate them. Adapter capability differs: unsupported adapters
-must fail or report the capability limitation rather than silently emulate an
-MCP server.
-
-MCP servers are external code or services. Stdio commands run with the host
-process's authority, and remote headers may carry credentials.
+See [Configure MCP Servers](mcp.md).
 
 ## Enable Skills
 
-Enable scoped skills explicitly:
-
-```python
-kedi.configure(skills=True)
-```
-
-or for one callable:
-
-```python
-@kedi.query(skills=True)
-def solve(task: str) -> str:
-    """kedi
->> Use an applicable project skill to solve <task>. Return [answer: str].
-    = `answer`
-    """
-    ...
-```
-
-Kedi checks the user Kedi registry, project-local `.agents/skills`, then the
-user-global `.agents/skills` directory and exposes two read-only tools:
-
-- `list_skills(all=False, limit=20)`;
-- `read_skill(name)`.
-
-Enabling skills does not preload every `SKILL.md`; the agent discovers and
-reads only relevant entries.
-
-Pass `SkillsSettings` for the same policy controls as the expanded DSL
-directive:
-
-```python
-from pathlib import Path
-
-import kedi
-from kedi import SkillsSettings
-
-kedi.configure(
-    skills=SkillsSettings(
-        enabled=True,
-        cwd=Path("workspace"),
-        max_skills=40,
-        include_registry=True,
-        include_all=False,
-        exclude_paths=(Path("~/.agents/skills"),),
-    )
-)
-```
+See [Enable Skills](skills.md).
 
 ## Per-Callable Overrides
 
@@ -199,7 +112,7 @@ kedi.configure(
 )
 def investigate(question: str) -> str:
     """kedi
->> Investigate <question> and return [answer: str].
+    >> The evidence-based answer to <question> is [answer: str].
     = `answer`
     """
     ...
@@ -208,6 +121,7 @@ def investigate(question: str) -> str:
 An explicit per-callable approval overrides inherited approval for that
 callable. `skills=False` can disable inherited skills. MCP servers append
 because their merge model is additive.
+
 
 ## Scope Precedence
 

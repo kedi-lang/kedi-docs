@@ -1,4 +1,4 @@
-# Modules and Packaging
+# Modules and Packages { #modules-and-packaging }
 
 Kedi modules split a program into explicit public surfaces. Packages distribute
 one module tree through the local Kedi registry; they do not change the module
@@ -67,3 +67,23 @@ identity and digest checks are integrity controls, not a sandbox.
 - [Installation and Registries](installation-and-registries.md) covers `install`
   and `add`.
 - [Built-In Modules](built-in-modules.md) documents the bundled public modules.
+
+## In This Section
+
+**Module System**
+
+- [Modules and Resolution](modules.md)
+- [Imports and Exports](imports-and-exports.md)
+
+**Standard Modules**
+
+- [Built-In Modules](built-in-modules.md)
+- [Filesystem](filesystem.md)
+- [Example Modules](example-modules.md)
+
+**Distribution**
+
+- [Package Manifests](package-manifests.md)
+- [Build a Local Package](local-package.md)
+- [Installation and Registries](installation-and-registries.md)
+- [Manifest Reference](../reference/package-manifest.md)

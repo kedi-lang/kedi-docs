@@ -32,9 +32,10 @@ from a source package.
 $ kedi add package_name
 ```
 
-Named add uses the `registry.kedi-lang.org/v1/package/<name>` contract. If no
-registry is configured or available in the current release, the command fails
-clearly rather than guessing a source.
+Named add targets the future `registry.kedi-lang.org/v1/package/<name>`
+contract. A verified public registry is not provided by this implementation.
+Use local installation or explicit Git sources; the local mock below is for
+testing the future contract, not a public registry service.
 
 For local registry-contract testing, set `KEDI_REGISTRY_MOCK_ROOT` to a directory
 whose children are package source directories:
@@ -74,7 +75,7 @@ The default home is:
       src-or-copied-source...
 ```
 
-Set `KEDI_HOME` to move all Kedi-owned state:
+Set `KEDI_HOME` to select the Kedi home used by package installation/resolution:
 
 ```console
 $ export KEDI_HOME=/absolute/path/to/kedi-home
@@ -114,5 +115,5 @@ top-level statements with the Kedi process's host permissions. Review the exact
 source and commit, install in an isolated Python environment, and restrict host
 credentials and filesystem access as you would for any Python dependency.
 
-A registry-verified commit establishes identity and integrity. It does not
+A future registry-verified commit would establish identity and integrity. It would not
 sandbox behavior, prove correctness, or approve capabilities.

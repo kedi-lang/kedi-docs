@@ -15,12 +15,13 @@ import kedi
 @kedi.query
 def summarize(text: str) -> str:
     """kedi
->> One-sentence summary of <text>: [summary: str].
+    >> A one-sentence summary of <text> is [summary: str].
     = `summary`
     """
     ...
 
 
+kedi.configure(adapter="pydantic", model="openai:gpt-5.6-luna")
 print(summarize("Kedi combines LLM templates with Python."))
 ```
 
@@ -37,7 +38,7 @@ stub body is never called.
 
 ## Decorator-Based Programs
 
-The API exposes four decorators:
+The primary program/type/tool decorators are:
 
 | Decorator | Role |
 | --- | --- |
@@ -49,6 +50,9 @@ The API exposes four decorators:
 `@kedi.approval` registers a default dynamic approval handler in the current
 Python API context.
 
+`@kedi.on(...)` registers lifecycle hooks. The introductory model-backed call
+also requires the selected provider's dependencies and credentials.
+
 ## Global and Scoped Configuration
 
 `kedi.configure(...)` replaces process-context defaults for subsequent calls:
@@ -56,7 +60,7 @@ Python API context.
 ```python
 kedi.configure(
     adapter="pydantic",
-    model="openai:gpt-4o-mini",
+    model="openai:gpt-5.6-luna",
     system="Answer with evidence.",
 )
 ```
@@ -64,7 +68,7 @@ kedi.configure(
 `kedi.context(...)` temporarily merges overrides:
 
 ```python
-with kedi.context(model="openai:gpt-4.1"):
+with kedi.context(model="openai:gpt-5.6-luna"):
     result = summarize("...")
 ```
 
@@ -179,3 +183,38 @@ from kedi.lang import compile_program, parse_program
 Executor protocols and the default implementation are also re-exported from
 `kedi`; specialized engine and playground executor classes live in their
 respective submodules.
+
+## In This Section
+
+**Calling Kedi**
+
+- [Query Decorator](query.md)
+- [Bind Decorator](bind.md)
+
+**Configuration**
+
+- [Configuration and Context](configuration-and-context.md)
+- [Public Parameters](public-parameters.md)
+
+**Integration**
+
+- [Types and Tools](types-and-tools.md)
+- [Permissions and External Tools](approvals-mcp-and-skills.md)
+- [MCP](mcp.md)
+- [Skills](skills.md)
+- [Hooks](hooks.md)
+
+**State and Execution**
+
+- [Artifacts and Sessions](artifacts-and-sessions.md)
+- [Decision Evidence](decisions.md)
+- [Cache Control](cache-control.md)
+- [Concurrency and Promises](concurrency-and-promises.md)
+- [Runtime and Executors](caching-runtime-and-executors.md)
+- [Embedding and Ownership](embedding.md)
+- [Executors](executors.md)
+
+**Pages**
+
+- [API Reference](../reference/python-api.md)
+- [Public Export Index](public-exports.md)

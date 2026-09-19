@@ -2,10 +2,10 @@
 
 ## Installation
 
-DSPy ships in Kedi's core dependency set:
+DSPy is an optional integration:
 
 ```bash
-uv add kedi
+uv add 'kedi[dspy]'
 ```
 
 A model is required; DSPy has no model-less Kedi default.
@@ -14,7 +14,7 @@ A model is required; DSPy has no model-less Kedi default.
 
 ```kedi
 > adapter: dspy
-> model: openrouter/openai/gpt-4o-mini
+> model: openai/gpt-5.6-luna
 ```
 
 Model names normalize to LiteLLM form. The adapter establishes a baseline

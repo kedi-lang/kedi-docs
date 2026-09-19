@@ -14,7 +14,7 @@ Other providers may require their own LangChain integration package.
 
 ```kedi
 > adapter: langchain
-> model: openai:gpt-4o-mini
+> model: openai:gpt-5.6-luna
 ```
 
 String models are passed through `langchain.chat_models.init_chat_model`.
@@ -66,9 +66,10 @@ finally:
     conversation.close()
 ```
 
-Install `kedi[codex-model,langchain]` and an updated `codex-auth-helper` build
-with its `websocket` extra. This LangChain support is not in the original
-published helper 1.6.1 release. Authentication uses the existing Codex login.
+Install `kedi[codex-model,langchain]` on Python 3.11 or newer. This selects
+`codex-auth-helper[websocket]==1.8.0`. Authentication uses the existing Codex
+login. See [Codex Models](codex-models.md) for factory parameters and the
+distinction from the Codex App Server harness.
 
 HTTP remains the default. Kedi owns one transport session for the complete
 agent run, including tool turns. An explicit `responses_session()` shares the

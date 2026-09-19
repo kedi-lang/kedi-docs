@@ -16,6 +16,12 @@ kedi program.kedi --eval
 
 Runs each `@eval:` metric over matching `test_data` or fallback training data.
 
+A completed score of `0.0` can still exit successfully. Enforce quality thresholds
+separately and inspect error feedback. Use the executable
+[validation workflow](../evals-and-optimization/validation-workflow.md) for a
+complete fixture and [reproducible comparisons](../evals-and-optimization/reproducibility.md)
+before interpreting optimization gains.
+
 ## Run Optimization
 
 ```bash
@@ -83,4 +89,3 @@ errors or final test/eval results.
 - `.kedi.optimized.json`: optimized prefixes;
 - `.kedi.optimized_scores.json`: training scores;
 - `.kedi.gepa/`: resume checkpoints.
-

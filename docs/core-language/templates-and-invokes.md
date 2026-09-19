@@ -7,7 +7,7 @@
 ```kedi
 @extract_owner(issue: str) -> str:
   >> Issue: <issue>
-  Responsible team: [owner: str].
+  The [owner: str] team owns the next action.
   = <owner>
 ```
 
@@ -21,8 +21,8 @@ request:
 
 ```kedi
 >> Incident: <incident>.
-Affected service: [service: str].
-Severity: [severity: Literal["low", "medium", "high"]].
+The affected service is [service: str].
+The severity is [severity: Literal["low", "medium", "high"]].
 ```
 
 Do not prefix every continuation row with `>>` unless separate model calls are
@@ -30,12 +30,14 @@ intended.
 
 ## One Model Call per Block
 
-The previous example produces one request with two output fields. Starting a
-second block produces a dependency-aware second request:
+The previous example starts one logical adapter operation with two output
+fields. Tools, validation retries, or transport recovery can require more than
+one provider request inside that operation. Starting a second block starts a
+dependency-aware second operation:
 
 ```kedi
 >> Incident <incident> affects [service: str].
->> Remediation steps for <service>: [steps: list[str]].
+>> To restore <service>, follow [steps: list[str]].
 ```
 
 The second call can substitute `service` because the first call completed and

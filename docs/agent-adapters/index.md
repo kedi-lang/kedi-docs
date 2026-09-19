@@ -1,4 +1,4 @@
-# Agent Adapters
+# Models and Integrations { #agent-adapters }
 
 Adapters translate Kedi's uniform prompt contract into a model framework or an
 agent harness. Selection is explicit because those backends have materially
@@ -63,3 +63,39 @@ details are adapter-specific and remain documented on each adapter page.
 - Choose Claude or Codex when a coding-agent harness and its native tools are
   part of the task.
 - Choose ACP only when driving an existing stdio ACP agent as a text harness.
+
+## In This Section
+
+**Selection**
+
+- [Backend Selection](../agentic-engineering/backend-selection.md)
+- [Models and Reasoning](../agentic-engineering/models-and-reasoning.md)
+- [Capability Matrix](../reference/capability-matrix.md)
+- [Codex Model Connections](codex-models.md)
+
+**Framework Adapters**
+
+- [Pydantic AI](pydantic-ai.md)
+- [LangChain](langchain.md)
+- [DSPy](dspy.md)
+
+**Agent Harnesses**
+
+- [Codex App Server](codex.md)
+- [Claude Agent SDK](claude.md)
+- [ACP Agents](acp.md)
+
+**Decision Models**
+
+- [TypeSafe Jev](typesafe.md)
+- [Claims and Thresholds](jev-claims.md)
+- [Criteria and Output Types](jev-criteria.md)
+- [Finite Extraction](jev-extraction.md)
+- [Decision Evidence](jev-evidence.md)
+- [Tool Selection](jev-tools.md)
+- [Generate, Evaluate, Route](jev-workflow.md)
+
+**Extending Kedi**
+
+- [Custom Adapters](custom-adapters.md)
+- [Artifact Integration](artifact-contract.md)

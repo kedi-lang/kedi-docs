@@ -79,6 +79,7 @@ kedi add git+https://github.com/owner/repository.git
 ```
 
 Installed content and `.kedi-install.json` receipts live below the Kedi home
-registry. Registry installation can identify a verified source commit; this
-proves identity/integrity, not safety. Imported packages may execute Python with
+registry. A future verified registry would identify an approved source commit;
+the current implementation does not provide that public service. Identity and
+integrity are not safety. Imported packages may execute Python with
 the host process's authority.

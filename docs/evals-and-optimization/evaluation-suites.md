@@ -7,7 +7,7 @@ An evaluation suite belongs at top level and names the procedure being scored:
 ````kedi
 @answer(question: str) -> str:
   >> Answer precisely: <question>.
-  Return only [response: str].
+  The answer is [response: str].
   = <response>
 
 @eval: answer:
@@ -39,16 +39,16 @@ rows under the same dataset name:
 
 ````kedi
 @sentiment(text: str) -> str:
-  >> Label <text> as positive or negative: [label]
+  >> The sentiment of <text> is [label: Literal["positive", "negative"]].
   = `label`
 
 @eval: sentiment:
   > data: examples:
-    = `[("Loved it", "positive"), ("Hated it", "negative")]`
+    = `[("Loved it", {"label": "positive"}), ("Hated it", {"label": "negative"})]`
   > test_data: examples:
-    = `[("A delightful surprise", "positive")]`
+    = `[("A delightful surprise", {"label": "positive"})]`
   > metric: accuracy(examples):
-    = `sentiment(examples).lower() == expected`
+    = `sentiment(examples).lower() == expected["label"]`
 ````
 
 For `kedi --eval`, a test dataset replaces the same-named training dataset for
@@ -56,7 +56,8 @@ scoring. It does not print separate train and test scores. If no matching
 `test_data` exists, evaluation falls back to `data`.
 
 During optimization, `data` is always the training set. Matching `test_data`
-is passed as validation data.
+is passed as validation data. That data participates in candidate selection;
+keep a separate final dataset to measure generalization.
 
 ## One Metric per Suite
 
@@ -69,9 +70,9 @@ error. A metric normally names its dataset:
 
 @eval: predict:
   > data: examples:
-    = `[("Kedi", "Kedi")]`
+    = `[("Kedi", {"text": "Kedi"})]`
   > metric: accuracy(examples):
-    = `predict(examples) == expected`
+    = `predict(examples) == expected["text"]`
 ```
 
 The legacy dataset-free metric form can still execute once, but new programs
@@ -90,12 +91,18 @@ Select the runtime adapter and model as usual:
 ```bash
 kedi program.kedi --eval \
   --adapter pydantic \
-  --adapter-model groq:qwen/qwen3-32b
+  --adapter-model openai:gpt-5.6-luna
 ```
 
-Each dataset row is isolated as a metric invocation. Exceptions raised while
+Each row gets fresh metric bindings but shares the compiled runtime. This is
+not process or mutable-object isolation. Exceptions raised while
 loading data abort the eval. Exceptions raised by a metric row become a score
 of `0.0` with `error: ...` feedback, allowing the remaining rows to run.
+
+`--eval` reports scores without enforcing a minimum acceptable score. A completed
+evaluation scoring `0.0`, including row errors, can exit with status `0`. Inspect
+scores and feedback explicitly. Parse errors, data-loading errors and missing
+dataset references are command failures.
 
 ## Train and Test Reporting
 

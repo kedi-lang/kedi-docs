@@ -10,16 +10,20 @@
     textarea.style.position = "fixed";
     textarea.style.opacity = "0";
     document.body.appendChild(textarea);
+    const focused = document.activeElement;
     textarea.select();
-    document.execCommand("copy");
+    const copied = document.execCommand("copy");
     textarea.remove();
+    focused?.focus();
+    if (!copied) throw new Error("Clipboard unavailable");
   }
 
   async function copyMarkdown(button, markdownUrl) {
     button.disabled = true;
     try {
-      const response = await fetch(markdownUrl, {
-        headers: { Accept: "text/markdown" }
+      const source = new URL(markdownUrl);
+      const response = await fetch(source.pathname, {
+        headers: { Accept: "text/markdown" },
       });
       if (!response.ok) {
         throw new Error(`Markdown request failed with ${response.status}`);
@@ -32,14 +36,17 @@
       }
       button.classList.add("is-copied");
       button.querySelector("span").textContent = "Copied";
+      button.setAttribute("aria-label", "Copied");
     } catch {
       button.classList.add("has-error");
       button.querySelector("span").textContent = "Copy failed";
+      button.setAttribute("aria-label", "Copy failed");
     } finally {
       window.setTimeout(() => {
         button.disabled = false;
         button.classList.remove("is-copied", "has-error");
         button.querySelector("span").textContent = COPY_LABEL;
+        button.setAttribute("aria-label", COPY_LABEL);
       }, 1800);
     }
   }
@@ -47,9 +54,13 @@
   function addCopyMarkdownAction() {
     const article = document.querySelector(".md-content__inner");
     const alternate = document.querySelector(
-      'link[rel="alternate"][type="text/markdown"]'
+      'link[rel="alternate"][type="text/markdown"]',
     );
-    if (!article || !alternate || article.querySelector(".kedi-copy-markdown")) {
+    if (
+      !article ||
+      !alternate ||
+      article.querySelector(".kedi-copy-markdown")
+    ) {
       return;
     }
 
@@ -62,12 +73,14 @@
       '<rect width="13" height="13" x="9" y="9" rx="2"></rect>',
       '<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>',
       "</svg>",
-      `<span>${COPY_LABEL}</span>`
+      `<span>${COPY_LABEL}</span>`,
     ].join("");
     button.addEventListener("click", () => {
       void copyMarkdown(button, alternate.href);
     });
-    article.prepend(button);
+    const actions = article.querySelector(".kedi-page-actions");
+    if (actions) actions.append(button);
+    else article.prepend(button);
   }
 
   if (typeof document$ !== "undefined") {
