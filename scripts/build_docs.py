@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import html
+import hashlib
 import re
 import shutil
 import subprocess
@@ -14,6 +15,25 @@ from urllib.parse import urljoin
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG_PATH = ROOT / "zensical.toml"
+
+
+def _scope_language_alternates(site_dir: Path) -> None:
+    # Zensical 0.0.51 treats every alternate link as a translated site. Markdown
+    # alternates are documents, not language roots with their own sitemap.xml.
+    selector = '"link[rel=alternate]"'
+    for bundle in (site_dir / "assets/javascripts").glob("bundle.*.min.js"):
+        script = bundle.read_text(encoding="utf-8")
+        if selector not in script:
+            continue
+        script = script.replace(selector, '"link[rel=alternate][hreflang]"')
+        digest = hashlib.sha256(script.encode()).hexdigest()[:12]
+        patched = bundle.with_name(f"bundle.{digest}.min.js")
+        patched.write_text(script, encoding="utf-8")
+        for page in site_dir.rglob("*.html"):
+            document = page.read_text(encoding="utf-8")
+            if bundle.name in document:
+                page.write_text(document.replace(bundle.name, patched.name), encoding="utf-8")
+        bundle.unlink()
 
 
 @dataclass(frozen=True)
@@ -195,6 +215,7 @@ def generate_machine_readable_docs() -> None:
     site_url = config["site_url"]
     pages = _collect_pages(config["nav"], docs_dir)
 
+    _scope_language_alternates(site_dir)
     _copy_markdown_and_add_alternates(pages, docs_dir, site_dir, site_url)
     _write_llms_index(
         pages,

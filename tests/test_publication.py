@@ -12,7 +12,7 @@ from xml.etree import ElementTree
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
 from assemble_site import assemble, redirect_page
-from build_docs import Page, _copy_markdown_and_add_alternates
+from build_docs import Page, _copy_markdown_and_add_alternates, _scope_language_alternates
 
 
 class PublicationTests(unittest.TestCase):
@@ -107,6 +107,24 @@ class PublicationTests(unittest.TestCase):
 
     def test_redirect_target_is_escaped(self) -> None:
         self.assertIn("a&amp;b", redirect_page("/docs/a&b/"))
+
+    def test_markdown_alternates_are_not_treated_as_language_sites(self) -> None:
+        self.write(
+            self.docs, "assets/javascripts/bundle.original.min.js", 'query("link[rel=alternate]")'
+        )
+        self.write(
+            self.docs,
+            "index.html",
+            '<script src="assets/javascripts/bundle.original.min.js"></script>',
+        )
+        _scope_language_alternates(self.docs)
+        bundles = list((self.docs / "assets/javascripts").glob("bundle.*.min.js"))
+        self.assertEqual(len(bundles), 1)
+        self.assertNotEqual(bundles[0].name, "bundle.original.min.js")
+        self.assertIn('"link[rel=alternate][hreflang]"', bundles[0].read_text())
+        self.assertIn(bundles[0].name, (self.docs / "index.html").read_text())
+        _scope_language_alternates(self.docs)
+        self.assertEqual(list((self.docs / "assets/javascripts").glob("bundle.*.min.js")), bundles)
 
     def test_copy_markdown_alternate_uses_docs_base(self) -> None:
         source = self.root / "source"

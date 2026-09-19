@@ -41,6 +41,9 @@ is never redirected. Unknown URLs show a 404 with home/documentation links;
 missing `/docs/` paths are not redirected recursively. Raw Markdown and LLM
 indexes remain at their old addresses for non-browser consumers. Canonical URLs,
 search, Markdown copy links, and sitemaps use the new documentation base.
+The builder also scopes Zensical 0.0.51's language-alternate lookup to links with
+`hreflang`: Markdown alternates must not be probed as separate sites with their
+own sitemap. The patched JS bundle receives a new content hash for cache safety.
 
 The workflow checks homepage `main` every 15 minutes and skips publication when
 both source revisions match `deployment.json` on `gh-pages`. GitHub can delay
