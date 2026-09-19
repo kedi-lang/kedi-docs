@@ -56,18 +56,27 @@ class LearningExamplesTests(unittest.TestCase):
             self.assertEqual(result.output.strip(), "ready")
             self.assertNotEqual(runner.invoke(main, ["-p", "-c", "@broken("]).exit_code, 0)
 
-    def test_first_deterministic_program(self):
-        runner = CliRunner()
-        with runner.isolated_filesystem():
-            Path("label.kedi").write_text(snippets("first-program.md")[0])
-            result = runner.invoke(main, ["label.kedi", "--title", "  Release   Notes  "])
-            self.assertEqual(result.exit_code, 0, result.output)
-            self.assertEqual(result.output.strip(), "release-notes")
+    def test_first_template_resolves_both_fields_in_one_call(self):
+        source = snippets("first-program.md")[0]
+        result = self.execute_model_program(
+            source, {"director": "Hayao Miyazaki", "year": 2001}, {}
+        )
+        self.assertEqual(result, "Spirited Away (2001), directed by Hayao Miyazaki.")
+
+    def test_first_template_accepts_a_runtime_title(self):
+        examples = snippets("first-program.md")
+        source = examples[0].replace("[film: str] = Spirited Away", examples[1].strip())
+        result = self.execute_model_program(
+            source,
+            {"director": "Hayao Miyazaki", "year": 1988},
+            {"film": "My Neighbor Totoro"},
+        )
+        self.assertEqual(result, "My Neighbor Totoro (1988), directed by Hayao Miyazaki.")
 
     def test_review_keeps_native_object_until_json_boundary(self):
         payload = {"decision": "revise", "summary": "Check traversal tests."}
         result = self.execute_model_program(
-            snippets("first-program.md")[1],
+            snippets("first-program.md")[2],
             {"review": payload},
             {"title": "Reject unsafe paths", "diff_summary": "Adds containment checks"},
         )
@@ -76,7 +85,7 @@ class LearningExamplesTests(unittest.TestCase):
     def test_review_branch_uses_one_model_call_for_either_outcome(self):
         examples = snippets("first-program.md")
         branch = next(source for source in examples if "[next_step:" in source)
-        source = examples[1].replace(
+        source = examples[2].replace(
             "= `review_change(args.title, args.diff_summary).model_dump_json()`",
             branch,
         )

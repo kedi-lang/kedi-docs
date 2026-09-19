@@ -36,21 +36,38 @@ Python injection. Recommended:
 
 ## Language Server Setup
 
-Resolution order is configured `lsp.kedi-lsp.binary.path`, workspace `.venv`/
-`venv` executable, `kedi-lsp` on `PATH`, then `python -m kedi.lsp.server`.
+On first language-server activation, the extension provisions Python 3.12 and
+installs Kedi and its parser into `~/.kedi/editor-venv`, shared with VS Code.
+An absolute `KEDI_HOME` environment variable relocates the managed directory.
+The first setup requires internet access; subsequent starts reuse it. Parallel
+editor starts share an installation lock.
+
+To use a host Python instead, configure its executable explicitly:
 
 ```json
 {
   "lsp": {
     "kedi-lsp": {
-      "binary": {
-        "path": "/path/to/python",
-        "arguments": ["-m", "kedi.lsp.server"]
+      "settings": {
+        "python_path": "/path/to/python"
       }
     }
   }
 }
 ```
+
+This interpreter is used for Kedi language services and Python virtualizers.
+It must already contain Kedi and its dependencies; the extension never installs
+packages into a selected host environment. The extension API does not expose a
+Python toolchain-selection callback, so Zed's selected project toolchain does
+not implicitly override this setting. Restart language servers after changing it.
+Advanced users can still configure `lsp.kedi-lsp.binary.path` and `arguments`
+for a custom server; specify `settings.python_path` as well when that server
+is a wrapper whose Python interpreter cannot be inferred.
+
+The managed installer pins `kedi==0.4.0` and `tree-sitter-kedi==0.4.0`.
+Both releases must be published before distributing automatic installation.
+Missing packages produce an explicit setup error, not an older-runtime fallback.
 
 The extension also starts an embedded-Python proxy and auto-installs Pyright
 through Zed's npm support. Python query docstrings use a separate virtualizer
@@ -73,6 +90,5 @@ and `languages/kedi/config.toml` is present. If files are recognized but LSP
 features fail, configure a Python environment that can import `kedi`.
 
 The manifest requests broad `process:exec` because it may launch a configured
-binary, workspace executable, Python fallback, Node, and Pyright proxy. Users
+binary, managed-runtime installer, Python, Node, and Pyright proxy. Users
 may narrow Zed's granted capability locally.
-

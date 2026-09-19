@@ -18,14 +18,28 @@ inside `.py` files can also receive experimental semantic tokens.
 
 ## Language Server Setup
 
-Resolution prefers:
+On first activation, the extension provisions Python 3.12 and installs Kedi
+and its parser into `~/.kedi/editor-venv`. Zed shares this same environment.
+An absolute `KEDI_HOME` environment variable relocates the managed directory.
+Initial setup requires internet access; subsequent starts reuse the installed
+environment. Concurrent editor starts serialize installation rather than
+modifying the environment together.
 
-1. workspace `.venv/bin/kedi-lsp` or `venv/bin/kedi-lsp` (or Windows equivalents);
-2. explicit `kedi.lsp.pythonPath`;
-3. interpreter selected by the Python extension, when enabled;
-4. `kedi.lsp.serverCommand` on `PATH`.
+Use **Kedi: Select Python Interpreter** to choose the managed environment,
+follow the Microsoft Python extension's selected interpreter, or enter a host
+Python executable. Host environments are never modified automatically and must
+already have Kedi and its dependencies installed.
 
-Use **Kedi: Restart Language Server** after changing environments.
+An explicit `kedi.lsp.pythonPath` takes precedence over Python-extension
+selection. Without either override, the managed environment is used. An
+explicit `kedi.lsp.serverCommand` can instead launch a custom server when no
+host interpreter is configured. Workspace virtual environments are not selected
+implicitly. Settings and selected-interpreter changes restart the server.
+
+The managed installer pins `kedi==0.4.0` and `tree-sitter-kedi==0.4.0`.
+Those releases must be available on the package index before this automatic
+installation can be distributed; an unavailable package produces an explicit
+setup error rather than falling back to an older runtime.
 
 ## Completion and Hover
 
@@ -42,19 +56,18 @@ Open **Output → Kedi Language Server** for client/server failures. Set
 
 ```json
 {
-  "kedi.lsp.usePythonExtension": true,
+  "kedi.lsp.usePythonExtension": false,
   "kedi.embeddedPython.enable": true,
   "kedi.embeddedKediInPython.enable": true,
   "kedi.embeddedKediInPython.experimentalSemanticTokens": true
 }
 ```
 
-Set `kedi.lsp.usePythonExtension` false and `kedi.lsp.pythonPath` explicitly
-when the selected environment cannot import Kedi.
-
-A workspace-local server still takes precedence over `pythonPath`. Check the
-Output log for the selected executable rather than assuming the active terminal
-and editor use the same environment.
+To use an existing host environment, set `kedi.lsp.pythonPath` to its Python
+executable. Alternatively, clear that setting and enable
+`kedi.lsp.usePythonExtension` to follow **Python: Select Interpreter**.
+Check the Output log for the selected executable; the active terminal and
+editor need not use the same environment.
 
 ## Troubleshooting
 

@@ -1,29 +1,68 @@
 # Your First Kedi Program
 
-Complete [Installation](installation.md) first. The first check needs no model;
-the review program then uses the OpenAI provider SDK and `OPENAI_API_KEY`.
+Your first program asks a model to complete a sentence, captures its answers as
+typed values, and uses those values in its output. No Python block or SDK call
+is needed.
 
-## Start Without a Model
+Complete [Installation](installation.md), including OpenAI provider support and
+`OPENAI_API_KEY`, before running it. This program makes a real model request.
 
-Create `label.kedi`:
+## Write Your First Template
+
+Create `film.kedi`:
 
 ```kedi
-@label(title: str) -> str:
-  = `"-".join(title.strip().casefold().split())`
+> adapter: pydantic
+> model: openai:gpt-5.6-luna
 
-= `label(args.title)`
+[film: str] = Spirited Away
+
+>> The film <film> was directed by [director: str] and first released in [year: int].
+
+= <film> (<year>), directed by <director>.
 ```
 
 ```bash
-kedi label.kedi --title "  Release   Notes  "
+kedi film.kedi
 ```
 
-This prints `release-notes`. Python performs normalization; no model interprets
-the title. In a uv project, run these commands as `uv run kedi ...`.
+In a uv project, use `uv run kedi film.kedi`. A typical result is:
 
-## Create a `.kedi` File
+```text
+Spirited Away (2001), directed by Hayao Miyazaki.
+```
 
-Create `review.kedi`:
+The program supplies the film title, not the answers. The model generates the
+director and release year; wording and factual correctness are not guaranteed.
+This example does not look up a film database.
+
+- `[film: str] = ...` binds the input title without calling a model.
+- `>>` opens a natural-language template. `<film>` substitutes the existing title.
+- `[director: str]` and `[year: int]` declare the answers to generate and their
+  types. Both belong to the same template, not two separate prompts.
+- `= ...` returns the completed output, which the CLI prints. Reading the
+  captured values resolves the template's deferred model request.
+
+The completed template forms a sentence, while its captures become program
+values: `director` is a string and `year` is an integer. Kedi validates their
+types; that validation does not establish that the facts are true.
+
+To choose the film at runtime, replace the input binding with:
+
+```kedi
+[film: str] = `args.film`
+```
+
+Then run `kedi film.kedi --film "My Neighbor Totoro"`. The template stays the
+same; only its input changes.
+
+<a id="create-a-kedi-file"></a>
+
+## Grow the Program with a Typed Procedure
+
+Once the template/capture distinction is familiar, a procedure can package a
+model interaction for reuse. This second example captures a structured review
+instead of individual film facts. Create `review.kedi`:
 
 ```kedi
 > adapter: pydantic
