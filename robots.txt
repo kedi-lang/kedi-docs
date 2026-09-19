@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://kedi-lang.org/sitemap.xml

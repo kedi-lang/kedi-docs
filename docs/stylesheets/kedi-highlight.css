@@ -1,0 +1,62 @@
+pre.kedi {
+  color: var(--md-code-fg-color);
+  background-color: var(--md-code-bg-color);
+}
+
+pre.kedi code {
+  display: block;
+}
+
+pre.kedi .c1,
+pre.kedi .cm {
+  color: var(--md-code-hl-comment-color);
+}
+
+pre.kedi .k,
+pre.kedi .kc {
+  color: var(--md-code-hl-keyword-color);
+}
+
+pre.kedi .nf {
+  color: var(--md-code-hl-function-color);
+}
+
+pre.kedi .nc,
+pre.kedi .nb {
+  color: var(--md-code-hl-special-color);
+}
+
+pre.kedi .nv,
+pre.kedi .bp {
+  color: var(--md-code-hl-variable-color);
+}
+
+pre.kedi .na {
+  color: var(--md-code-hl-name-color);
+}
+
+pre.kedi .mi,
+pre.kedi .mf {
+  color: var(--md-code-hl-number-color);
+}
+
+pre.kedi .s {
+  color: var(--md-code-hl-string-color);
+}
+
+pre.kedi .o {
+  color: var(--md-code-hl-operator-color);
+}
+
+pre.kedi .p {
+  color: var(--md-code-hl-punctuation-color);
+}
+
+pre.kedi .bt {
+  color: #c2410c;
+  font-weight: 700;
+}
+
+[data-md-color-scheme="slate"] pre.kedi .bt {
+  color: #fbbf24;
+}
