@@ -1,3 +1,8 @@
 site/
 .cache/
 .zensical/
+public-site/
+.homepage-source/
+.kedi-source/
+.tree-sitter-kedi-source/
+__pycache__/

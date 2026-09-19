@@ -26,10 +26,42 @@ plus `site/llms-full.txt`.
 
 ## Deploy
 
-Pushes to `main` run `.github/workflows/docs.yml`. The workflow builds the site
-with the pinned dependency in `requirements-docs.txt` and publishes `site/` to
-the `gh-pages` branch. GitHub Pages serves that branch at
-<https://kedi-lang.org/>.
+Pushes to `main` run `.github/workflows/docs.yml`. The workflow builds the docs
+with the pinned dependency in `requirements-docs.txt`, checks out an exact
+`kedi-lang/homepage` revision, and builds and browser-tests that site as well.
+`scripts/assemble_site.py` combines the homepage at `/`, documentation at
+`/docs/`, and compatibility routes into `public-site/`. Only this combined tree
+is published to `gh-pages`. GitHub Pages keeps its existing custom domain and
+branch settings; `/docs/` is a directory, not a second Pages configuration.
+
+Old HTML documentation URLs redirect to `/docs/`, retaining query strings and
+anchors with JavaScript and providing a meta-refresh/link fallback. GitHub Pages
+serves these as static HTML, not server-side HTTP 301 redirects. The root page
+is never redirected. Unknown URLs show a 404 with home/documentation links;
+missing `/docs/` paths are not redirected recursively. Raw Markdown and LLM
+indexes remain at their old addresses for non-browser consumers. Canonical URLs,
+search, Markdown copy links, and sitemaps use the new documentation base.
+
+The workflow checks homepage `main` every 15 minutes and skips publication when
+both source revisions match `deployment.json` on `gh-pages`. GitHub can delay
+scheduled workflows; use a manual dispatch for an immediate homepage release.
+No deployment token needs to be shared with the homepage repository. Social
+cover images are excluded and rejected by the combined-site builder.
+
+To check the publication locally, build the homepage first and run:
+
+```sh
+python -m unittest discover -s tests -v
+python scripts/build_docs.py
+python scripts/assemble_site.py --homepage ../website/dist \
+  --homepage-sha "$(git -C ../website rev-parse HEAD)" \
+  --docs-sha "$(git rev-parse HEAD)" --kedi-sha "$(git -C .. rev-parse HEAD)"
+python -m http.server 8789 --directory public-site
+```
+
+Rollback: revert the homepage or documentation source commit and dispatch the
+workflow again. `deployment.json` records the three source revisions; the domain
+and Pages configuration do not need to change.
 
 The repository secret `KEDI_REPOSITORY_TOKEN` must contain a fine-grained
 GitHub token with read-only `Contents` access to the private

@@ -118,7 +118,7 @@ def _copy_markdown_and_add_alternates(
 
         html_path = _html_path(page.source, docs_dir, site_dir)
         document = html_path.read_text(encoding="utf-8")
-        markdown_url = "/" + relative.as_posix()
+        markdown_url = _markdown_url(site_url, page.source, docs_dir)
         alternate = (
             f'<link rel="alternate" type="text/markdown" '
             f'href="{html.escape(markdown_url, quote=True)}">\n'
