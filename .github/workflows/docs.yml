@@ -2,51 +2,18 @@ name: Documentation
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   workflow_dispatch:
-  schedule:
-    # Homepage updates are picked up without sharing deployment credentials.
-    - cron: "7,22,37,52 * * * *"
 
 permissions:
   contents: write
 
 concurrency:
-  group: documentation
+  group: documentation-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  sources:
-    runs-on: ubuntu-latest
-    outputs:
-      homepage: ${{ steps.sources.outputs.homepage }}
-      changed: ${{ steps.sources.outputs.changed }}
-    steps:
-      - name: Resolve homepage and compare the published revisions
-        id: sources
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          homepage="$(gh api repos/kedi-lang/homepage/commits/main --jq .sha)"
-          if ! [[ "$homepage" =~ ^[0-9a-f]{40}$ ]]; then
-            echo "::error::Homepage main did not resolve to a commit"
-            exit 1
-          fi
-          echo "homepage=$homepage" >> "$GITHUB_OUTPUT"
-          previous="$(gh api 'repos/kedi-lang/kedi-docs/contents/deployment.json?ref=gh-pages' \
-            --jq '.content | @base64d' 2>/dev/null || true)"
-          changed=true
-          if [ "$GITHUB_EVENT_NAME" = schedule ] && \
-            jq -e --arg homepage "$homepage" --arg docs "$GITHUB_SHA" \
-              '.homepage == $homepage and .docs == $docs' <<< "$previous" >/dev/null 2>&1; then
-            changed=false
-          fi
-          echo "changed=$changed" >> "$GITHUB_OUTPUT"
-
   deploy:
-    needs: sources
-    if: needs.sources.outputs.changed == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -114,29 +81,11 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Check out homepage at the resolved revision
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-        with:
-          repository: kedi-lang/homepage
-          ref: ${{ needs.sources.outputs.homepage }}
-          path: .homepage-source
-          persist-credentials: false
-
       - name: Set up Node
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: "24"
           cache: npm
-          cache-dependency-path: .homepage-source/package-lock.json
-
-      - name: Build and test homepage
-        working-directory: .homepage-source
-        env:
-          ASTRO_TELEMETRY_DISABLED: "1"
-        run: |
-          npm ci
-          npx playwright install --with-deps chrome
-          npm test
 
       - name: Install documentation dependencies
         run: |
@@ -144,40 +93,22 @@ jobs:
             -r requirements-docs.txt \
             ./.tree-sitter-kedi-source \
             ./.kedi-source
+          npm ci --ignore-scripts
+          npx playwright install --with-deps chrome
 
-      - name: Validate Kedi examples and adapter metadata
+      - name: Validate and build documentation
         run: |
           python scripts/validate_kedi_examples.py
           python scripts/sync_capability_matrix.py --check
-
-      - name: Build documentation
-        run: |
           python scripts/build_docs.py
           python -m unittest discover -s tests -v
-
-      - name: Assemble homepage, documentation, and compatibility routes
-        env:
-          HOMEPAGE_SHA: ${{ needs.sources.outputs.homepage }}
-        run: |
-          python scripts/assemble_site.py \
-            --homepage .homepage-source/dist \
-            --homepage-sha "$HOMEPAGE_SHA" \
-            --docs-sha "$GITHUB_SHA" \
-            --kedi-sha "$(git -C .kedi-source rev-parse HEAD)"
-
-      - name: Verify combined publication in a browser
-        run: node .homepage-source/scripts/verify-publication.mjs public-site
-
-      - name: Test documentation layout and navigation
-        run: |
-          npm ci --ignore-scripts
           npm run test:browser
 
-      - name: Publish gh-pages branch
+      - name: Publish documentation
         uses: peaceiris/actions-gh-pages@329bcc8f12caed2cefe5a5b80781499a6f3b361b # v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: ./public-site
-          cname: kedi-lang.org
+          publish_dir: ./site
+          cname: docs.kedi-lang.org
           force_orphan: true

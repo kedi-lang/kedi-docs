@@ -1,20 +1,22 @@
 const { test, expect } = require("@playwright/test");
 const legacyRoutes = require("../fixtures/legacy-routes.json");
+const currentRoutes = Object.keys(legacyRoutes).map((route) => route.replace(/^\/docs/, "") || "/");
 const categories = ["Learn Kedi", "Language Reference", "Modules and Packages", "Agents and Orchestration", "Context and Runtime", "Python API", "Models and Integrations", "Testing and Optimization", "Tools and Environments", "Cookbook", "Benchmarks"];
+const localOrigin = "http://127.0.0.1:8794";
 
-const article = "/docs/core-language/templates-and-invokes/";
+const article = "/core-language/templates-and-invokes/";
 const pages = [
-  "/docs/",
+  "/",
   article,
-  "/docs/agent-adapters/typesafe/",
-  "/docs/reference/capability-matrix/",
+  "/agent-adapters/typesafe/",
+  "/reference/capability-matrix/",
 ];
 
 async function keepCanonicalRequestsLocal(context) {
-  await context.route("https://kedi-lang.org/**", async (route) => {
+  await context.route("https://docs.kedi-lang.org/**", async (route) => {
     const url = new URL(route.request().url());
     const response = await route.fetch({
-      url: `http://127.0.0.1:8789${url.pathname}${url.search}`,
+      url: `${localOrigin}${url.pathname}${url.search}`,
     });
     await route.fulfill({
       response,
@@ -64,13 +66,13 @@ for (const width of [360, 390, 768, 1024, 1280, 1440, 1920]) {
       page.on("response", (response) => {
         if (
           response.status() >= 400 &&
-          response.url().startsWith("http://127.0.0.1:8789/")
+          response.url().startsWith(`${localOrigin}/`)
         ) {
           failedAssets.push(`${response.status()} ${response.url()}`);
         }
       });
       for (const path of pages) {
-        await page.goto(`http://127.0.0.1:8789${path}`);
+        await page.goto(`${localOrigin}${path}`);
         await expect(page.locator(".kedi-page-meta")).toBeVisible();
         await page.evaluate(() => document.fonts.ready);
         await expect(page.locator("article h1")).toBeVisible();
@@ -95,7 +97,7 @@ for (const width of [360, 390, 768, 1024, 1280, 1440, 1920]) {
             .locator('[contenteditable="true"]', { hasText: "" })
             .count(),
         ).toBe(0);
-        if (path === "/docs/")
+        if (path === "/")
           await expect(page.locator(".kedi-directory li")).toHaveCount(categories.length);
         if (path === article) {
           await expect(page.locator(".kedi-code-frame")).toHaveCount(5);
@@ -114,7 +116,7 @@ for (const width of [360, 390, 768, 1024, 1280, 1440, 1920]) {
         }
         if (
           (width === 390 || width === 1440) &&
-          (path === article || path === "/docs/")
+          (path === article || path === "/")
         ) {
           await page.screenshot({
             path: info.outputPath(
@@ -191,7 +193,7 @@ test("Markdown copy uses the served docs base and retains source syntax", async 
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.goto(article);
   const request = page.waitForRequest((request) =>
-    request.url().endsWith("/docs/core-language/templates-and-invokes.md"),
+    request.url().endsWith("/core-language/templates-and-invokes.md"),
   );
   await page.locator(".kedi-copy-markdown").click();
   await request;
@@ -279,7 +281,7 @@ test("source and the complete navigation remain readable without JavaScript", as
     viewport: { width: 1440, height: 1000 },
   });
   const page = await context.newPage();
-  await page.goto(`http://127.0.0.1:8789${article}`);
+  await page.goto(`${localOrigin}${article}`);
   await expect(page.locator("article h1")).toBeVisible();
   await expect(page.locator("pre.kedi").first()).toContainText(
     "@extract_owner",
@@ -290,19 +292,19 @@ test("source and the complete navigation remain readable without JavaScript", as
   await context.close();
 });
 
-test("every page in the full navigation is published under /docs", async ({
+test("every page in the full navigation is published at the documentation root", async ({
   page,
   request,
 }) => {
-  await page.goto("/docs/");
+  await page.goto("/");
   const routes = await page
     .locator(".md-nav--primary a[href]")
     .evaluateAll((links) => [
       ...new Set(links.map((link) => new URL(link.href).pathname)),
     ]);
-  expect(routes).toEqual(expect.arrayContaining(Object.keys(legacyRoutes)));
+  expect(routes).toEqual(expect.arrayContaining(currentRoutes));
   for (const route of routes) {
-    expect(route).toMatch(/^\/docs\//);
+    expect(route).toMatch(/^\//);
     const response = await request.get(route);
     expect(response.ok(), route).toBe(true);
     expect(await response.text()).toContain("kedi-page-meta");
@@ -310,7 +312,7 @@ test("every page in the full navigation is published under /docs", async ({
 });
 
 test("directory counts leaf pages and links even when a chapter has no index", async ({ page }) => {
-  await page.goto("/docs/");
+  await page.goto("/");
   await expect(page.locator(".kedi-section-description strong")).toHaveText(categories);
   const counts = await page.locator(".kedi-section-description > span").allTextContents();
   const routes = await page.locator(".md-nav--primary a[href]").evaluateAll(
@@ -335,11 +337,11 @@ for (const width of [390, 1440]) {
       "evals-and-optimization/reproducibility",
       "tooling/notebook", "tooling/notebook-runtimes", "tooling/notebook-files",
     ]) {
-      await page.goto(`/docs/${path}/`);
+      await page.goto(`/${path}/`);
       await expect(page.locator("article h1")).toBeVisible();
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
     }
-    await page.goto("/docs/python-api/query/");
+    await page.goto("/python-api/query/");
     await expect(page.locator(".kedi-brand")).toHaveText("kedi");
     const code = page.locator("article pre code").filter({ hasText: "def title_for" }).first();
     await expect(code).toBeVisible();
@@ -358,7 +360,7 @@ for (const width of [390, 1440]) {
     test(`${group} guides remain readable at ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: 1000 });
       for (const path of paths) {
-        await page.goto(`/docs/${path}/`);
+        await page.goto(`/${path}/`);
         await expect(page.locator("article h1")).toBeVisible();
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
       }
@@ -369,11 +371,11 @@ for (const width of [390, 1440]) {
   test(`orchestration guides remain readable at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     for (const slug of ["subagent-limits", "reviewed-evidence", "tool-reasons", "codemode-sandbox"]) {
-      await page.goto(`/docs/agentic-engineering/${slug}/`);
+      await page.goto(`/agentic-engineering/${slug}/`);
       await expect(page.locator("article h1")).toBeVisible();
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
     }
-    await page.goto("/docs/agentic-engineering/reviewed-evidence/");
+    await page.goto("/agentic-engineering/reviewed-evidence/");
     await expect(page.locator("pre.kedi").first()).toContainText("~Review");
     await page.screenshot({ path: `test-results/orchestration-${width}.png`, fullPage: true });
   });

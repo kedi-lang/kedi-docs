@@ -27,7 +27,8 @@ class Ids(HTMLParser):
 class NavigationTests(unittest.TestCase):
     def setUp(self):
         self.nav = tomllib.loads((ROOT / "zensical.toml").read_text())["project"]["nav"]
-        self.legacy = json.loads((ROOT / "tests/fixtures/legacy-routes.json").read_text())
+        legacy = json.loads((ROOT / "tests/fixtures/legacy-routes.json").read_text())
+        self.legacy = {route.removeprefix("/docs"): anchors for route, anchors in legacy.items()}
 
     def test_every_source_has_one_owner(self):
         sources = []
@@ -46,9 +47,9 @@ class NavigationTests(unittest.TestCase):
         actual = {p.relative_to(ROOT / "docs").as_posix() for p in (ROOT / "docs").rglob("*.md")}
         self.assertEqual(set(sources), actual)
         routes = {
-            "/docs/"
+            "/"
             if source == "index.md"
-            else "/docs/" + (source[:-8] if source.endswith("index.md") else source[:-3] + "/")
+            else "/" + (source[:-8] if source.endswith("index.md") else source[:-3] + "/")
             for source in sources
         }
         self.assertTrue(set(self.legacy).issubset(routes))
@@ -98,7 +99,7 @@ class NavigationTests(unittest.TestCase):
         )
         for route, anchors in self.legacy.items():
             with self.subTest(route=route):
-                page = ROOT / "site" / route.removeprefix("/docs/") / "index.html"
+                page = ROOT / "site" / route.removeprefix("/") / "index.html"
                 self.assertTrue(page.exists())
                 parser = Ids()
                 parser.feed(page.read_text())

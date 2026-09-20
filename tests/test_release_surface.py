@@ -60,9 +60,7 @@ class ReleaseSurfaceTests(unittest.TestCase):
                 target = urlsplit(urljoin(current, link))
                 if target.netloc != urlsplit(self.origin).netloc:
                     continue
-                if not target.path.startswith("/docs/"):
-                    continue  # Homepage and compatibility routes have separate tests.
-                destination = self.site / unquote(target.path.removeprefix("/docs/"))
+                destination = self.site / unquote(target.path.removeprefix("/"))
                 if destination.is_dir():
                     destination /= "index.html"
                 if not destination.is_file():

@@ -29,17 +29,16 @@ plus `site/llms-full.txt`.
 The custom theme lives in `overrides/`, `docs/stylesheets/manual.css`, and
 `docs/javascripts/manual.js`. It retains Zensical's search, palette switching,
 instant navigation, Markdown rendering, and publication paths. The sidebar
-and homepage directory both use the full `nav` in `zensical.toml`; adding a
+and manual directory both use the full `nav` in `zensical.toml`; adding a
 section does not require a second menu definition. The `manual-directory`
-comment in the homepage source is the insertion point for that directory.
+comment in the manual index is the insertion point for that directory.
 
 The light and dark palettes share locally hosted Geist and Geist Mono fonts
-(license in `docs/assets/fonts/`). The logo and pixel illustration are shared
-with the homepage. Code examples remain static, with syntax highlighting and
+(license in `docs/assets/fonts/`). Code examples remain static, with syntax highlighting and
 source-only copying; the illustrative output on the index is not an execution
 result. No playground or model calls are loaded by the theme.
 
-After assembling `public-site/` using the command below, browser checks run with:
+After building `site/`, browser checks run with:
 
 ```sh
 npm ci
@@ -55,45 +54,27 @@ deployment workflow runs these checks before publishing.
 
 ## Deploy
 
-Pushes to `main` run `.github/workflows/docs.yml`. The workflow builds the docs
-with the pinned dependency in `requirements-docs.txt`, checks out an exact
-`kedi-lang/homepage` revision, and builds and browser-tests that site as well.
-`scripts/assemble_site.py` combines the homepage at `/`, documentation at
-`/docs/`, and compatibility routes into `public-site/`. Only this combined tree
-is published to `gh-pages`. GitHub Pages keeps its existing custom domain and
-branch settings; `/docs/` is a directory, not a second Pages configuration.
+Pushes to `main` run `.github/workflows/docs.yml`. The workflow validates the
+manual against Kedi's `stable` branch and its pinned tree-sitter revision,
+builds and browser-tests the documentation, then publishes `site/` to
+`https://docs.kedi-lang.org` through GitHub Pages. The homepage is built and
+published independently from `kedi-lang/homepage`.
 
-Old HTML documentation URLs redirect to `/docs/`, retaining query strings and
-anchors with JavaScript and providing a meta-refresh/link fallback. GitHub Pages
-serves these as static HTML, not server-side HTTP 301 redirects. The root page
-is never redirected. Unknown URLs show a 404 with home/documentation links;
-missing `/docs/` paths are not redirected recursively. Raw Markdown and LLM
-indexes remain at their old addresses for non-browser consumers. Canonical URLs,
-search, Markdown copy links, and sitemaps use the new documentation base.
-The builder also scopes Zensical 0.0.51's language-alternate lookup to links with
-`hreflang`: Markdown alternates must not be probed as separate sites with their
-own sitemap. The patched JS bundle receives a new content hash for cache safety.
+Canonical URLs, search, Markdown copy links, sitemaps, and LLM exports all use
+the documentation domain root. The homepage owns compatibility redirects from
+legacy `https://kedi-lang.org/docs/...` links and preserves their path, query,
+and fragment.
 
-The workflow checks homepage `main` every 15 minutes and skips publication when
-both source revisions match `deployment.json` on `gh-pages`. GitHub can delay
-scheduled workflows; use a manual dispatch for an immediate homepage release.
-No deployment token needs to be shared with the homepage repository. Social
-cover images are excluded and rejected by the combined-site builder.
-
-To check the publication locally, build the homepage first and run:
+To check the publication locally, run:
 
 ```sh
 python scripts/build_docs.py
 python -m unittest discover -s tests -v
-python scripts/assemble_site.py --homepage ../website/dist \
-  --homepage-sha "$(git -C ../website rev-parse HEAD)" \
-  --docs-sha "$(git rev-parse HEAD)" --kedi-sha "$(git -C .. rev-parse HEAD)"
-python -m http.server 8789 --directory public-site
+npm run test:browser
 ```
 
-Rollback: revert the homepage or documentation source commit and dispatch the
-workflow again. `deployment.json` records the three source revisions; the domain
-and Pages configuration do not need to change.
+Rollback: revert the documentation source commit and dispatch the workflow
+again. Homepage releases do not rebuild or republish documentation.
 
 The repository secret `KEDI_REPOSITORY_TOKEN` must contain a fine-grained
 GitHub token with read-only `Contents` access to the private
