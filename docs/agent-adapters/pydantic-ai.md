@@ -140,3 +140,12 @@ sanitized child error to the parent instead of failing the parent run.
 ## Codex Responses Connections
 
 See [Codex Responses Connections](codex-models.md).
+
+
+## Native History Policy
+
+For application-defined retention or summarization, pass a native
+`history_processor=` callback. Pydantic AI's processed history is written back
+to the active graph before dispatch, including tool-loop requests. Kedi validates
+tool lifecycles and continuation safety around that callback. See
+[User-Defined History Processing](../runtime/history.md#user-defined-history-processing).

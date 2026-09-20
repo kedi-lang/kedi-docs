@@ -15,6 +15,16 @@ can change the request prefix or continuation lane. Compaction establishes a
 new cache epoch. These are not equivalent to appending a user message to an
 otherwise identical request.
 
+A `history_processor=` callback that returns semantically equivalent history is
+a no-op: Kedi preserves the native message objects, continuation state, and
+cache identity. An accepted removal, reordering, redaction, or summary changes
+the prefix. Kedi then disables stale response-ID continuation for the affected
+request and stages a new cache generation for each actual rewrite. Later tool
+steps reuse that generation until another edit occurs; a failed or cancelled
+turn does not commit it. Old server conversation IDs stay disabled on subsequent
+turns in the same lane. Automatic response-ID continuation can use a new response
+created after the edit. See [History](history.md#user-defined-history-processing).
+
 ## What Kedi Cannot Guarantee
 
 An unchanged prefix is necessary for reuse, not a promise of a cache hit.

@@ -24,6 +24,15 @@ the active model. Enable tool reasons with Pydantic AI or LangChain:
     and optional model-provided reason. The reason is untrusted context, not proof
     of user authorization. This helper is not a complete authorization boundary.
 
+The helper asks for four required outputs: assessed risk (`low`, `medium`, or
+`high`), authorization confidence at the same three levels, an `allow`/`deny`
+decision, and a concise rationale. Kedi prints this assessment when the decision
+is made. It also stores the report in `ApprovalDecision.reason`; on denial,
+Pydantic AI receives it as `ToolDenied` and LangChain receives it as an error
+`ToolMessage`, allowing the calling model to understand why execution stopped.
+Authorization confidence summarizes the supplied evidence and does not promote
+the model-authored tool reason into trusted user permission.
+
 ## Optional Tool Reasons
 
 Both `PydanticAdapter` and `LangChainAdapter` accept `tool_reason=False` by

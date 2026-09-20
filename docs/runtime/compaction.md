@@ -43,3 +43,15 @@ Kedi includes an adapter-neutral deterministic history processor, lifecycle
 grouping, protected-boundary planner, and transactional checkpoint validation
 foundation. A Kedi-owned semantic summarizer is intentionally not public yet;
 it is tracked in [kedi-lang/kedi#80](https://github.com/kedi-lang/kedi/issues/80).
+
+## Application-Owned Processing
+
+`history_processor=` is separate from native compaction. It lets Python
+applications implement deterministic retention, redaction, or summarization
+over framework-native messages. With `history_archive=`, exact archival runs
+first and the custom processor receives the resulting checkpointed history.
+Kedi validates atomic tool lifecycles and protected provider state before an
+accepted edit replaces durable history.
+
+See [User-Defined History Processing](history.md#user-defined-history-processing)
+for the callback contract and a whole-group selection example.

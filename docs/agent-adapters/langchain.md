@@ -233,6 +233,11 @@ tool output; apply the artifact store's retention/access policy accordingly.
 For direct message processing, `LangChainArtifactHistoryProcessor` is exported
 from `kedi.agent_adapter.compaction`; using it alone does not manage graph state.
 
+For application-defined retention or summarization, pass a native
+`history_processor=` callback. Kedi commits its accepted result through
+LangGraph `Overwrite`, so removed history cannot reappear on a later tool step.
+See [User-Defined History Processing](../runtime/history.md#user-defined-history-processing).
+
 ## Capability Limits
 
 Backend-specific settings still depend on the selected chat model. Native

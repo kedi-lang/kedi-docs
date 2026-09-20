@@ -82,7 +82,10 @@ Kedi executor.
 `helpers` exports `llm_approval(request: ApprovalRequest) -> ApprovalDecision`,
 an experimental model-backed approval handler. It requires tool reasons to be
 enabled on the calling tool surface; the model's reason is untrusted context,
-not proof of user authorization. It does not run for ordinary read-only calls.
+not proof of user authorization. The helper produces and displays assessed
+risk, authorization confidence, an allow/deny decision, and a concise
+rationale. A denial returns the same report to the calling model through the
+adapter's denied tool result. It does not run for ordinary read-only calls.
 
 ```kedi
 > import: helpers:
