@@ -20,7 +20,7 @@ typed tools through the framework's model interface.
 
 ```kedi
 > agent: codex
-> model: gpt-5
+> model: gpt-5.6-luna
 > settings:
     cwd: .
     sandbox: workspace-write
@@ -29,7 +29,7 @@ typed tools through the framework's model interface.
 = <answer>
 ```
 
-Built-in harness shortnames are `claude`, `codex`, and `acp`. Harnesses are
+Built-in harness shortnames are `claude`, `codex`, `acp`, and `a2a`. Harnesses are
 appropriate when the underlying agent owns its tool loop, repository context,
 or protocol session.
 
@@ -59,16 +59,33 @@ literal or profile in production source.
 Select ACP using an explicit command:
 
 ```kedi
-> agent:
-    acp: `["uv", "run", "my-acp-agent"]`
+> agent: acp:
+    command: `["uv", "run", "my-acp-agent"]`
 ```
 
 The command can be plain text or a Python expression evaluating to a string or
-sequence of strings. The structured form binds the command to the `acp` harness.
+sequence of strings. The connection body binds the command to the `acp` harness.
 
-ACP commands are always explicit. Use multiline `> agent:` syntax or construct
+ACP commands are always explicit. Use `> agent: acp:` syntax or construct
 `ACPAdapter(command=...)` in Python. Plain `> agent: acp`, CLI command options,
 and environment command fallbacks are unsupported.
+
+## A2A Endpoints
+
+Bind a remote A2A harness to its endpoint and credential reference:
+
+```kedi
+> agent: a2a:
+    endpoint: https://agents.example.com
+    auth:
+        scheme: bearer
+        token_env: RESEARCH_AGENT_TOKEN
+```
+
+The remote process owns its model and tool loop, so local `> model:`, `> effort:`,
+`> settings:`, `> mcp:`, and tool registration are not forwarded. Generic peers
+support raw text; Kedi-served peers can negotiate typed captures. See
+[A2A Cloud Agents](../agent-adapters/a2a.md).
 
 ## CLI and Environment Defaults
 

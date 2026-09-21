@@ -10,6 +10,7 @@ from typing import Any
 os.environ.setdefault("LITELLM_LOCAL_MODEL_COST_MAP", "True")
 
 from kedi.agent_adapter import (
+    A2AAdapter,
     ACPAdapter,
     ClaudeAdapter,
     CodexAdapter,
@@ -30,6 +31,7 @@ ADAPTERS = (
     ("Claude Agent SDK", ClaudeAdapter),
     ("Codex App Server", CodexAdapter),
     ("ACP", ACPAdapter),
+    ("A2A", A2AAdapter),
 )
 CAPABILITIES = (
     ("Structured output", "supports_structured_output"),
@@ -49,7 +51,14 @@ CAPABILITIES = (
 )
 
 
-def _availability(value: bool | None) -> str:
+def _availability(
+    value: bool | None,
+    *,
+    adapter_name: str,
+    attribute: str,
+) -> str:
+    if adapter_name == "A2A" and attribute == "supports_structured_output" and value is None:
+        return "conditional"
     return "yes" if value is True else "no"
 
 
@@ -64,9 +73,11 @@ def _table(adapters: tuple[tuple[str, type[Any]], ...]) -> str:
             _availability(
                 getattr(adapter.capabilities, attribute) is not None
                 if attribute == "hooks"
-                else getattr(adapter.capabilities, attribute)
+                else getattr(adapter.capabilities, attribute),
+                adapter_name=name,
+                attribute=attribute,
             )
-            for _, adapter in adapters
+            for name, adapter in adapters
         )
         lines.append("| " + " | ".join((label, *values)) + " |")
     return "\n".join(lines)

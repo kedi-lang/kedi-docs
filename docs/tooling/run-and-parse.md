@@ -92,8 +92,8 @@ programs such as the greeting above need neither credentials nor a model call.
 
 ## ACP Commands
 
-ACP commands must be embedded explicitly in source using multiline `> agent:`
-syntax, or supplied through `ACPAdapter(command=...)` in Python. The CLI does
+ACP commands must be embedded explicitly in a `> agent: acp:` connection body,
+or supplied through `ACPAdapter(command=...)` in Python. The CLI does
 not accept a global ACP command because one process-level value cannot describe
 multiple ACP profiles.
 

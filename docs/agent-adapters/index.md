@@ -25,6 +25,7 @@ Use `> agent:` or Python `agent=`:
 | `claude` | Claude Agent SDK |
 | `codex` | Codex App Server |
 | `acp` | Generic stdio ACP agent |
+| `a2a` | Remote Agent2Agent agent |
 
 Harnesses are full agent processes with their own tools, sessions, sandboxing,
 and permission models. Kedi maps what each protocol actually supports.
@@ -62,7 +63,9 @@ details are adapter-specific and remain documented on each adapter page.
 - Choose DSPy for signatures, ReAct, and GEPA workflows.
 - Choose Claude or Codex when a coding-agent harness and its native tools are
   part of the task.
-- Choose ACP only when driving an existing stdio ACP agent as a text harness.
+- Choose ACP when driving an existing stdio ACP agent as a text harness.
+- Choose A2A when orchestration stays local but an independently deployed agent
+  owns execution, tools, and sandboxing.
 
 ## In This Section
 
@@ -84,6 +87,7 @@ details are adapter-specific and remain documented on each adapter page.
 - [Codex App Server](codex.md)
 - [Claude Agent SDK](claude.md)
 - [ACP Agents](acp.md)
+- [A2A Cloud Agents](a2a.md)
 
 **Decision Models**
 

@@ -181,6 +181,8 @@ nav = [
       { "Codex App Server" = "agent-adapters/codex.md" },
       { "Claude Agent SDK" = "agent-adapters/claude.md" },
       { "ACP Agents" = "agent-adapters/acp.md" },
+      { "A2A Cloud Agents" = "agent-adapters/a2a.md" },
+      { "A2A Structured Output Protocol" = "a2a/extensions/structured-output/v1.md" },
     ] },
     { "Decision Models" = [
       { "TypeSafe Jev" = "agent-adapters/typesafe.md" },

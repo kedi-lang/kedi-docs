@@ -6,8 +6,8 @@ The generic ACP adapter launches an Agent Client Protocol process and speaks
 newline-delimited JSON-RPC over stdio:
 
 ```kedi
-> agent:
-    acp: npx @zed-industries/codex-acp
+> agent: acp:
+    command: npx @zed-industries/codex-acp
 ```
 
 Command strings are shell-split without invoking a shell. Python may pass a
@@ -16,7 +16,7 @@ sequence to avoid quoting ambiguity.
 ## Explicit Commands
 
 ACP does not have an implicit command source. Every runnable ACP configuration
-must bind the command in multiline `> agent:` syntax or construct
+must bind the command in a typed `> agent: acp:` body or construct
 `ACPAdapter(command=...)` in Python. Plain `> agent: acp`, CLI command options,
 and environment command fallbacks are intentionally unsupported.
 
@@ -49,8 +49,8 @@ agent's own default model through its command/environment.
 ACP supports raw text only:
 
 ```kedi
-> agent:
-    acp: npx @zed-industries/codex-acp
+> agent: acp:
+    command: npx @zed-industries/codex-acp
 [answer] << Inspect the repository and summarize the risk.
 = `answer`
 ```

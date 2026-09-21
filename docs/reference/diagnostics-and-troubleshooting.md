@@ -39,7 +39,10 @@ not make imported Python safe.
 | Symptom | Check |
 | --- | --- |
 | Framework/harness mismatch | Use `> adapter:` for frameworks, `> agent:` for harnesses |
-| ACP command missing | Set an explicit multiline ACP command or construct `ACPAdapter(command=...)` |
+| ACP command missing | Set `command` in `> agent: acp:` or construct `ACPAdapter(command=...)` |
+| A2A endpoint rejected | Use HTTPS outside loopback; remove credentials, query, and fragment from the URL |
+| A2A structured output unsupported | Use raw invocation or a peer advertising Kedi's structured-output extension |
+| A2A observation timed out | Inspect/cancel the recorded task ID; a local timeout does not cancel remote work |
 | Structured output unsupported | Choose a structured adapter or use raw `[text] <<` |
 | Tools/MCP/subagents unsupported | Consult [Capability Matrix](capability-matrix.md) |
 | Model setting ignored/rejected | Use a key supported by the active adapter |

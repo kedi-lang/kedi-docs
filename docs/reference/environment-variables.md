@@ -80,6 +80,20 @@ Notebook reads `.env` from its working directory without overriding existing
 process values, then applies its Secret Manager entries. Updating Secret Manager
 resets active runtimes. These files and their contents must not be committed.
 
+## A2A Server
+
+| Variable | Contract |
+| --- | --- |
+| `KEDI_A2A_PUBLIC_URL` | Public discovery base URL used by `kedi a2a serve` |
+| `KEDI_A2A_AUTH_SCHEME` | `basic`, `bearer`, or `api-key` |
+| `KEDI_A2A_USERNAME` | Basic-auth username; default `kedi` |
+| `KEDI_A2A_SECRET` | Direct server credential fallback |
+| `KEDI_A2A_MODEL` | Model override for the exported server profile |
+
+Prefer a named variable through `--secret-env` or a mounted file through
+`--secret-file` over `KEDI_A2A_SECRET`. Client profiles reference their own
+credential variable or file in the `> agent: a2a:` auth block.
+
 ## Benchmark Instrumentation
 
 `KEDI_HARBOR_LOGFIRE=1` opts the Harbor integration into installing and

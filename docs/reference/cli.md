@@ -13,6 +13,7 @@ kedi add PACKAGE_NAME
 kedi add git+https://github.com/OWNER/REPOSITORY.git
 kedi skills add --path SKILL_DIRECTORY
 kedi skills add --repo OWNER/REPOSITORY
+kedi a2a serve SOURCE --entry PROFILE [OPTIONS]
 kedi notebook [--host HOST] [--port PORT] [--python PATH] [--cwd PATH] [--token TOKEN] [--no-open]
 ```
 
@@ -27,7 +28,7 @@ source-file identity and adjacent artifacts.
 
 | Option | Default | Meaning |
 | --- | --- | --- |
-| `--adapter NAME` | `pydantic` | `pydantic`, `dspy`, `langchain`, `claude`, `codex`, or `acp` |
+| `--adapter NAME` | `pydantic` | `pydantic`, `dspy`, `langchain`, `claude`, `codex`, `acp`, or `a2a` |
 | `--adapter-model MODEL` | `groq:qwen/qwen3-32b` | Default model identifier; examples explicitly select `openai:gpt-5.6-luna` |
 
 The historical option name is `--adapter`, but it accepts both framework
@@ -124,6 +125,34 @@ are ignored. Missing attributes read as `None`.
 `kedi install` accepts zero or one manifest path and defaults to
 `./package.kedi`. `kedi add` accepts exactly one registry name or credential-free
 GitHub `git+https` URL. Package subcommands reject ordinary runtime options.
+
+## A2A Server
+
+`kedi a2a serve SOURCE --entry PROFILE` exposes one exported profile through
+the official A2A protocol server. Install `kedi[a2a]` first.
+
+| Option | Default / meaning |
+| --- | --- |
+| `--entry NAME` | Required exported profile |
+| `--host`, `--port` | `127.0.0.1`, `8000` |
+| `--public-url URL` | Required for a non-loopback bind |
+| `--rpc-path PATH` | `/a2a` |
+| `--auth` | `basic`, `bearer`, or `api-key`; default `basic` |
+| `--username` | Basic username; default `kedi` |
+| `--secret-env`, `--secret-file` | Secret reference; mutually exclusive |
+| `--api-key-header` | API-key header; default `X-API-Key` |
+| `--allow-unauthenticated` | Explicit loopback-only development mode |
+| `--model` | Server entry model override |
+| `--max-concurrency` | Concurrent profile executions; default `4` |
+| `--max-pending-tasks` | Global and per-principal pending bound |
+| `--max-sessions` | In-memory principal/context session bound |
+| `--max-request-bytes` | HTTP request body bound |
+| `--max-input-chars` | Task text bound |
+| `--max-response-bytes` | Result bound |
+| `--max-tasks-per-principal` | Retained task bound |
+
+See [A2A Cloud Agents](../agent-adapters/a2a.md) for authentication, structured
+results, lifecycle recovery, and deployment limits.
 
 ## Notebook Command { #notebook-command }
 

@@ -31,28 +31,34 @@ part of the base adapter protocol rather than an optional capability.
 
 ## Agent Harnesses
 
-| Capability | Claude Agent SDK | Codex App Server | ACP |
-| --- | :---: | :---: | :---: |
-| Structured output | yes | yes | no |
-| Kedi tool registration | yes | yes | no |
-| Kedi-declared MCP | yes | no | no |
-| Profile override | yes | yes | yes |
-| Model override | yes | yes | no |
-| Effort | yes | yes | no |
-| Settings | yes | yes | yes |
-| Code mode | yes | yes | no |
-| Native approvals | yes | yes | no |
-| Dynamic native approval handler | yes | no | no |
-| Foreground subagents | yes | yes | no |
-| Background subagents | yes | yes | no |
-| Semantic stream events | yes | yes | yes |
-| Agent lifecycle hooks | yes | yes | yes |
+| Capability | Claude Agent SDK | Codex App Server | ACP | A2A |
+| --- | :---: | :---: | :---: | :---: |
+| Structured output | yes | yes | no | conditional |
+| Kedi tool registration | yes | yes | no | no |
+| Kedi-declared MCP | yes | no | no | no |
+| Profile override | yes | yes | yes | yes |
+| Model override | yes | yes | no | no |
+| Effort | yes | yes | no | no |
+| Settings | yes | yes | yes | no |
+| Code mode | yes | yes | no | no |
+| Native approvals | yes | yes | no | no |
+| Dynamic native approval handler | yes | no | no | no |
+| Foreground subagents | yes | yes | no | yes |
+| Background subagents | yes | yes | no | yes |
+| Semantic stream events | yes | yes | yes | yes |
+| Agent lifecycle hooks | yes | yes | yes | yes |
 <!-- END GENERATED ADAPTER CAPABILITIES -->
 
 ACP is intentionally a raw-text harness. It starts a fresh ACP session for each
 Kedi invocation and consumes text chunks. Structured captures, Kedi tools, MCP
 projection, model selection, effort, and subagents are rejected rather than
 simulated.
+
+A2A delegates execution to a remote agent. Structured output is conditional:
+generic peers remain text-only, while peers advertising Kedi's versioned
+structured-output extension accept typed captures. A2A does not project local
+tools, MCP, model settings, effort, CodeMode, or approval handlers into the
+remote process.
 
 “Native approvals” means the adapter can project Kedi's policy into its own
 tool loop. Kedi still performs argument validation and risk classification
