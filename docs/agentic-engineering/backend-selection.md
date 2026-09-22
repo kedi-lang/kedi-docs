@@ -54,6 +54,24 @@ selected_backend = "pydantic"
 Dynamic selection postpones validation and reduces static diagnostics. Prefer a
 literal or profile in production source.
 
+## Required Capabilities
+
+Make nonnegotiable backend behavior explicit with `> requires:`:
+
+```kedi
+> adapter: langchain
+> requires:
+    structured_output
+    tool_registration
+    history_replay
+```
+
+Literal selections receive source-located LSP errors when the adapter cannot
+meet the contract. Dynamic selections are checked at runtime before model I/O.
+Requirements accumulate through lexical scope and applied profiles; an inner
+scope cannot erase an outer obligation. See
+[Scoping and Capabilities](scoping-and-capabilities.md#explicit-requirements).
+
 ## ACP Commands
 
 Select ACP using an explicit command:

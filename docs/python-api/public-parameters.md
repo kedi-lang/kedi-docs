@@ -39,7 +39,9 @@ These entry points accept `**adapter_kwargs` for adapter construction.
 
 `query` additionally accepts optional positional `fn` and `cache=False`.
 `bind` requires keyword-only `file`, and adds `cache=False`, `reload=False`.
-Neither accepts arbitrary adapter kwargs or execution constructor parameters.
+Both accept `requires`, a sequence of canonical adapter capability names checked
+before the callable's model I/O. Neither accepts arbitrary adapter kwargs or
+execution constructor parameters.
 
 ## Incremental Runtime Parameters
 

@@ -11,7 +11,7 @@ sketches, not executable programs.
 
 - `FrameworkAdapterName` is
   `Literal["pydantic", "dspy", "langchain"]`.
-- `AgentName` is `Literal["claude", "codex", "acp"]`.
+- `AgentName` is `Literal["claude", "codex", "acp", "a2a"]`.
 - `AdapterLike` is `AgentAdapter[Any] | LazyAdapter`.
 - `ApprovalMode` is `Literal["allow", "deny"]`.
 - `ApprovalHandler` is a sync or async callable from `ApprovalRequest` to
@@ -33,6 +33,7 @@ import kedi
     system=...,
     effort=...,
     settings=...,
+    requires=(),
     tools=(),
     env=...,
     mcp_servers=(),
@@ -99,14 +100,17 @@ import kedi
     name=None,
     description=None,
     retries=0,
+    retry_on=None,
     risk="mutating",
 )
 def tool_name(value: str) -> object: ...
 ```
 
 Risk is `read_only`, `mutating`, or `sensitive`. Retries must be nonnegative and
-produce `retries + 1` total attempts. Sync and async functions are preserved;
-only `Exception` subclasses are retried.
+produce `retries + 1` total attempts. `retry_on` is `None` for all ordinary
+`Exception` failures, or a sequence of eligible `Exception` classes; an empty
+sequence disables matching. Sync and async functions are preserved. Only
+callable-body failures are retried.
 
 `@kedi.type` converts an ordinary class to a dataclass or preserves an existing
 Pydantic/dataclass surface. `inject=True` registers it by name for query

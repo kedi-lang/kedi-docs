@@ -193,6 +193,7 @@ Override metadata and retry transient callable errors:
     name="search_docs",
     description="Search approved project documentation.",
     retries=2,
+    retry_on=(TimeoutError, ConnectionError),
     risk="read_only",
 )
 def search_index(query: str) -> list[str]:
@@ -200,9 +201,17 @@ def search_index(query: str) -> list[str]:
 ```
 
 The registered name defaults to `__name__`; description defaults to the
-docstring. `retries=2` means at most three total attempts. Retries catch normal
-`Exception` failures for both sync and async callables; they do not retry
-`BaseException` subclasses. Negative retry counts are invalid.
+docstring. `retries=2` means at most three total attempts. `retry_on` accepts a
+sequence of `Exception` classes and matches subclasses. Omit it to make all
+ordinary `Exception` failures eligible, or pass an empty tuple to match none.
+The filter alone does not enable retries.
+
+Retries cover only failures raised by the callable body, for both sync and
+async tools. Argument validation, hooks, approval, result handoff, cancellation,
+`KeyboardInterrupt`, and `SystemExit` are not retried. A tool managed by an
+adapter still has one retry owner; the decorator and adapter projection do not
+multiply attempts. Negative retry counts and non-`Exception` filters are
+invalid.
 
 ## Tool Risk Metadata
 

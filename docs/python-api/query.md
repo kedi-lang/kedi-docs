@@ -144,6 +144,7 @@ Framework adapters use `adapter=`; process-backed harnesses use `agent=`:
     system="Return only the requested result.",
     effort="low",
     settings={"timeout": 120},
+    requires=("structured_output",),
 )
 def extract_name(text: str) -> str:
     """kedi
@@ -156,6 +157,11 @@ def extract_name(text: str) -> str:
 Use `agent="codex"`, `agent="claude"`, or `agent="acp"` for harnesses. Passing
 both `adapter` and `agent` is an error. Adapter instances are accepted when
 they expose matching `kind` and `shortname` metadata.
+
+`requires` declares adapter capabilities that this callable cannot operate
+without. Names use the same canonical vocabulary as native `> requires:` and
+are checked before model I/O. Unknown names fail during decoration; unsupported
+capabilities fail when the callable resolves its adapter.
 
 ## Tools, Environment, and Skills
 

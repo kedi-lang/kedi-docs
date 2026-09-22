@@ -45,6 +45,8 @@ not make imported Python safe.
 | A2A observation timed out | Inspect/cancel the recorded task ID; a local timeout does not cancel remote work |
 | Structured output unsupported | Choose a structured adapter or use raw `[text] <<` |
 | Tools/MCP/subagents unsupported | Consult [Capability Matrix](capability-matrix.md) |
+| Explicit adapter requirement missing | Remove the unsupported `> requires:` entry or select an adapter that advertises it |
+| CodeMode preload unknown/over limit | Use exact exposed tool names and keep the list within `max_hydrated_tools` |
 | Model setting ignored/rejected | Use a key supported by the active adapter |
 | Provider authentication fails | Provider-specific API key and endpoint |
 | Codex schema rejected | Replace unsupported URL/regex formats with described strings |
@@ -60,8 +62,9 @@ with its production model and optional dependencies installed.
 - An edit must provide the complete argument mapping and is revalidated.
 - `.env` reads need explicit secret-file intent plus sensitive approval.
 - Approval only wraps registered tools, not arbitrary embedded Python.
-- Tool retries retry exceptions and may repeat side effects; make retryable
-  mutating tools idempotent.
+- Tool retries repeat matching body failures and may repeat side effects; make
+  retryable mutating tools idempotent. Validation, approval, hooks, and
+  cancellation are not retry triggers.
 
 ## MCP
 

@@ -9,6 +9,8 @@
 | `> agent: acp:` | Select ACP and bind its explicit stdio `command` |
 | `> agent: a2a:` | Select a remote A2A endpoint, auth reference, and transport timeouts |
 | `> model: value` | Set plain or Python-evaluated model identifier |
+| `> requires: capability` | Require one adapter capability before model I/O |
+| `> requires:` | Require an indented list of adapter capabilities |
 | `> effort: level` | Set `minimal`, `low`, `medium`, `high`, `xhigh`, or `max` |
 | `> system: text` | Replace active instructions; block form joins lines |
 | `> settings:` | Merge adapter settings by key |
@@ -46,6 +48,14 @@ optional positive `compaction_threshold`. Compaction is history lifecycle
 policy, not a model setting. See
 [Caching and Conversation History](../runtime/caching.md).
 
+`> codemode:` accepts `enabled`, `preload_tools`, `default_search_limit`,
+`max_search_limit`, `max_hydrated_tools`, `max_discovery_result_bytes`,
+`max_code_chars`, `max_nested_calls`, `max_concurrent_calls`,
+`max_tool_result_bytes`, `max_total_tool_result_bytes`, `max_print_bytes`, and
+`request_timeout`. `preload_tools` may be one exact exposed name or an indented
+list; preloading resolves schemas without executing tools. See
+[CodeMode](../agentic-engineering/codemode.md#preload-known-tools).
+
 `> hooks:` fields are `user_prompt_submit`, `pre_tool_use`, `post_tool_use`,
 and `post_tool_use_failure`. Each value is a Python callable or a sequence of
 callables. See [Agent Lifecycle Hooks](../agentic-engineering/hooks.md).
@@ -65,6 +75,19 @@ callables. See [Agent Lifecycle Hooks](../agentic-engineering/hooks.md).
 Network transports use `url` instead of `command`/`args`. Valid normalized
 transports are documented in [MCP Servers](../agentic-engineering/mcp.md).
 
+## Procedure Tool Metadata
+
+| Directive | Scope and contract |
+| --- | --- |
+| `> tool:` | One declaration inside a procedure, after an optional leading docstring and before executable statements |
+
+The fields are `name`, `description`, `risk`, `retries`, and `retry_on`.
+`retry_on` is an indented list of visible `Exception` class names. Metadata
+changes the exposed tool contract, not the procedure's source identity. Retries
+apply only to body failures; validation, hooks, approval, cancellation, and
+return validation are not retried. See
+[Tools and `> use:`](../agentic-engineering/tools-and-use.md#native-tool-metadata).
+
 ## Profiles and Delegation
 
 | Directive | Contract |
@@ -76,8 +99,9 @@ transports are documented in [MCP Servers](../agentic-engineering/mcp.md).
 | `> output: Type` | Declare a profile's default structured child result; an explicit child-call `final_schema` overrides it |
 
 A profile body may contain adapter or agent selection, model, effort, system,
-settings, approval, hooks, history, skills, CodeMode, artifact policy, MCP, tools,
-child profiles, descendant budget, workflow mode, and output type. See
+settings, explicit requirements, approval, hooks, history, skills, CodeMode,
+artifact policy, MCP, tools, child profiles, descendant budget, workflow mode,
+and output type. See
 [Profiles and Composition](../agentic-engineering/profiles.md#merge-rules) for
 the member-specific merge rules. Defining or applying a profile is configuration,
 not a model invocation.

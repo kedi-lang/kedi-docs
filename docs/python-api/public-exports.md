@@ -13,7 +13,7 @@ while runtime and artifact handles are advanced integration surfaces.
 | `type`, `tool`, `Constraints` | Class registration, callable metadata/retries/risk, validation-only field metadata. [Types and Tools](types-and-tools.md) |
 | `approval`, `ApprovalPolicy`, `ApprovalMode`, `ApprovalHandler`, `ApprovalRequest`, `ApprovalDecision`, `ApprovalCancelled` | Policy registration, static/dynamic policy types, immutable request and allow/deny/edit results; cancellation is not denial. [Approvals](approvals-mcp-and-skills.md) |
 | `McpServerSpec`, `SkillsSettings` | Normalized server transport specification and scoped skill-discovery policy. [MCP](mcp.md), [Skills](skills.md) |
-| `CodeModeSettings` | Enabled/discovery-result limits for the scoped tool catalog. [CodeMode](../agentic-engineering/codemode.md) |
+| `CodeModeSettings` | Activation, preloaded tool names, and limits for the scoped tool catalog. [CodeMode](../agentic-engineering/codemode.md) |
 | `on`, `HookSettings`, `HookHandler`, `HookEvent`, `HookEventName`, `HookDecisionKind` | Registration and event/decision aliases, not arbitrary provider callbacks. [Hooks](../agentic-engineering/hooks.md) |
 | `HookContext`, `ToolHookContext`, `ToolOrigin` | Run lineage and tool-origin metadata supplied by runtime; do not infer authorization from origin. [Hooks](../agentic-engineering/hooks.md) |
 | `UserPromptSubmitRequest`, `UserPromptSubmitDecision`, `PreToolUseRequest`, `PreToolUseDecision`, `PostToolUseEvent`, `PostToolUseFailureEvent` | Typed hook payloads; only pre-operation decisions can edit/deny, post events cannot undo effects. [Hook payloads](../agentic-engineering/hooks.md) |

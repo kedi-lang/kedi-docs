@@ -99,6 +99,44 @@ Adapters advertise kind and capabilities such as:
 The parser and LSP combine literal backend selection with this metadata. Dynamic
 backend expressions defer some checks to runtime.
 
+## Explicit Requirements
+
+Use `> requires:` when a capability is a hard contract rather than an inferred
+feature warning:
+
+```kedi
+> adapter: pydantic
+> requires:
+    structured_output
+    tool_registration
+    stream_events
+```
+
+The scalar form accepts one name: `> requires: stream_events`. Requirements are
+additive across lexical scopes and applied profiles, with stable
+deduplication. They may appear at top level, inside a procedure, or inside a
+profile.
+
+Literal adapter selections are checked by the LSP. Dynamic selections defer
+the decision until runtime, but Kedi still validates the contract before the
+first model request. A missing or unadvertised capability is an error, not a
+fallback. Python `query` and `bind` accept the same callable-boundary contract
+through `requires=(...)`.
+
+A2A can negotiate peer capabilities: an authenticated Agent Card lookup may
+precede validation, but no remote task starts unless its requirements hold.
+For example, `structured_output` requires the peer's Kedi structured-output
+extension, even when the current call only requests a text response.
+
+The canonical requirement vocabulary is:
+
+```text
+structured_output, tool_registration, mcp, profile_override, model_override,
+effort, settings, codemode, native_approvals, native_approval_handler,
+subagents, background_subagents, artifacts, native_artifacts,
+stateful_history, history_replay, native_compaction, stream_events, hooks
+```
+
 ## Errors versus Warnings
 
 Structured output is central to `>>` output capture. If the selected adapter

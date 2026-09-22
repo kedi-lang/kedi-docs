@@ -107,13 +107,16 @@ entries.
     system="Cite the supplied records.",
     effort="medium",
     settings={"timeout": 120},
+    requires=("structured_output", "history_replay"),
 )
 def report(records: list[str]) -> str:
     ...
 ```
 
-Use `agent=` instead of `adapter=` for Claude, Codex, or ACP harnesses. The two
-selection parameters are mutually exclusive.
+Use `agent=` instead of `adapter=` for Claude, Codex, ACP, or A2A harnesses. The
+two selection parameters are mutually exclusive. `requires` uses canonical
+adapter capability names and fails before model I/O when the selected backend
+cannot honor the file-backed callable's contract.
 
 ## Tools and Environment
 

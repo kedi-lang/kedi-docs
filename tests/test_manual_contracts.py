@@ -186,8 +186,8 @@ class ManualContractTests(unittest.TestCase):
         additions = {
             "configure": execution,
             "context": execution,
-            "query": {"fn", "cache"},
-            "bind": {"file", "cache", "reload"},
+            "query": {"fn", "cache", "requires"},
+            "bind": {"file", "cache", "reload", "requires"},
             "interactive": execution
             | {
                 "executor",

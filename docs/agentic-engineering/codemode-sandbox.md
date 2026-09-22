@@ -1,7 +1,8 @@
 # CodeMode Sandbox and Recovery
 
 CodeMode is bounded execution over hydrated tools, not general host Python.
-The model must discover a tool and request its schema before using it.
+The model must discover a tool and request its schema before using it unless
+the application explicitly lists that exact exposed name in `preload_tools`.
 See [Discovery and Execution](codemode.md#model-facing-tools) for that protocol.
 
 ## Supported Sandbox Subset
@@ -29,6 +30,9 @@ CPython execution.
 Every agent run receives an isolated catalog, hydration set, Monty process
 checkout, and variable state. Kedi closes the session and cancels active host
 callbacks on normal completion, errors, cancellation, and early close.
+Preloaded schemas count toward the same hydration set. Restarting Monty clears
+variables but preserves that run's hydrated allowlist; it never carries the
+allowlist into another run.
 
 The runtime bounds search pages, discovery payload bytes, hydrated tools, code
 characters, nested call count, nested concurrency, individual result bytes,

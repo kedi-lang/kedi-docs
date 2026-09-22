@@ -32,10 +32,13 @@ defaults to `true` when omitted:
 
 ```kedi
 > codemode:
+    preload_tools:
+        lookup_release
+        list_versions
     default_search_limit: 10
     max_search_limit: 50
-    max_hydrated_tools: 32
-    max_nested_calls: 48
+    max_hydrated_tools: 64
+    max_nested_calls: 64
     max_concurrent_calls: 8
     max_tool_result_bytes: 256000
     max_total_tool_result_bytes: 1000000
@@ -52,6 +55,36 @@ from kedi.agent_adapter import PydanticAdapter
 
 adapter = PydanticAdapter("openai:gpt-5.6-luna", codemode=True)
 ```
+
+Use `CodeModeSettings` when Python should preload known tools:
+
+```python
+from kedi.agent_adapter import CodeModeSettings, PydanticAdapter
+
+adapter = PydanticAdapter(
+    "openai:gpt-5.6-luna",
+    codemode=CodeModeSettings(preload_tools=("lookup_release",)),
+)
+```
+
+## Preload Known Tools
+
+`preload_tools` accepts one exact exposed tool name or an indented list. Kedi
+resolves the names and hydrates their schemas before the first model request,
+so generated code may call those tools without `search_tools` or
+`get_tool_schema`. Their schemas are included in the first CodeMode instruction.
+Preloading does not execute a tool or expose a result.
+
+Resolution is atomic and run-local. Unknown or ambiguous names, duplicate
+catalog names, and `max_hydrated_tools` overflow fail before model I/O and leave
+no partial hydration. Aliased tools must be named by the alias exposed to the
+model. Preloaded tools count toward `max_hydrated_tools` and remain hydrated
+after `execute_code(restart=True)` resets sandbox variables.
+
+Static lists with more than five unique names produce an LSP warning by
+default. VS Code users may change the lint-only
+`kedi.codemode.preloadWarningThreshold` setting; it does not change the runtime
+hydration limit.
 
 ## Model-Facing Tools
 

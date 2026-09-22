@@ -14,6 +14,9 @@ release_index = {"1.4.0": "Adds typed child results and fixes cancellation clean
   ###
   Return release notes for one exact version.
   ###
+  > tool:
+      name: lookup_release
+      risk: read_only
   = `release_index[version]`
 
 > use: lookup_release
@@ -23,9 +26,8 @@ release_index = {"1.4.0": "Adds typed child results and fixes cancellation clean
 = <answer>
 ````
 
-This fixture exposes one local lookup and explicitly permits its invocation.
-Kedi procedures default to mutating risk even when their body only reads data;
-use a risk-annotated Python tool when it should be read-only by contract.
+This fixture exposes one local lookup, marks it read-only, and explicitly
+permits its invocation.
 
 Kedi converts the procedure signature and docstring into a tool name,
 description, JSON argument schema, and validated callable. Custom Kedi types
@@ -33,6 +35,41 @@ become nested schemas. Defaults remain optional arguments.
 
 Write useful procedure docstrings before exposing a tool. The model must know
 what the tool does, what its arguments mean, and what result it returns.
+
+## Native Tool Metadata
+
+A procedure may contain one `> tool:` declaration after its optional leading
+docstring and before executable statements:
+
+```kedi
+@fetch_release(version: str) -> str:
+  > tool:
+      name: lookup_release
+      description: Read notes for one exact release version.
+      risk: read_only
+      retries: 2
+      retry_on:
+          TimeoutError
+          ConnectionError
+  = `release_client.fetch(version)`
+```
+
+The fields are:
+
+| Field | Contract |
+| --- | --- |
+| `name` | Model-facing alias; the source procedure keeps its original name |
+| `description` | Model-facing description; omission uses the procedure docstring |
+| `risk` | `read_only`, `mutating`, or `sensitive`; default `mutating` |
+| `retries` | Nonnegative retry count; total attempts are at most `retries + 1` |
+| `retry_on` | Visible `Exception` class names eligible for retry |
+
+Retries wrap only procedure-body failures. Argument and result validation,
+hooks, approval, cancellation, `KeyboardInterrupt`, and `SystemExit` are not
+retried. Each native retry starts from a fresh copy of the validated arguments.
+Omitting `retry_on` makes ordinary `Exception` failures eligible.
+The exception classes are captured when the procedure is defined. Reassigning
+an exception name later does not change an existing procedure's policy.
 
 ## Single-Line Resolution
 
@@ -128,8 +165,9 @@ caller-scope lookup.
 
 ## Risk and Approval
 
-Custom Kedi procedures and Python tools default to `mutating`. The Python API
-can mark a tool `read_only`, `mutating`, or `sensitive`, and can attach an
+Custom Kedi procedures and Python tools default to `mutating`. Native
+procedures use `> tool:` and Python callables use `@kedi.tool(...)` to declare
+`read_only`, `mutating`, or `sensitive`. Adapter-owned tools may also attach an
 argument-aware resolver that only elevates risk. Every risky invocation is
 processed through the active approval policy before execution.
 
