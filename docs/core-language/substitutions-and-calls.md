@@ -12,7 +12,7 @@ Use `<name>` to read a value from the current lexical environment:
 [project] = Atlas
 [status] = ready
 
-= Project <project> is <status>.
+> show: Project <project> is <status>.
 ```
 
 Substitution always renders the value as text at that position. It is therefore
@@ -24,10 +24,10 @@ bare name inside Python or pass it as a native call argument.
 [retries: int] = `3`
 
 # Text rendering
-= Retries: <retries>
+> show: Retries: <retries>
 
 # Native arithmetic
-= `retries + 1`
+> show: `retries + 1`
 ```
 
 An unknown name is an error. Kedi does not silently render a missing
@@ -41,7 +41,7 @@ Call a Kedi procedure inside angle brackets:
 @display_name(first: str, last: str) -> str:
   = <first> <last>
 
-= Owner: <display_name(Ada, Lovelace)>
+> show: Owner: <display_name(Ada, Lovelace)>
 ```
 
 Angle-call arguments are positional. Kedi does not provide a
@@ -52,7 +52,7 @@ compiled Kedi procedure from Python:
 @label(name: str, prefix: str = `"Issue"`) -> str:
   = <prefix>: <name>
 
-= `label(name="Parser", prefix="Bug")`
+> show: `label(name="Parser", prefix="Bug")`
 ```
 
 Use the ordinary angle-call form for readable prompt composition. Use a Python

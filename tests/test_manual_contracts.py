@@ -65,11 +65,11 @@ class ManualContractTests(unittest.TestCase):
             run(examples[0].replace("= `(status, visits)`", "= `scratch`"))
         self.assertIn("scratch", str(caught.exception))
 
-    def test_last_return_and_defaults(self):
+    def test_early_return_and_defaults(self):
         examples = snippets("core-language/parameters-and-returns.md")
-        last = next(s for s in examples if "@last_value" in s)
+        early = next(s for s in examples if "@choose" in s)
         default = next(s for s in examples if "@format_count" in s)
-        self.assertEqual(run(last), 2)
+        self.assertEqual(run(early), 0)
         self.assertEqual(run(default), "3 items")
 
     def test_nested_loop_map(self):

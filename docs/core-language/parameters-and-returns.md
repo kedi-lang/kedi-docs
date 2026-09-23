@@ -148,23 +148,43 @@ boundary.
 
 ## Early Return and No Return
 
-Kedi uses the last reached return value; `=` does not stop execution. Later
-statements still run, including side effects and model calls. A return inside
-the selected branch contributes a value without exiting the procedure. This is
-different from Python's `return` inside a fenced block, which exits that Python
+The first evaluated `=` ends the enclosing procedure or regular program.
+Different reachable branches may each return; this is not a one-return-per-file
+restriction. Statements after a definitely terminal path are rejected before
+execution. A Python `return` inside a fenced block still exits that Python
 block only.
 
 ```kedi
-@last_value() -> int:
-  = `1`
-  [value: int] = `2`
+@choose(value: int) -> int:
+  > if: `value < 0`:
+    = `0`
   = `value`
 
-= `last_value()`
+= `choose(-1)`
 ```
 
-This returns `2`. Use conditional bodies to control which work executes; do not
-place costly work after `=` expecting it to be unreachable.
+This returns `0`. Work after a taken return is not started. Already scheduled
+work is drained normally; its failures are not hidden by return.
+
+### Display Without Returning
+
+```kedi
+[city] = Ankara
+> show: The selected city is <city>.
+> show: `len(city)`
+= <city>
+```
+
+`> show:` evaluates once, displays with a newline, and continues without changing
+the return value. It supports literal text, substitutions and inline Python,
+but cannot declare output captures. It does not implicitly generate model
+output or append display text to model history.
+
+Notebook and IDLE roots reject `=` before execution, even in nested control
+flow. Use `> show:` there; procedure returns remain valid. IDLE also accepts
+`:show` as an alias. When migrating old repeated returns, convert intended
+displays only; do not automatically print discarded computations or sensitive
+values.
 
 An untyped procedure with no returned value produces `""`. Relying on that is
 appropriate only for side-effect-oriented helpers. Public procedures should

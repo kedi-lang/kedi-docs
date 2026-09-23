@@ -119,7 +119,7 @@ Run this setup cell first:
 Then run the result cell:
 
 ```kedi
-= `sum(value * value for value in values)`
+> show: `sum(value * value for value in values)`
 ```
 
 The result is `38`. After resetting the runtime, running only the second cell

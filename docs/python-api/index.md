@@ -120,7 +120,7 @@ complete Kedi fragments without replaying earlier fragments:
 ```python
 with kedi.interactive() as interactive_session:
     interactive_session.execute("[value: int] = `40`")
-    assert interactive_session.execute("= `value + 2`") == 42
+    interactive_session.execute("> show: `value + 2`")  # displays 42
 ```
 
 See [Interactive Execution](../runtime/interactive-execution.md) for source

@@ -44,9 +44,9 @@ second condition is needed:
 Each selected body owns a child value scope. A Kedi `=` initialization remains
 inside that branch, while `:=` or embedded Python may update a binding already
 owned by a containing scope. New Python-only names never become Kedi bindings.
-Agent-profile directives inside the body are also lexical. A return inside a
-selected body participates in Kedi's existing last-return behavior; it is not
-a Python-style early return.
+Agent-profile directives inside the body are also lexical. The first evaluated
+return ends the enclosing procedure or regular program; later conditions and
+statements do not execute. Use `> show:` to display a value and continue.
 
 
 ## Template Conditions

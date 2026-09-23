@@ -173,8 +173,10 @@ Public artifact models are `ArtifactRef`, `ArtifactChunk`,
 `interactive(...) -> InteractiveSession` creates a synchronous, process-local
 incremental runtime. `InteractiveSession.execute(source, *, source_name=None)`
 parses and executes one complete fragment exactly once while retaining earlier
-values, declarations, imports, conversation state, and artifacts. It returns
-the same native result as `KediRuntime.run_main()`. `close()` is idempotent;
+values, declarations, imports, conversation state, and artifacts. Interactive
+fragments return `None`; use bindings to preserve values and `> show:` to
+display them. Root `=` returns are rejected before execution, while procedure
+returns retain their ordinary early-exit semantics. `close()` is idempotent;
 the session is also a context manager.
 
 `dump_session(session, path)` atomically writes a strict, pickle-free snapshot

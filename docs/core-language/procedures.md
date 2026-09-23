@@ -30,10 +30,12 @@ Statements execute in source order. A return statement starts with `=`:
   = <summary>
 ```
 
-Execution continues after `=`; the last reached return determines the result.
+The first evaluated `=` ends the current procedure immediately. Statements
+after an unconditional return are rejected as unreachable; returns in
+different `if`/`else` branches are valid because only one branch is evaluated.
 If an untyped procedure reaches the end without a value, it returns an empty
-string. For non-string behavior, add an
-explicit return annotation and return a native value.
+string. For non-string behavior, add an explicit return annotation and return
+a native value.
 
 Keep deterministic transformation in Python and model judgement in `>>`
 templates. A procedure may combine both, but its name and return type should

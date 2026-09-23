@@ -1,7 +1,9 @@
 """Exercise CLI and incremental examples published in the tooling chapter."""
 
+import io
 import sys
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 
 from click.testing import CliRunner
@@ -43,8 +45,11 @@ class ToolingExampleTests(unittest.TestCase):
             with self.assertRaises(KediExecutionError):
                 session.execute(cells[1])
             session.execute(cells[0])
-            self.assertEqual(session.execute(cells[1]), 38)
-            self.assertEqual(session.execute(cells[1]), 38)
+            output = io.StringIO()
+            with redirect_stdout(output):
+                self.assertIsNone(session.execute(cells[1]))
+                self.assertIsNone(session.execute(cells[1]))
+            self.assertEqual(output.getvalue(), "38\n38\n")
 
     def test_cli_default_inventory(self):
         defaults = {p.name: p.default for p in main.params}

@@ -31,7 +31,7 @@ with kedi.interactive() as session:
     = `base + 2`
 """.strip()
     )
-    assert session.execute("= `add_two()`") == 42
+    session.execute("> show: `add_two()`")  # displays 42
 ```
 
 The second and third fragments can read declarations and values created by the
@@ -41,15 +41,15 @@ Earlier fragments are neither concatenated nor executed again.
 
 ### Results
 
-`InteractiveSession.execute()` uses the same native-value boundary as
-`KediRuntime.run_main()`:
+`InteractiveSession.execute()` returns `None`. Use `> show:` to display a value
+and bindings to retain it. Interactive-root returns, including those in root
+branches or loops, are rejected before any fragment side effect. Procedures
+defined or called in a session retain normal typed returns.
 
-- a native return such as ``= `value` `` returns the underlying Python value;
-- a rendered return such as `= <value>` returns rendered text;
-- a fragment without a top-level return returns `None`.
-
-This distinction means an `int` remains an `int`; interactive execution does
-not implicitly stringify results.
+Display evaluates once and does not replay earlier cells or introduce model
+calls. Resolving a pending capture keeps its normal computation. Existing
+notebooks using root returns need explicit migration; user files are not
+silently rewritten.
 
 ### Source Identity and Imports
 
@@ -59,8 +59,8 @@ useful identity:
 
 ```python
 with kedi.interactive(cwd="examples/cells") as session:
-    result = session.execute(
-        "> import: helpers\n= `answer`",
+    session.execute(
+        "> import: helpers\n> show: `answer`",
         source_name="answer.kedi",
     )
 ```
@@ -108,7 +108,7 @@ with kedi.interactive() as session:
     kedi.dump_session(session, snapshot)
 
 with kedi.load_session(snapshot) as session:
-    assert session.execute("= `add_two()`") == 42
+    session.execute("> show: `add_two()`")  # displays 42
 ```
 
 The operation is strict and all-or-nothing. Kedi validates all fragments,

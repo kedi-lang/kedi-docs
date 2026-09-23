@@ -79,22 +79,20 @@ same `~/.kedi_history` file as ordinary and multiline input.
 
 ### Inspecting Values
 
-`:show <expression>` is a terminal-only meta command. It is not valid Kedi
-source and cannot appear in a `.kedi` file.
-
-The command evaluates any expression accepted on the right-hand side of a Kedi
-return. For example:
+`:show <expression>` is an IDLE alias for native `> show:`. Both display once
+and continue; neither declares output captures. Regular `.kedi` files use the
+native form. For example:
 
 ```console
 +++ :show <name>
-'rendered value'
+rendered value
 +++ :show `items[0]`
 42
 ```
 
-The first form uses Kedi rendering; the second preserves and displays the native
-value with `repr()`. This provides top-level inspection without making bare
-top-level substitutions legal in normal Kedi programs.
+Both forms use print-like display. Interactive root returns are rejected before
+execution; use show instead. Returns in procedures remain valid. Snapshot
+fragment sources use the canonical `> show:` form.
 
 ### Commands, History, and Exit
 
