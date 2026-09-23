@@ -56,7 +56,7 @@ statements do not execute. Use `> show:` to display a value and continue.
 [minimum_population: int] = `5_000_000`
 [result] = unknown
 
-> if: <city> has more than `minimum_population` residents
+> if: <city> has more than <`minimum_population`> residents
   [result] := major city
 > else:
   [result] := smaller city
@@ -65,8 +65,11 @@ statements do not execute. Use `> show:` to display a value and continue.
 ```
 
 A template condition has no trailing `:`. Plain text, `<name>` substitutions,
-procedure calls, and inline Python values use normal Kedi rendering semantics.
-`[output]` fields are rejected because a condition does not create a binding.
+procedure calls, and Python substitutions such as ``<`minimum_population`>``
+use normal Kedi rendering semantics. Bare backtick expressions are rejected
+during parsing; angle brackets make their place in the rendered claim
+explicit. `[output]` fields are rejected because a condition does not create a
+binding.
 
 Kedi evaluates the rendered claim using the current agent profile and its
 available context. A claim that cannot be established is treated as `false`.
@@ -79,7 +82,7 @@ when both contain one inline Python segment:
 > if: `is_ready`:
   [kind] = deterministic
 
-> if: `is_ready`
+> if: <`is_ready`>
   [kind] = model-classified
 ```
 
