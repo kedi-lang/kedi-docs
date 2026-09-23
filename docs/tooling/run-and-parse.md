@@ -55,6 +55,23 @@ kedi -p -c '= Hello from Kedi'
 A successful parse prints `Parsed successfully.` and performs no model call or
 program execution.
 
+## Explain Model Calls Without Execution
+
+```bash
+kedi explain program.kedi
+```
+
+`explain` parses the source directly, without importing its modules, running
+its prelude, evaluating dynamic model selectors, or invoking a model. It lists
+each static model-call site with its source-order adapter/model selection,
+visible tools, and capability requirements. Unknown dynamic values are labeled
+`unresolved`; they are not guessed. A known unsupported requirement makes the
+command exit nonzero. The report omits prompt and tool-result payloads.
+
+For a Python `@kedi.query` or `@kedi.bind` function, use
+`kedi.explain(function)` to obtain the structured `ExplainReport` without
+calling the function.
+
 ## `kedi parse`
 
 ```bash

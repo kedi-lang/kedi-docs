@@ -8,6 +8,7 @@ while runtime and artifact handles are advanced integration surfaces.
 | --- | --- |
 | `__version__` | Installed Kedi version string; not the provider or grammar revision |
 | `query`, `bind` | Decorators preserving sync/async call shape; execute docstring/file Kedi, not the Python stub. [Query](query.md), [Bind](bind.md) |
+| `explain`, `ExplainReport`, `ExplainedCall` | Read-only per-call-site adapter, model, tool and capability inspection; no user program execution. [Run and Parse](../tooling/run-and-parse.md) |
 | `configure`, `context`, `reset_config`, `parallel`, `interactive` | Configuration replacement, scoped overlay, reset, concurrent override and incremental construction. [Parameters](public-parameters.md) |
 | `AdapterLike`, `AgentName`, `FrameworkAdapterName` | Selection aliases; framework and harness selectors are not interchangeable. [Selection](configuration-and-context.md#framework-and-harness-selection) |
 | `type`, `tool`, `Constraints` | Class registration, callable metadata/retries/risk, validation-only field metadata. [Types and Tools](types-and-tools.md) |
@@ -16,11 +17,12 @@ while runtime and artifact handles are advanced integration surfaces.
 | `CodeModeSettings` | Activation, preloaded tool names, and limits for the scoped tool catalog. [CodeMode](../agentic-engineering/codemode.md) |
 | `on`, `HookSettings`, `HookHandler`, `HookEvent`, `HookEventName`, `HookDecisionKind` | Registration and event/decision aliases, not arbitrary provider callbacks. [Hooks](../agentic-engineering/hooks.md) |
 | `HookContext`, `ToolHookContext`, `ToolOrigin` | Run lineage and tool-origin metadata supplied by runtime; do not infer authorization from origin. [Hooks](../agentic-engineering/hooks.md) |
-| `UserPromptSubmitRequest`, `UserPromptSubmitDecision`, `PreToolUseRequest`, `PreToolUseDecision`, `PostToolUseEvent`, `PostToolUseFailureEvent` | Typed hook payloads; only pre-operation decisions can edit/deny, post events cannot undo effects. [Hook payloads](../agentic-engineering/hooks.md) |
+| `UserPromptSubmitRequest`, `UserPromptSubmitDecision`, `PreToolUseRequest`, `PreToolUseDecision`, `PostToolUseEvent`, `PostToolUseFailureEvent`, `PostToolResultFailureEvent`, `ToolCallRecord` | Typed hook payloads and body/result evidence; only pre-operation decisions can edit/deny, post events cannot undo effects. [Hook payloads](../agentic-engineering/hooks.md) |
 | `HookDeniedError`, `HookExecutionError`, `HookTimeoutError` | Denial, handler failure, and timeout remain distinct failure paths. [Hooks](../agentic-engineering/hooks.md) |
 | `AgentMessageEvent`, `AgentMessagePhase`, `AgentRunState`, `AgentRunStateEvent`, `AgentStreamEvent` | Semantic message/run-state events and discriminants, not token streams. [Stream Events](../agentic-engineering/stream-events.md) |
 | `AsyncAgentEventQueue`, `observe_agent_events`, `bind_agent_event_dispatcher` | Async queue and scoped event observer/dispatcher; own and join producer tasks explicitly. [Stream Events](../agentic-engineering/stream-events.md) |
 | `SubagentExecutionContext`, `SubagentUsageLimits`, `current_subagent_execution` | Current child lineage (or `None` outside a child) and request/tool/token ceilings. [Python Embedding](../agentic-engineering/subagent-python.md) |
+| `RunBudget`, `RunBudgetExceeded` | Immutable root/descendant request and managed tool-attempt ceilings; admission is atomic. [Limits](../agentic-engineering/subagent-limits.md) |
 | `ConversationState`, `session` | Model history and artifact ownership, not incremental variable scope. [Sessions](artifacts-and-sessions.md) |
 | `ArtifactPolicy`, `ArtifactRef`, `ArtifactChunk`, `ArtifactSearchResult`, `ArtifactReleaseResult`, `ArtifactHandle`, `ArtifactStream` | Policy, bounded transport/results, internal native handle, explicit single-use stream. [Artifacts](../runtime/tool-artifacts.md), [Retrieval](../runtime/artifact-retrieval.md), [Lifetime](../runtime/artifact-lifecycle.md) |
 | `DecisionCapture`, `DecisionInfo`, `DecisionSource`, `capture_decisions`, `decision_info` | Historical evaluation metadata, capture scope, and binding lookup; no extra model requests. [Decisions](decisions.md) |

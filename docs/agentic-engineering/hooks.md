@@ -12,13 +12,16 @@ the run waits for each handler before it continues.
 | `pre_tool_use` | After argument canonicalization and before approval/execution | yes | yes |
 | `post_tool_use` | After one successful tool execution | no | no |
 | `post_tool_use_failure` | After one failed tool execution | no | no |
+| `post_tool_result_failure` | After a returned body encounters result preparation or handoff failure | no | no |
 
 A denied prompt is never transported to the model. A denied tool call does not
 execute and does not produce a post-failure event. Denial is policy behavior,
 not a tool execution failure.
 
-Each executed tool call emits `pre_tool_use` and exactly one terminal event:
-`post_tool_use` on success or `post_tool_use_failure` on failure.
+`post_tool_use` and `post_tool_use_failure` describe the body lifecycle.
+`post_tool_result_failure` is a separate result lifecycle event: a body that
+returned successfully is not relabeled as a failed execution when artifact
+admission, a post-success hook, or delivery subsequently fails.
 
 ## Kedi Configuration
 
@@ -54,6 +57,7 @@ def observe_tool(event):
     pre_tool_use: `constrain_report_path`
     post_tool_use: `observe_tool`
     post_tool_use_failure: `observe_tool`
+    post_tool_result_failure: `observe_tool`
 ````
 
 A field may evaluate to one callable or a sequence of callables. Use the short
@@ -128,6 +132,14 @@ interruption. It is emitted only after tool execution starts; hook and approval
 denials are not tool-execution failures. Payload values are available to the
 handler but omitted from event representations and default telemetry.
 
+`PostToolResultFailureEvent.tool_call` is a `ToolCallRecord` with
+`tool_call_id`, 1-based `attempt`, `execution_state`, `result_state`,
+`failure_stage`, and `output_available`. If the body returned, `output` retains
+the native body value, including a valid `None`. The record's representation
+does not print that payload. A result-stage failure does not automatically
+retry the body, even when the tool has `retries` configured. Kedi-managed tools
+provide this evidence; opaque provider-built-in tools may not.
+
 ## Ordering and Errors
 
 Handlers execute serially in this order:
@@ -199,6 +211,13 @@ event fails before model transport and is reported by the LSP. Dynamic adapter
 selection defers that check to runtime.
 
 ## Security and Telemetry
+
+For CodeMode, a result record's `destination` is `sandbox`. `handed_off` is
+recorded only after the sandbox execution accepts the result. If execution
+fails and individual receipt cannot be established, delivery remains `unknown`.
+A successful tool body whose output fails serialization or size validation
+produces a `post_tool_result_failure` event and a terminal error retaining the
+native output; it is not converted into a model request to repeat that tool.
 
 Hooks execute trusted Python and can inspect prompt, argument, result, and error
 payloads. Keep audit sinks bounded and redact before forwarding data to another

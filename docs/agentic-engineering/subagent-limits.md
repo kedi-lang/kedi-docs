@@ -20,6 +20,40 @@ The model/tool/token limits are configured through `SubagentUsageLimits`, not
 `> settings: max_tokens`. The latter is a model-generation setting and does not
 replace the whole-child budget. See [Python Embedding](subagent-python.md).
 
+## Shared Run Budget
+
+For a ceiling across the root invocation and all descendants, use:
+
+```kedi
+> budget:
+    request_limit: 10
+    tool_attempt_limit: 20
+```
+
+Or pass `run_budget=RunBudget(request_limit=10, tool_attempt_limit=20)` to
+`compile_program`. Each independent root invocation starts a fresh ledger.
+Nested procedure/profile/child ceilings can narrow, but never extend, the
+remaining ancestor budget. Concurrent admissions are atomic.
+
+`request_limit` counts actual managed model generations, including tool-loop
+and output-repair turns. `tool_attempt_limit` counts entry into managed tool
+bodies, including every selective retry. Validation and approval denial do not
+consume attempts. An exhausted budget raises `RunBudgetExceeded` before the
+next operation; a spent slot is not refunded after a failure. A dimension that
+an adapter cannot enforce is rejected before the corresponding model call.
+Embedded Python calls to unrelated SDKs and opaque remote/provider tools are
+outside this local managed boundary.
+
+Fallback models debit one request per attempted generation, not one per whole
+fallback chain. A finite request budget requires provider SDK retries to be
+disabled (`max_retries=0`). Providers whose retry controls cannot be inspected
+are rejected for that budget rather than silently undercounted. These checks
+do not mutate a shared model or SDK client.
+
+CodeMode discovery and execution-control wrappers do not consume application
+tool attempts. Nested application tools and their body retries do, equally
+with Pydantic AI and LangChain.
+
 ## What Consumes a Start
 
 Repeated calls to one child count separately. Once admitted, failed and
