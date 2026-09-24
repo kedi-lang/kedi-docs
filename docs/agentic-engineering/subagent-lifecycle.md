@@ -1,8 +1,23 @@
 # Foreground and Background Runs
 
-Delegation tools are model-facing tools added to the parent's profile. They are
-not global Python functions and not Kedi statements. The names below describe
-the schema that the model sees.
+Delegation tools are model-facing tools added to the parent's profile. Native
+`> task` / `> await` statements and `runtime.subagents(...)` are separate
+program-controlled entry points to the same coordinator. The tool names below
+describe the schema that the model sees.
+
+## Native Task Ownership
+
+`> task [job]: child:` starts a direct child as soon as the statement runs.
+`> await [result]: job` blocks at that statement and returns a typed result;
+`> await: job` waits without binding a name. Two tasks may be active before
+the first await. Child failures, timeouts, and invalid results raise even for
+the binderless form. A repeated await uses the same completed run.
+
+If an invocation returns with a native task unawaited, Kedi cancels it, joins
+it, and fails closed. Task handles do not survive the invocation; they are not
+detached jobs. See [Subagents](subagents.md#start-a-child-in-kedi-code) for
+syntax and [Python Embedding](subagent-python.md#delegate-directly-from-python)
+for the async API.
 
 ## Foreground Result
 

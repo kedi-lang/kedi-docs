@@ -67,6 +67,33 @@ The state path is optional. Exclude it from version control because task text,
 results, and adapter continuation state may be sensitive. See
 [Persistence](subagent-continuations.md).
 
+## Delegate Directly From Python
+
+When application code knows the child task, it can use the same runtime without
+a parent model call. The scope owns every child it starts:
+
+```python
+async with runtime.subagents(parent="coordinator") as agents:
+    job = await agents.start(
+        "reviewer",
+        task="Assess this evidence: unit tests passed; integration tests were not run.",
+    )
+    result = await job.wait()
+    print(result.task_summary)
+```
+
+`start` admits the child and returns a `SubagentTask`; `wait` blocks for its
+`SubagentResult`. The result exposes `output`, `task_summary`, `run_id`, and
+`subagent`. If the child has no `> output:` declaration, `output` is `None`.
+Repeated waits return the same result. The handle cannot be reused after its
+scope closes or from another invocation. Leaving a task unawaited cancels it
+and fails the scope; child failures and schema errors raise at `wait`.
+
+The `parent` must be the effective profile when this scope is called inside
+Kedi execution. An independent embedding scope may select a compiled profile,
+but it cannot use that choice to bypass a running child profile's permissions.
+Use `await runtime.aclose()` when the application is done with the runtime.
+
 ## Inspect a Child From Its Tool
 
 `current_subagent_execution()` returns a `SubagentExecutionContext` inside a
@@ -102,6 +129,7 @@ using this API and verifies its identity against the delegation result.
 | Profile directives | Kedi source declares permissions and graph structure. |
 | `delegate_task`, lifecycle tools, `run_workflow` | The parent model through its advertised tools. |
 | `compile_program`, `KediRuntime`, `kedi.context` | The embedding application. |
+| `runtime.subagents(...)`, `SubagentTask`, `SubagentResult` | Program-controlled child work in Python. |
 | `SubagentUsageLimits`, execution context helper | Application configuration and child-aware tools. |
 
 The coordinator's underscored runtime methods are implementation details, not

@@ -44,6 +44,44 @@ Use delegate mode for one child result at a time. Use
 [Dynamic Workflows](dynamic-workflows.md) for generated dependencies and fan-out.
 Both modes preserve the same child boundaries, budgets, and approval ceilings.
 
+## Start a Child in Kedi Code
+
+Use native `> task` when the program, rather than the parent model, decides to
+delegate. The header names one direct child and opens exactly one `>>` template
+block. It starts the child immediately; `> await` waits at its own statement.
+
+```kedi
+> profile: reviewer:
+    > adapter: pydantic
+    > system: Review only the supplied change.
+
+> profile: coordinator:
+    > adapter: pydantic
+    > subagent: reviewer
+
+> use: coordinator
+
+> task [review_job]: reviewer:
+    >> The main issue in <change> is [issue: str].
+    The recommended fix is [recommendation: str].
+
+> await [review]: review_job
+> show: `review.output.recommendation`
+```
+
+The two capture fields form a validated child output model. They do not create
+parent-scope variables and do not invoke the parent model. The child receives
+only the rendered task text, with its explicit `<change>` input. The child
+profile must not also declare `> output:` when the task has captures. Without
+captures, the child profile's output type applies; without either schema,
+`review.output` is `None` and text is in `review.task_summary`.
+
+You may start several tasks before awaiting any of them. `> await: review_job`
+waits and propagates errors without binding a result. Repeated awaits observe
+the same run. Unawaited work is cancelled and fails the enclosing invocation.
+See [Foreground and Background Runs](subagent-lifecycle.md) and
+[Python Embedding](subagent-python.md).
+
 ## Child Isolation
 
 A child receives its own profile, not the parent's conversation, local values,
@@ -117,6 +155,6 @@ consult the [capability matrix](../reference/capability-matrix.md).
 6. [Python Embedding](subagent-python.md): configure, inspect, and close a runtime.
 7. [Reviewed Evidence Workflow](reviewed-evidence.md): execute the complete path.
 
-The model-facing tools are not a Python `kedi.subagent()` API. Python callers
-embed a program through public compilation/context APIs; coordinator internals
-are not required application APIs.
+The model-facing tools and native task statements use the same coordinator.
+Python callers can use `runtime.subagents(parent="coordinator")`; coordinator
+internals are not required application APIs.
