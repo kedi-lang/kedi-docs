@@ -27,6 +27,7 @@ part of the base adapter protocol rather than an optional capability.
 | Foreground subagents | yes | yes | yes |
 | Background subagents | yes | no | yes |
 | Semantic stream events | yes | no | yes |
+| Native history processing | yes | no | yes |
 | Agent lifecycle hooks | yes | no | yes |
 
 ## Agent Harnesses
@@ -46,6 +47,7 @@ part of the base adapter protocol rather than an optional capability.
 | Foreground subagents | yes | yes | no | yes |
 | Background subagents | yes | yes | no | yes |
 | Semantic stream events | yes | yes | yes | yes |
+| Native history processing | no | no | no | no |
 | Agent lifecycle hooks | yes | yes | yes | yes |
 <!-- END GENERATED ADAPTER CAPABILITIES -->
 

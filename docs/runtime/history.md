@@ -58,20 +58,126 @@ MessageT = TypeVar("MessageT")
 
 
 def keep_recent_cycles(ctx: HistoryProcessorContext[MessageT]) -> list[MessageT]:
-    editable = [group for group in ctx.groups if group.closed and not group.protected]
-    retained = {group.group_id for group in editable[-4:]}
-    retained.update(group.group_id for group in ctx.groups if group.protected)
-    return [
-        message
-        for group in ctx.groups
-        if group.group_id in retained
-        for message in ctx.messages[group.entry_start : group.entry_end]
-    ]
+    return ctx.keep_recent_groups(4)
 
 
 pydantic_adapter = PydanticAdapter(history_processor=keep_recent_cycles)
 langchain_adapter = LangChainAdapter(history_processor=keep_recent_cycles)
 ```
+
+### Native Configuration
+
+Select the same callback from a Kedi program, procedure, or profile:
+
+```kedi
+@keep_recent(ctx: Any) -> list[Any]:
+    = `ctx.keep_recent_groups(4)`
+
+> history:
+    enabled: true
+    processor: `keep_recent`
+
+>> The proposed next step is [next_step: str].
+= <next_step>
+```
+
+Use `Any` for a native callback's framework-specific context and messages.
+An unannotated parameter means `str`; `object` is not a supported native Kedi
+type name. Python callbacks can use the generic `HistoryProcessorContext` type.
+
+`processor` is a callable reference, not its result. The expanded directive still
+requires `enabled: true|false`; `compaction_mode` and `compaction_threshold` remain
+sibling fields. Python callers can use
+`AgentProfile(history_processing=HistoryProcessingSettings(processor=callback))`
+from `kedi.agent_profile` for the same lexical override.
+
+Omitting `processor` inherits the captured policy or adapter constructor default.
+An explicit ``processor: `None` `` disables the callback in that scope; leaving
+the scope restores the previous policy. Shared adapter fields are not mutated,
+so concurrent invocations can use different processors safely.
+Native procedure callbacks bind to their selected definition; a deeper procedure
+with the same name cannot replace the captured callback.
+
+### Conditional Processing
+
+Use `processor_condition` to evaluate whether the processor is needed before
+each logical model request, including requests after tool calls:
+
+```kedi
+@needs_compaction(state: Any) -> bool:
+    = `state.estimated_tokens >= 80_000`
+
+> history:
+    enabled: true
+    processor: `keep_recent`
+    processor_condition: `needs_compaction`
+
+>> A concise next step for this project is [next_step].
+= <next_step>
+```
+
+The predicate receives a frozen `HistoryProcessorState`, not editable messages.
+It has `adapter_shortname`, `model_id`, one-based `request_index`, `cache_epoch`,
+`estimated_tokens`, and an opaque `history_version`. The estimate covers the
+candidate history, including any system messages it contains. It does not include
+separately injected instructions or tool schemas and is not an exact wire-request
+budget. A true result builds `HistoryProcessorContext` for the same history
+revision; false skips the processor's detached copy and edit validation. Normal
+request validation remains active. The predicate may be synchronous or async
+and must return exactly `bool`; errors and other return types stop the request
+before model transport. It is level-triggered, with no cooldown. Cancellation
+does not commit a pending rewrite or cache generation.
+
+Python adapters use `history_processor_condition=needs_compaction` alongside
+`history_processor=keep_recent_cycles`. A condition alone does not choose a
+processor. A condition-only lexical override can use an outer or constructor
+processor. Replacing a processor without specifying a condition makes the new
+processor unconditional; an explicit ``processor_condition: `None` `` clears an
+inherited condition while retaining its processor. An effective condition
+without a processor is a configuration error.
+
+The LSP warns at active processor declarations, including external callables.
+Python constructors warn once per configuration, not per request. A processor
+may change earlier history and reduce prefix-cache reuse. A condition reduces
+how often the processor runs, but it does not guarantee prefix preservation or
+a provider cache hit. A semantic no-op preserves native history and cache
+identity. Evaluating the predicate and estimating tokens still cost work.
+
+`enabled: false` disables conversation continuity, not processing of the current
+invocation's ephemeral native tool loop. It does not expose an outer conversation
+to the callback. Unsupported adapters reject an active processor or condition
+before model I/O; the declared capability is `history_processing`.
+
+### Recent Groups and Origins
+
+`ctx.keep_recent_groups(n)` keeps the last `n` closed, unprotected groups and all
+protected, unfinished, and current-request groups, in their original order.
+It returns a native message list without changing the context. `n` must be a
+nonnegative integer, not a boolean. `n=0` still preserves required history; the
+total retained group count may exceed `n`. No summary model is called and no
+token-budget fit is promised. Normal edit validation still applies.
+
+Each `group.origins` is a tuple of frozen `HistoryOrigin` records:
+
+| Field | Meaning |
+| --- | --- |
+| `kind` | Existing history kind, such as `user`, `assistant`, `tool-call`, or `tool-result` |
+| `run_id` | Runtime-known run identity, or `None` |
+| `source_location` | Detached Kedi source span, or `None` for unknown/native-only locations |
+| `tool_name` | Exact native or execution-boundary tool name, when known |
+| `tool_call_id` | Native tool lifecycle identifier, when known |
+
+Origins are out-of-band metadata, never extra prompt text. They survive supported
+edits and successful in-process conversation continuation, including turns where
+the condition skips the processor. Imported history,
+ambiguous copied duplicates, generated summaries, and calls made while processing
+is disabled may lack lineage; Kedi does not infer it from message text. This is
+not a durable provenance export protocol, a truth score, or proof of tool side
+effects. Metadata edits inside a callback cannot change the retained lineage.
+
+Read origins while returning `list(ctx.messages)` to inspect without rewriting.
+A no-op preserves cache identity. Retaining fewer groups can remove an early
+prefix and reduce cache reuse; this policy is opt-in, not a universal speedup.
 
 For an executable tool-loop example using a deterministic `FunctionModel`, see
 [examples/history_processor.py](https://github.com/kedi-lang/kedi/blob/stable/examples/history_processor.py).
@@ -158,4 +264,5 @@ A separately supplied Pydantic `ProcessHistory` capability is rejected when
 `history_processor` is configured. Compose the policies in one callback instead.
 Other capabilities must also respect these message boundaries.
 
-This is a Python adapter API. It does not add a second DSL compaction mode.
+The Python callback and native `processor` field share one implementation.
+Neither introduces a second DSL compaction mode or a built-in summarizer.

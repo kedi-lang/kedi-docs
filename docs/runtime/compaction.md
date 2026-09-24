@@ -1,5 +1,10 @@
 # Conversation Compaction
 
+Custom retention and transformation use the separate
+[`processor` history field](history.md#native-configuration), not a new
+`compaction_mode`. If exact archival and processing are both configured,
+archival runs first and its checkpoint remains protected from the processor.
+
 Compaction changes retained conversation state. Configure it independently from artifact storage and Python response caching.
 
 ## Native Compaction
@@ -50,6 +55,10 @@ it is tracked in [kedi-lang/kedi#80](https://github.com/kedi-lang/kedi/issues/80
 applications implement deterministic retention, redaction, or summarization
 over framework-native messages. With `history_archive=`, exact archival runs
 first and the custom processor receives the resulting checkpointed history.
+`processor_condition` can skip that callback after the archived candidate
+history has been inspected; it does not replace native compaction or guarantee
+a prefix-cache hit. A real history rewrite may reduce prefix reuse, while a
+semantic no-op preserves native history and cache generation.
 Kedi validates atomic tool lifecycles and protected provider state before an
 accepted edit replaces durable history.
 

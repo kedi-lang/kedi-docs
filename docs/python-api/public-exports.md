@@ -1,5 +1,11 @@
 # Public Export Index
 
+History-specific exports live in `kedi.agent_adapter`: `HistoryProcessorContext`,
+`HistoryProcessorState`, `HistoryProcessorCallback`, `HistoryProcessorCondition`,
+`HistoryOrigin`, `HistoryProcessingError`, and
+`HistoryProcessingValidationError`. `HistoryProcessingSettings` is exported from
+`kedi.agent_profile`. See [History](../runtime/history.md#user-defined-history-processing).
+
 This index covers the root package's `__all__`. A root export is not necessarily
 a high-level constructor: event unions and protocol aliases describe contracts,
 while runtime and artifact handles are advanced integration surfaces.

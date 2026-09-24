@@ -44,7 +44,15 @@ default. Artifact querying is separately disabled by default and accepts
 
 The expanded `> history:` form contains only subsettings. It requires
 `enabled: true|false` and accepts `compaction_mode: native|disabled` plus an
-optional positive `compaction_threshold`. Compaction is history lifecycle
+optional positive `compaction_threshold`. Pydantic and LangChain also accept
+`processor` as a sync/async callable reference in inline Python. Omission inherits;
+an explicit ``processor: `None` `` clears the callback in that scope.
+`processor_condition` accepts a sync/async predicate returning exactly `bool`.
+It receives read-only history metadata before each logical request; without a
+condition, processing is unconditional. A condition alone can inherit a processor;
+a new processor does not inherit an old condition. See
+[History Processing](../runtime/history.md#native-configuration) for group-safe
+retention and provenance. Compaction is history lifecycle
 policy, not a model setting. See
 [Caching and Conversation History](../runtime/caching.md).
 

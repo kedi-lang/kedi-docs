@@ -15,7 +15,8 @@ can change the request prefix or continuation lane. Compaction establishes a
 new cache epoch. These are not equivalent to appending a user message to an
 otherwise identical request.
 
-A `history_processor=` callback that returns semantically equivalent history is
+A Python `history_processor=` callback or native `> history:` `processor` that
+returns semantically equivalent history is
 a no-op: Kedi preserves the native message objects, continuation state, and
 cache identity. An accepted removal, reordering, redaction, or summary changes
 the prefix. Kedi then disables stale response-ID continuation for the affected
@@ -24,6 +25,14 @@ steps reuse that generation until another edit occurs; a failed or cancelled
 turn does not commit it. Old server conversation IDs stay disabled on subsequent
 turns in the same lane. Automatic response-ID continuation can use a new response
 created after the edit. See [History](history.md#user-defined-history-processing).
+
+`processor_condition` can gate the callback on a history token estimate or
+another read-only state field. A false result avoids the processor's detached
+copy and rewrite path; it does not rotate the cache epoch. A true result is
+still subject to the same no-op/rewrite rules. A condition may reduce how often
+processing runs, but cannot promise prefix preservation or a provider cache hit.
+Python configuration emits one warning when a processor is installed; the LSP
+warns at each active processor declaration, including external callbacks.
 
 ## What Kedi Cannot Guarantee
 

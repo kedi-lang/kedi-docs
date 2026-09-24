@@ -1,5 +1,17 @@
 # Configuration and Context
 
+Native history processing can be scoped with
+`AgentProfile(history_processing=HistoryProcessingSettings(processor=callback))`,
+where both types are imported from `kedi.agent_profile`. An omitted policy inherits;
+`HistoryProcessingSettings(processor=None)` explicitly disables it. Pydantic and
+LangChain retain their `history_processor=` constructor defaults outside the
+override. See [History](../runtime/history.md#user-defined-history-processing).
+`HistoryProcessingSettings(condition=predicate, inherit_processor=True)` gates
+the inherited processor. Both adapters also accept
+`history_processor_condition=predicate` at construction; it requires an active
+processor and defaults to unconditional processing. Replacing a scoped processor
+without a condition clears the old condition.
+
 
 ## Configure Process Defaults
 

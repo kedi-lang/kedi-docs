@@ -7,6 +7,16 @@ to explicitly passing `None`.
 
 ## Profile Parameters
 
+`AgentProfile.history_processing` accepts `HistoryProcessingSettings` from `kedi.agent_profile`.
+Its `processor` is a sync/async native history callback or `None` to explicitly
+disable an inherited callback. The default profile value, `None`, means inherit.
+Its optional `condition` gates a processor; `inherit_processor=True` can apply
+one to an outer or adapter-default callback. Pydantic and LangChain constructors
+also accept `history_processor_condition=` with `history_processor=`.
+This is an `AgentProfile` field, not a shared keyword of the functions below.
+It is separate from the `history` conversation-continuity setting. See
+[History Processing](../runtime/history.md#native-configuration).
+
 `configure`, `context`, `query`, `bind`, and `interactive` share these parameters:
 
 | Parameter | Contract |

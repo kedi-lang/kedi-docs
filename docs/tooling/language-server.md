@@ -35,6 +35,11 @@ formats that the selected adapter cannot carry.
 Selection state is tracked lexically. Unsupported structured output is an
 error. Unsupported tool/MCP/profile capabilities are reported at the relevant
 directive. Diagnostics use adapter metadata, not a hard-coded backend guess.
+An active `> history:` processor declaration, including an external callable,
+receives a non-blocking prefix-cache warning at its declaration. Adding
+`processor_condition` does not remove that warning. A statically disabled
+``processor: `None` `` does not warn, and the warning is not repeated at every
+model call. The LSP also completes and explains `processor_condition`.
 
 ## Completion
 

@@ -1,5 +1,11 @@
 # Profiles
 
+Profiles can also select a lexical native history processor through
+`> history:` with `enabled: true` and ``processor: `callback` ``. This overrides
+the adapter constructor default only for the scoped invocation. See
+[History Processing](../runtime/history.md#native-configuration) for callback
+types, explicit disable, safe group retention, and lineage.
+
 Profiles are named, reusable agent configuration. A profile describes how a
 model call should run: its backend, instructions, tools, permissions, and optional
 children. Defining or applying a profile does not start a model call, create a
