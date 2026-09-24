@@ -113,7 +113,7 @@ See [Continuations and Persistence](subagent-continuations.md#opt-into-restart-p
 
 ## Adapter Support
 
-Pydantic AI, LangChain, Claude Agent SDK, Codex App Server, and DSPy support
+Pydantic AI, LangChain, Claude Agent SDK, Codex App Server, A2A, and DSPy support
 child execution. Background lifecycle requires asynchronous ownership and is
 not available through DSPy's bridge. Unsupported capabilities fail explicitly;
 consult the [capability matrix](../reference/capability-matrix.md).
