@@ -50,40 +50,10 @@ Use native `> task` when the program, rather than the parent model, decides to
 delegate. The header names one direct child and opens exactly one `>>` template
 block. It starts the child immediately; `> await` waits at its own statement.
 
-```kedi
-> profile: reviewer:
-    > adapter: pydantic
-    > system: Review only the supplied change.
-
-> profile: coordinator:
-    > adapter: pydantic
-    > subagent: reviewer
-
-> use: coordinator
-
-> task [review_job]: reviewer:
-    >> The main issue in <change> is [issue: str].
-    The recommended fix is [recommendation: str].
-
-> await [review]: review_job
-> show: `review.output.recommendation`
-```
-
-The two capture fields form a validated child output model. They do not create
-parent-scope variables and do not invoke the parent model. The child receives
-only the rendered task text, with its explicit `<change>` input. The child
-profile must not also declare `> output:` when the task has captures. Without
-captures, the child profile's output type applies; without either schema,
-`review.output` is `None` and text is in `review.task_summary`.
-
-You may start several tasks before awaiting any of them. `> await: review_job`
-waits and propagates errors without binding a result. Repeated awaits observe
-the same run. Unawaited work is cancelled and fails the enclosing invocation.
-See [Foreground and Background Runs](subagent-lifecycle.md) and
-[Python Embedding](subagent-python.md).
-
-Use [Concurrent Result Processing](subagent-processing.md) to process each
-result as soon as it is ready and join all processing before continuing.
+Read [Native Tasks and Await](subagent-tasks.md) for a complete program, typed
+output access, and ownership rules. Use
+[Concurrent Result Processing](subagent-processing.md) to process each result
+as soon as it is ready and join all processing before continuing.
 
 ## Child Isolation
 
@@ -150,13 +120,15 @@ consult the [capability matrix](../reference/capability-matrix.md).
 
 ## Reading Path
 
-1. [Typed Child Results](subagent-results.md): define what the parent consumes.
-2. [Foreground and Background Runs](subagent-lifecycle.md): own and observe work.
-3. [Limits, Isolation and Safety](subagent-limits.md): bound resources and authority.
-4. [Continuations and Persistence](subagent-continuations.md): refine and restore.
-5. [Dynamic Workflows](dynamic-workflows.md): compose child calls in code.
-6. [Python Embedding](subagent-python.md): configure, inspect, and close a runtime.
-7. [Reviewed Evidence Workflow](reviewed-evidence.md): execute the complete path.
+1. [Native Tasks and Await](subagent-tasks.md): delegate from Kedi code.
+2. [Typed Child Results](subagent-results.md): define what the parent consumes.
+3. [Foreground and Background Runs](subagent-lifecycle.md): own and observe work.
+4. [Concurrent Result Processing](subagent-processing.md): process ready results.
+5. [Limits, Isolation and Safety](subagent-limits.md): bound resources and authority.
+6. [Continuations and Persistence](subagent-continuations.md): refine and restore.
+7. [Dynamic Workflows](dynamic-workflows.md): compose child calls in code.
+8. [Python Embedding](subagent-python.md): configure, inspect, and close a runtime.
+9. [Reviewed Evidence Workflow](reviewed-evidence.md): execute the complete path.
 
 The model-facing tools and native task statements use the same coordinator.
 Python callers can use `runtime.subagents(parent="coordinator")`; coordinator

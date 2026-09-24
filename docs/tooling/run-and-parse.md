@@ -72,6 +72,36 @@ For a Python `@kedi.query` or `@kedi.bind` function, use
 `kedi.explain(function)` to obtain the structured `ExplainReport` without
 calling the function.
 
+```python
+import kedi
+
+
+@kedi.query
+def classify(note: str) -> str:
+    """kedi
+    > adapter: pydantic
+    > model: openai:gpt-5.6-luna
+    > requires: structured_output
+    >> The category of <note> is [category: str].
+    = <category>
+    """
+
+
+report = kedi.explain(classify)
+call = report.calls[0]
+assert call.adapter.value == "pydantic"
+assert call.model.value == "openai:gpt-5.6-luna"
+assert call.requirements[0].status == "satisfied"
+assert not report.diagnostics
+```
+
+This inspects the function without calling `classify`, supplying `note`, or
+authenticating with a provider. `call.source_location` identifies the call site;
+`call.tools` contains statically known tool metadata. A satisfied declaration
+means the adapter advertises a capability, not that credentials or the remote
+model have been tested. `explain` is not a dry-run execution or call-count forecast:
+branches, loops, retries, and dynamic task starts still depend on runtime inputs.
+
 ## `kedi parse`
 
 ```bash
@@ -90,7 +120,7 @@ kedi program.kedi --adapter codex
 ```
 
 Inside source, use the semantically strict `> adapter:` for Pydantic/DSPy/
-LangChain and `> agent:` for Claude/Codex/ACP.
+LangChain and `> agent:` for Claude/Codex/ACP/A2A.
 
 ## Select a Model
 

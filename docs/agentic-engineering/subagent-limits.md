@@ -22,6 +22,9 @@ replace the whole-child budget. See [Python Embedding](subagent-python.md).
 
 ## Shared Run Budget
 
+See [Run Budgets](../runtime/run-budgets.md) for a complete offline example,
+provider retry configuration, and the distinction from token limits.
+
 For a ceiling across the root invocation and all descendants, use:
 
 ```kedi

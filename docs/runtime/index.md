@@ -83,6 +83,7 @@ controls, span hierarchy, and metric names.
 
 - [Execution and Dataflow](execution-and-dataflow.md)
 - [Concurrency](concurrency.md)
+- [Run Budgets](run-budgets.md)
 - [Incremental Execution](interactive-execution.md)
 
 **Context Management**

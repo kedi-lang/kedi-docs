@@ -65,7 +65,7 @@ pydantic_adapter = PydanticAdapter(history_processor=keep_recent_cycles)
 langchain_adapter = LangChainAdapter(history_processor=keep_recent_cycles)
 ```
 
-### Native Configuration
+## Native Configuration
 
 Select the same callback from a Kedi program, procedure, or profile:
 
@@ -98,12 +98,15 @@ so concurrent invocations can use different processors safely.
 Native procedure callbacks bind to their selected definition; a deeper procedure
 with the same name cannot replace the captured callback.
 
-### Conditional Processing
+## Conditional Processing
 
 Use `processor_condition` to evaluate whether the processor is needed before
 each logical model request, including requests after tool calls:
 
 ```kedi
+@keep_recent(ctx: Any) -> list[Any]:
+    = `ctx.keep_recent_groups(4)`
+
 @needs_compaction(state: Any) -> bool:
     = `state.estimated_tokens >= 80_000`
 
@@ -148,7 +151,7 @@ invocation's ephemeral native tool loop. It does not expose an outer conversatio
 to the callback. Unsupported adapters reject an active processor or condition
 before model I/O; the declared capability is `history_processing`.
 
-### Recent Groups and Origins
+## Recent Groups and Origins
 
 `ctx.keep_recent_groups(n)` keeps the last `n` closed, unprotected groups and all
 protected, unfinished, and current-request groups, in their original order.
@@ -179,10 +182,29 @@ Read origins while returning `list(ctx.messages)` to inspect without rewriting.
 A no-op preserves cache identity. Retaining fewer groups can remove an early
 prefix and reduce cache reuse; this policy is opt-in, not a universal speedup.
 
+For example, inspect known tool origins without changing the outgoing history:
+
+```python
+from kedi.agent_adapter import HistoryProcessorContext
+
+
+def inspect_origins(ctx: HistoryProcessorContext) -> list:
+    for group in ctx.groups:
+        for origin in group.origins:
+            if origin.tool_name is not None:
+                print(origin.run_id, origin.tool_name, origin.tool_call_id)
+    return list(ctx.messages)
+```
+
+This logs identifiers, not tool arguments or results. Treat identifiers and
+source locations as application metadata when choosing a logging destination.
+
 For an executable tool-loop example using a deterministic `FunctionModel`, see
 [examples/history_processor.py](https://github.com/kedi-lang/kedi/blob/stable/examples/history_processor.py).
 From the repository checkout, run `uv run python examples/history_processor.py`;
 it needs no API key and makes no network requests.
+
+## Callback Contract
 
 The callback may be synchronous or asynchronous. Synchronous callbacks run in a
 worker thread rather than blocking the adapter event loop. It must return a
@@ -203,7 +225,7 @@ per-entry metadata. It does not expose the complete wire request: system
 instructions, tool schemas, routing, approvals, and model settings remain owned
 by the adapter.
 
-### Editing Boundaries
+## Editing Boundaries
 
 `group.entry_start` and `group.entry_end` are half-open indices into
 `ctx.messages`. Groups cover complete user/assistant cycles, including their
@@ -238,7 +260,7 @@ counters and pending transport resets separate, including nested native runs on
 the same adapter. Calling that same configured adapter recursively from inside
 the processor raises an error; use a separate processor-free model for a summary.
 
-### Persistence and Continuation
+## Persistence and Continuation
 
 An accepted edit replaces Pydantic AI's native run history or LangChain's
 durable graph state, so later tool steps and successful future turns see it.

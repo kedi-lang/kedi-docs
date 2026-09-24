@@ -69,5 +69,5 @@ forcibly stop synchronous Python that is already executing.
 Parallel processing does not impose a side-effect order or make shared mutations
 atomic. Keep state local or use explicit synchronization for shared aggregates.
 
-See [Task and Await](subagents.md#start-a-child-in-kedi-code),
+See [Native Tasks and Await](subagent-tasks.md),
 [Lifecycle](subagent-lifecycle.md), and [Limits and Safety](subagent-limits.md).
