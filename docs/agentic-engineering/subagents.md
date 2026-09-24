@@ -82,6 +82,9 @@ the same run. Unawaited work is cancelled and fails the enclosing invocation.
 See [Foreground and Background Runs](subagent-lifecycle.md) and
 [Python Embedding](subagent-python.md).
 
+Use [Concurrent Result Processing](subagent-processing.md) to process each
+result as soon as it is ready and join all processing before continuing.
+
 ## Child Isolation
 
 A child receives its own profile, not the parent's conversation, local values,

@@ -99,6 +99,7 @@ nav = [
       { "Overview" = "agentic-engineering/subagents.md" },
       { "Typed Child Results" = "agentic-engineering/subagent-results.md" },
       { "Foreground and Background Runs" = "agentic-engineering/subagent-lifecycle.md" },
+      { "Concurrent Result Processing" = "agentic-engineering/subagent-processing.md" },
       { "Limits, Isolation and Safety" = "agentic-engineering/subagent-limits.md" },
       { "Continuations and Persistence" = "agentic-engineering/subagent-continuations.md" },
       { "Dynamic Workflows" = "agentic-engineering/dynamic-workflows.md" },
