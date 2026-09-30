@@ -151,8 +151,11 @@ get_artifact(ref_id)
 bounded reads, literal search, or iteration. The final Python expression is the
 semantic result; captured stdout is diagnostic output.
 
-The execution cannot import modules or access host files, environment
-variables, the network, models, adapters, tools, or subagents. It can access
+Use the provided helpers and ordinary expressions, loops, and comprehensions;
+`eval` and `exec` are unavailable. Their errors include a bounded recovery hint,
+not a host-Python fallback. Avoid imports: Monty's limited built-in modules are
+not the host Python standard library. The execution cannot access host files,
+environment variables, the network, models, adapters, tools, or subagents. It can access
 only references listed in `artifact_refs`. Host calls, total bytes read,
 materialization, stdout, execution time, memory, recursion, result size, result
 depth, and result node count are bounded.
@@ -177,8 +180,11 @@ The default runtime limits are:
 The result is admitted under the active artifact policy. A small reduction is
 returned inline. A reduction at or above the threshold becomes a new
 `artifact_code_result_N` with provenance linking its source references and a
-hash of the executed code. The derived artifact remains valid if its source
-artifacts are later released.
+hash of the executed code. Its `derivation_depth` is one plus the maximum depth
+of its accessed parents, with ordinary source artifacts at depth zero. Only
+actually accessed references are recorded as parents, not every allowed ref.
+The derived artifact remains valid if its source artifacts are later released;
+provenance does not keep their payloads alive.
 
 Choose a threshold larger than the expected reduced result. An unnecessarily
 low threshold can recursively artifact a useful small reduction and force an

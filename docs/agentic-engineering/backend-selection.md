@@ -128,14 +128,39 @@ For a model call, selection priority is:
 4. environment-based default selection.
 
 Nested scopes may choose another backend and restore the outer selection when
-they exit.
+they exit. Sequential directives can also change backend kinds in the same
+scope: the most recent selection applies to following calls. Python/CLI and
+environment defaults do not prevent this. Procedures retain the selection
+captured where they were defined.
+
+When switching frameworks, Kedi preserves the explicit `> model:` or the initial
+framework's string model ID if no model directive was given. The destination
+must support that ID. Framework-specific Python model objects, credentials,
+and provider clients are not converted to another framework.
+
+An implicit framework model is not transferred to a harness. Explicit model
+directives remain in scope; select a compatible model when switching kinds:
+
+```kedi
+> adapter: pydantic
+> model: openai:gpt-5.6-luna
+>> Summarize the repository requirements.
+
+> agent: codex
+> model: gpt-5.6-luna
+>> Inspect the repository and summarize its test coverage.
+```
+
+Changing backends does not itself transfer conversation history. Configure
+history explicitly when calls should share context.
 
 ## Invalid Combinations
 
-A single lexical scope cannot mix `> adapter:` and `> agent:`. Kedi also rejects
+A declarative `> profile:` cannot contain both `> adapter:` and `> agent:` members.
+Unlike executable directives, these describe one backend, not a sequence.
+Kedi also rejects
 a framework name in `> agent:`, a harness name in `> adapter:`, conflicting
 environment defaults, a dynamic value with the wrong type, and an adapter
 instance whose declared kind does not match the selected API.
 
-Switch in a nested procedure or define separate profiles instead of creating an
-ambiguous mixed scope.
+Define separate profiles when you need reusable configurations for both kinds.

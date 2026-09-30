@@ -137,10 +137,38 @@ session.
 
 ## History and Cache Stability
 
-`ArtifactHistory` is a thread-safe, append-only lifecycle log with monotonically
+`ArtifactHistory` is a thread-safe recent lifecycle log with monotonically
 increasing sequence numbers. It records tool calls, tool results, artifact
-creation, bounded reads, release, and expiry. Portable conversation history
-contains references and bounded tool results, never the original large payload.
+creation, bounded reads, release, and expiry. By default it retains the latest
+4,096 events. Eviction drops only the oldest diagnostic events; sequence numbers
+are never reused. `retained_events` and `dropped_events` expose the retained and
+evicted counts. This log is not a complete audit archive.
+
+Python applications can select a different retention limit:
+
+```python
+from kedi.artifacts import ArtifactHistory, ArtifactManager
+
+manager = ArtifactManager(history=ArtifactHistory(max_events=8192))
+try:
+    recent_events = manager.history.snapshot()
+    omitted_events = manager.history.dropped_events
+finally:
+    manager.close()
+```
+
+`max_events=None` explicitly opts into unbounded retention; the application then
+owns its memory growth. Do not use it for indefinite sessions without an
+external lifecycle limit. Artifact checkpoints preserve the retention limit and
+sequence cursor. Legacy checkpoints with a plain event list remain readable.
+`as_jsonable()` exports only recent events; use `export_checkpoint()` and
+`ArtifactHistory.from_checkpoint()` when restoring sequence/retention state.
+
+The diagnostic log and provider conversation are separate. Evicting a log event
+does not release a payload or remove a provider message. Compaction reads live
+and expired/released reference state from the artifact manager, not from a
+possibly evicted creation event. Portable conversation history contains
+references and bounded tool results, never the original large payload.
 
 Within one cache epoch, artifact lifecycle operations never delete, reorder, or
 rewrite earlier model messages. Releasing or expiring a payload therefore does
@@ -152,6 +180,11 @@ Provider-native checkpoints follow the same rule: release and expiry do not
 mutate their existing prefix. Conversation compaction is a separate explicit
 operation that starts a new cache epoch; artifact lifecycle does not perform
 hidden history compaction.
+
+Released/expired reference metadata remains session-owned so later lookups can
+distinguish those states from unknown IDs and derived provenance remains useful.
+Bounding the event log does not bound an unlimited number of created artifact
+references or application-owned conversation messages; close sessions when done.
 
 Kedi remains stateless by default. Use an explicit Python
 [`session()`](../python-api/artifacts-and-sessions.md) when separate calls must

@@ -164,8 +164,11 @@ Nested scopes may switch to another framework or harness:
   = <answer>
 ```
 
-The nested scope is a new selection boundary. A single scope still cannot mix
-both kinds.
+The nested scope restores the outer selection when it exits. Within a single
+executable scope, sequential `> adapter:` and `> agent:` directives select the
+backend for subsequent calls. A declarative profile still specifies one kind.
+See [Backend Selection](backend-selection.md#selection-precedence) for model
+inheritance and framework-to-harness transitions.
 
 ## Production Guidance
 

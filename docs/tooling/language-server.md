@@ -47,6 +47,12 @@ Completion covers directives, procedures, values, types, profiles, imports,
 settings, tools, and scoped names. Suggestions respect source position and
 imported module surfaces.
 
+Directive suggestions describe their purpose and preserve the leading `>` when
+accepted. They appear while entering a directive name, not in its value after
+`:`. The colon does not trigger a completion popup, so Enter can start the next
+line. Backtick delimiters do not trigger Kedi suggestions or insert a matching
+backtick automatically; Python completion remains available inside expressions.
+
 ## Hover Documentation
 
 Hover shows procedure/type/profile signatures, fields, docstrings, variables,
@@ -68,7 +74,16 @@ imports and `> export: *`, and does not expose private non-exported names.
 
 Embedded Python fences/backticks are transformed into scope-aware virtual
 Python documents with Kedi procedures, values, and types represented as Python.
-Editor proxies use these maps for Python hover/definition/references.
+Editor proxies use these maps for Python completion, hover, definition, and
+references. Completion snippets and additional edits are mapped back to source;
+auto-imports are inserted in the module's Python prelude, creating one when
+needed. Synthetic declarations are not writable. An unmappable required edit
+rejects the suggestion instead of silently omitting its import.
+
+VS Code uses Python/Pylance and requests up to 128 resolved suggestions at a
+time. Zed uses Pyright with lazy completion resolution. Both discard stale
+results after a document change. These features require matching current editor
+and Kedi language-server revisions.
 
 Python files with query docstrings whose first cleaned line is `kedi` receive
 Kedi diagnostics, hover, definition, references, and semantic tokens inside

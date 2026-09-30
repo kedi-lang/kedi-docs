@@ -109,16 +109,23 @@ Both tools are `read_only`, so the default approval policy allows them.
 
 ## On-Demand Loading
 
-Enabling skills adds compact instructions telling the agent to:
+Enabling skills adds a sorted, bounded inventory of available names, not their
+contents, and compact instructions telling the agent to:
 
-1. call `list_skills` when reusable guidance may help;
-2. call `read_skill` for a listed relevant name;
+1. use the inventory to identify a relevant skill; call `list_skills` only to refresh discovery;
+2. call `read_skill` before answering a project-specific task that skill covers;
 3. follow it only for the current task;
 4. never claim to have read a skill whose contents were not returned.
 
 The model does not know a skill's body until it reads that skill. This avoids
 filling every context with unrelated instructions and makes skill usage visible
-in the tool trace.
+in the tool trace. Unrelated questions do not require a discovery or read call.
+
+For tools and skills, Kedi's shared grounding instruction gives task-specific
+evidence precedence over a familiar answer from model memory. It does not demand
+tools for stable general knowledge or self-contained calculations. This is a
+behavioral instruction, not a proof that the model used evidence correctly;
+validate important decisions and retain the tool trace.
 
 ## Install Into the Kedi Registry
 

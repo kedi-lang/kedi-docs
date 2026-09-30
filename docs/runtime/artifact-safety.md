@@ -23,7 +23,7 @@ Artifact failures are explicit and do not silently expose the full payload:
 | `ArtifactCodeError` | Sandboxed artifact computation failed |
 
 Quota failure occurs before publishing a reference. Stream failure aborts the
-transaction. Code-mode failure does not create a derived artifact. None of
+transaction. Artifact Compute failure does not create a derived artifact. None of
 these errors include the rejected raw payload in their message or telemetry.
 
 For agent calls, invalid read/search arguments and unknown, expired, or released
@@ -41,7 +41,7 @@ tool-failure reporting behavior.
 ## Security and Observability
 
 Artifact metadata, summaries, bounded previews, read sizes, lifecycle states,
-and code-mode provenance may appear in telemetry. Raw payloads are not attached
+and Artifact Compute provenance may appear in telemetry. Raw payloads are not attached
 to artifact lifecycle spans. Code provenance contains a code hash and source
 references, not an unrestricted payload copy.
 

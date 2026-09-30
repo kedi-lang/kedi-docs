@@ -11,6 +11,8 @@ Install the optional protocol and server dependencies:
 uv add 'kedi[a2a]'
 ```
 
+For persistent task and session state, install `kedi[a2a-persistence]` instead.
+
 Kedi uses the official `a2a-sdk` Python package. A2A is a transport boundary,
 not a model provider: the serving process owns its model, tools, sandbox, and
 approval policy.
@@ -70,6 +72,67 @@ Credentials may come from `--secret-env`, `--secret-file`, or
 secrets should not be placed in source, shell history, or process arguments.
 Use `--allow-unauthenticated` only for an explicitly loopback-bound development
 server.
+
+### Persist Tasks and Sessions
+
+Persistence is opt-in. Give one server process a dedicated local directory on a
+persistent volume:
+
+```bash
+uv add 'kedi[a2a-persistence]'
+
+kedi a2a serve research-agent.kedi \
+  --entry researcher \
+  --auth bearer \
+  --secret-env RESEARCH_AGENT_TOKEN \
+  --state-dir /var/lib/kedi/research-agent
+```
+
+`KEDI_A2A_STATE_DIR` is the environment equivalent of `--state-dir`. The
+directory must be private to the serving user; Kedi will create it with
+restricted permissions when it does not exist. A process lock prevents a second
+server from opening the same directory. The directory is bound to the served
+program, its Kedi imports, entry, adapter, model, and history configuration.
+Changing these requires a new state directory; Kedi will not silently discard
+or reinterpret existing state.
+
+Completed A2A tasks, owner-scoped results, conversation checkpoints, and
+referenced artifact payloads survive a process restart. Pydantic AI and
+LangChain profiles with history enabled restore their native message
+history, not a reconstructed text transcript. Other adapters can persist
+stateless task results, but history-enabled serving with an unsupported adapter
+fails at startup. Without `--state-dir`, the existing in-memory behavior remains.
+
+A task that was `submitted` or `working` when the server stopped becomes
+`failed` with `server_interrupted` metadata on the next startup. It is not
+replayed automatically: a model call or tool may already have had external
+effects. A previously canceled task remains canceled. The last committed
+session turn is the recovery point; uncommitted turns are not added to history.
+Use `GetTask` to inspect the old task, then start a new attempt deliberately.
+
+Terminal task records cannot be overwritten by late completion, failure, or
+cancellation events. Task completion and the session checkpoint are committed
+in one database transaction. Cancellation and shutdown wait for in-flight
+storage work before releasing session resources or the directory lock; this
+does not make external tool effects transactional.
+
+This mode is single-process and requires a local filesystem with OS file locks.
+It does not preserve provider sockets, runtime globals, tool-created files,
+remote sandbox filesystems, or effects in external services. Back up the state
+directory and its artifact files together. Persistent artifact payloads must
+use Kedi's safe file codecs; an unsupported value cannot be checkpointed as a
+usable reference. Each session checkpoint is limited to 64 MiB; session,
+retained-task, and artifact quotas still apply. Released and expired artifact
+payloads are compacted after a successful commit while their unavailable status
+is retained. Artifact expiry and idle deadlines survive restart; reopening the
+server does not extend an artifact's lifetime. Retention evicts only terminal
+tasks, including tasks marked interrupted during restart, and never running
+tasks. The state directory has no global byte quota, so place it on a
+volume with an explicit capacity limit and free-space monitoring. Disk-full or
+corrupt referenced payloads fail closed rather than reporting a successful task.
+Basic-auth
+password rotation retains the username's state, while rotating a Bearer/API key
+changes the principal and does not transfer old records.
 
 ## Connect from Kedi
 
@@ -219,20 +282,18 @@ errors retain known `task_id`, `context_id`, and state coordinates.
 - Request body, input, schema, result, pending-task, session, concurrency, and
   retained-task counts are bounded. Tune the corresponding `kedi a2a serve`
   options for the deployment.
-- Tasks and sessions are kept in memory and scoped by authenticated principal.
-  Queued and running calls keep their sessions alive; only idle sessions can
-  be evicted when the session limit is reached. Calls sharing a context run
-  sequentially without consuming concurrency slots while waiting for that context.
-  One process restart loses that state. This release is single-process; do not
-  put multiple workers behind a load balancer without sticky routing and an
-  external task/session implementation.
+- Tasks and sessions are scoped by authenticated principal. Queued and running
+  calls keep their in-memory sessions alive; only idle sessions can be evicted.
+  Calls sharing a context run sequentially without consuming concurrency slots
+  while waiting for that context. Without `--state-dir`, restart loses that
+  state. With it, completed state is restored, but live execution is not.
+  Neither mode supports multiple workers sharing one state directory.
 - Shutdown stops SDK tasks and drains active and queued invocations before
   closing session and runtime resources.
 - A2A is not a sandbox. Run the server with filesystem, process, network, and
   secret permissions appropriate for the exported profile.
-- OAuth/OIDC, mTLS identity, durable task storage, push notifications, remote
-  file transfer, webhooks, and cross-process task ownership are not implemented
-  by this release.
+- OAuth/OIDC, mTLS identity, push notifications, remote file transfer, webhooks,
+  and cross-process task ownership are not implemented by this release.
 
 Use an external gateway for rate limiting and production identity controls.
 The built-in server provides bounded capacity and credential authentication,

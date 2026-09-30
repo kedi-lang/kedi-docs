@@ -160,6 +160,13 @@ nonnegative integer, not a boolean. `n=0` still preserves required history; the
 total retained group count may exceed `n`. No summary model is called and no
 token-budget fit is promised. Normal edit validation still applies.
 
+Protected groups do not count toward `n`. For example, if the newest completed
+cycle contains provider-required reasoning, `keep_recent_groups(1)` retains it
+and the newest unprotected completed cycle. Retention can therefore differ
+between providers even for similar visible text. Inspect `group.protected` and
+`group.protected_reasons` when building a more selective policy; do not remove
+opaque replay data to force a smaller history.
+
 Each `group.origins` is a tuple of frozen `HistoryOrigin` records:
 
 | Field | Meaning |

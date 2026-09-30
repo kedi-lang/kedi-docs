@@ -19,7 +19,7 @@ inside `.py` files can also receive experimental semantic tokens.
 ## Language Server Setup
 
 On first activation, the extension provisions Python 3.12 and installs Kedi
-and its parser into `~/.kedi/editor-venv`. Zed shares this same environment.
+with its parser and debugger into `~/.kedi/editor-venv`. Zed shares this same environment.
 An absolute `KEDI_HOME` environment variable relocates the managed directory.
 Initial setup requires internet access; subsequent starts reuse the installed
 environment. Concurrent editor starts serialize installation rather than
@@ -36,10 +36,15 @@ explicit `kedi.lsp.serverCommand` can instead launch a custom server when no
 host interpreter is configured. Workspace virtual environments are not selected
 implicitly. Settings and selected-interpreter changes restart the server.
 
-The managed installer pins `kedi==0.4.0` and `tree-sitter-kedi==0.4.0`.
+The managed installer pins `kedi==0.4.0`, `tree-sitter-kedi==0.4.1`, and
+`kedi-debugger==0.1.0`. Existing managed environments gain the debugger on their
+next setup check. Host environments still require explicit debugger installation.
 Those releases must be available on the package index before this automatic
-installation can be distributed; an unavailable package produces an explicit
+installation can be distributed, and the Kedi wheel must contain the required
+debugger hooks; an unavailable or incompatible package produces an explicit
 setup error rather than falling back to an older runtime.
+
+See [Debugger and Inspector](debugger.md) for launch configuration and controls.
 
 ## Completion and Hover
 

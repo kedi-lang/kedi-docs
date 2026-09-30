@@ -123,7 +123,30 @@ discarded. Descriptions guide the model but do not enforce a numeric range.
 
 ## Validation Constraints
 
-Use `kedi.Constraints` inside a Python type alias when bounds must be enforced:
+Import `kedi.Constraints` when bounds must be enforced. In a native `Annotated`,
+wrap the metadata constructor call in backticks:
+
+````kedi
+```
+from kedi import Constraints
+```
+
+~Review(
+  confidence: Annotated[
+    float,
+    "Confidence of the review",
+    `Constraints(ge=0, le=1)`
+  ]
+)
+[review: Review] = `Review(confidence=0.9)`
+> show: `review.confidence`
+````
+
+This also works inside nested lists, dictionaries, optional and union types.
+The metadata expression produces a value, while the first `Annotated` argument
+must still be a type. `Constraints` is not an implicit global.
+
+Alternatively, define the whole annotation as a Python alias:
 
 ````kedi
 ```
@@ -143,9 +166,9 @@ Rating = Annotated[
 
 The Python alias supplies actual validation metadata. Kedi's native annotation
 grammar does not accept arbitrary constructor calls such as
-`Annotated[float, Constraints(ge=0)]`; define the alias in Python and reference
-it with a backtick type expression. These constraints validate values, not the
-truth of model judgements. See [Jev](../agent-adapters/typesafe.md) for decision
+`Annotated[float, Constraints(ge=0)]`; use a backtick metadata expression or
+reference a Python alias through a backtick type expression. These constraints
+validate values, not the truth of model judgements. See [Jev](../agent-adapters/typesafe.md) for decision
 metadata and supported schemas.
 
 ## Pydantic-Compatible Models

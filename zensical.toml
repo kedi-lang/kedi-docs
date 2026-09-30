@@ -231,6 +231,7 @@ nav = [
       { "Language Server" = "tooling/language-server.md" },
       { "VS Code" = "tooling/vscode.md" },
       { "Zed" = "tooling/zed.md" },
+      { "Debugger and Inspector" = "tooling/debugger.md" },
     ] },
     { "Interactive Environments" = [
       { "Terminal REPL" = "tooling/repl.md" },

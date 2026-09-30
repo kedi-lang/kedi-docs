@@ -5,7 +5,7 @@ This model-assisted example combines two tool results. It requires a tool-capabl
 ## End-to-End Multi-Artifact Reduction
 
 The following program exposes two large datasets as ordinary Kedi tools. The
-agent receives compact references, joins the hidden payloads in CodeMode, and
+agent receives compact references, joins the hidden payloads with Artifact Compute, and
 returns only the aggregate needed by the template:
 
 ```kedi

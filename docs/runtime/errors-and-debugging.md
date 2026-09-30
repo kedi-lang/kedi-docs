@@ -202,6 +202,10 @@ difference in final values or failure semantics as a runtime bug.
 
 ## Executor Debug Events
 
+For interactive breakpoints, stepping and bounded read-only scopes in VS Code or
+Zed, use the optional [Debugger and Inspector](../tooling/debugger.md). It does not
+enable the exporter below or write a persistent transcript.
+
 Tracebacks explain a failed execution path. Executor debug events instead
 record operations and values, including successful ones. An executor can emit
 `ExecutorDebugEvent` records with a UTC timestamp, executor, step, event name,

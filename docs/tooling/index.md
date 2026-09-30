@@ -71,6 +71,7 @@ latency, token, cache, request, and tool-call distributions, are reported in
 - [Language Server](language-server.md)
 - [VS Code](vscode.md)
 - [Zed](zed.md)
+- [Debugger and Inspector](debugger.md)
 
 **Interactive Environments**
 

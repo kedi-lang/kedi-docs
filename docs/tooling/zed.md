@@ -37,7 +37,7 @@ Python injection. Recommended:
 ## Language Server Setup
 
 On first language-server activation, the extension provisions Python 3.12 and
-installs Kedi and its parser into `~/.kedi/editor-venv`, shared with VS Code.
+installs Kedi with its parser and debugger into `~/.kedi/editor-venv`, shared with VS Code.
 An absolute `KEDI_HOME` environment variable relocates the managed directory.
 The first setup requires internet access; subsequent starts reuse it. Parallel
 editor starts share an installation lock.
@@ -65,9 +65,14 @@ Advanced users can still configure `lsp.kedi-lsp.binary.path` and `arguments`
 for a custom server; specify `settings.python_path` as well when that server
 is a wrapper whose Python interpreter cannot be inferred.
 
-The managed installer pins `kedi==0.4.0` and `tree-sitter-kedi==0.4.0`.
-Both releases must be published before distributing automatic installation.
-Missing packages produce an explicit setup error, not an older-runtime fallback.
+The managed installer pins `kedi==0.4.0`, `tree-sitter-kedi==0.4.1`, and
+`kedi-debugger==0.1.0`. Existing managed environments gain the debugger on their
+next setup check. Host environments still require explicit debugger installation.
+These releases must be published before distributing automatic installation,
+and the Kedi wheel must contain the required debugger hooks. Missing or
+incompatible packages produce an explicit setup error, not an older-runtime fallback.
+
+See [Debugger and Inspector](debugger.md) for launch configuration and controls.
 
 The extension also starts an embedded-Python proxy and auto-installs Pyright
 through Zed's npm support. Python query docstrings use a separate virtualizer
