@@ -128,7 +128,7 @@ unsupported adapter capabilities fail.
 | `> import: module/path` | Import all explicitly exported names |
 | `> import: module/path:` | Import only listed exported names |
 | `> export:` | Export listed top-level procedures, types, values, or profiles |
-| `> export: *` | Export all public names not starting with `_` |
+| `> export: *` | Export public names, excluding `_`-prefixed names and runtime-owned `args` |
 | `> package: name:` | Declare metadata in `package.kedi` only |
 
 Imports are relative to their source file before bundled and installed-package
@@ -173,9 +173,9 @@ same-named eval suite with training data and a metric.
 uses a separate agent/model configuration and stores generated source in
 `program.cache.kedi`.
 
-Both directive bodies accept explicit `>>` or legacy bare template lines. The
-entire body remains one newline-joined model call; the old syntax does not imply
-one request per line.
+An optimize body must start its template with `>>`. Its continuation lines form
+one prompt, not separate calls. A bare optimize prompt is a parse error.
+The `> auto:` body remains an indented code-generation specification.
 
 ## Placement and Capture
 

@@ -27,6 +27,28 @@ def normalize_path(value: str) -> str:
 The fence must be the first content, apart from comments and permitted source
 metadata. A later top-level fence is an ordinary runtime block.
 
+## Source-Relative Files
+
+A file-backed Kedi program receives `__file__` as its absolute source path.
+It is available in the prelude, inline expressions, and procedure bodies:
+
+````kedi
+```
+from pathlib import Path
+```
+
+[notes] = `Path(__file__).with_name("notes.md").read_text(encoding="utf-8")`
+````
+
+Every imported module receives its own `__file__`; it does not inherit the
+caller's file path. Kedi leaves the process working directory unchanged, so
+ordinary `Path("notes.md")` calls remain CWD-relative. This distinction lets
+programs use both bundled resources and paths relative to the shell invocation
+without changing the behavior of concurrent programs.
+
+Unnamed programs and synthetic sources such as notebook cells do not receive
+an inferred `__file__` binding.
+
 ## Startup Execution
 
 The prelude executes during program compilation/startup, before the main Kedi

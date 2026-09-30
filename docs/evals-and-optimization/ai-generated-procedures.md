@@ -14,9 +14,10 @@
 The indented lines form one natural-language specification. The old implicit
 unknown-`>` form is not accepted; use the explicit `> auto:` directive.
 
-Like `> optimize:`, `> auto:` accepts bare indented specification lines without
-`>>`. This is a directive-body exception. Bare text remains invalid in ordinary
-procedure bodies.
+`> auto:` accepts indented specification lines without `>>`; these describe
+generated code rather than an ordinary executable template. In contrast,
+`> optimize:` requires a template starting with `>>`. Bare prompt beginnings
+remain invalid in ordinary procedure bodies.
 
 ## Procedure Signatures as Contracts
 

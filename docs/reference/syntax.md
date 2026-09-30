@@ -109,9 +109,10 @@ to recognized Kedi globals are synchronized; lexical locals remain scoped.
     = `procedure_name(rows) == expected["field"]`
 ```
 
-`> optimize:` and `> auto:` occur inside procedures. Their bodies accept either
-an explicit leading `>>` or legacy bare template lines. Bare template lines are
-invalid everywhere else.
+`> optimize:` and `> auto:` occur inside procedures. An optimize body contains
+one template block starting with `>>`; bare prompt beginnings are invalid.
+`> auto:` instead takes an indented code-generation specification, not an
+ordinary executable template block.
 
 ## Escapes
 

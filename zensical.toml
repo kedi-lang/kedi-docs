@@ -189,6 +189,7 @@ nav = [
     ] },
     { "Decision Models" = [
       { "TypeSafe Jev" = "agent-adapters/typesafe.md" },
+      { "Local Laya" = "agent-adapters/laya.md" },
       { "Claims and Thresholds" = "agent-adapters/jev-claims.md" },
       { "Criteria and Output Types" = "agent-adapters/jev-criteria.md" },
       { "Finite Extraction" = "agent-adapters/jev-extraction.md" },

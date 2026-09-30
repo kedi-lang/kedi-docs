@@ -59,7 +59,10 @@ programs.
 
 ## Star Exports
 
-`> export: *` exports every public top-level name:
+`> export: *` exports every public top-level name except the runtime-owned `args`
+binding. Imported procedures still read the caller's CLI arguments; those
+arguments are not re-exported or rebound by the import. Explicitly importing
+an exported `args` binding is rejected because the name is reserved.
 
 ```kedi
 @public_name() -> str:

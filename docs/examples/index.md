@@ -4,6 +4,12 @@ These examples combine Kedi features into reviewable programs. Read the focused
 language pages first when you need a complete rule rather than a guided
 scenario.
 
+For checkout-ready programs with bundled input files, per-example guides, and
+regression tests, use the
+[repository example gallery](https://github.com/kedi-lang/kedi/tree/stable/examples).
+Its [verification notes](https://github.com/kedi-lang/kedi/blob/stable/examples/VALIDATION.md)
+separate live model observations from deterministic runtime checks.
+
 ## Choose an Example
 
 | Example | Main concepts | Requires model calls |

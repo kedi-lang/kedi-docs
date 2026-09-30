@@ -1,6 +1,27 @@
 # Jev Criteria and Output Types
 
-Describe finite choices, binary evidence, probabilities, and ordered score levels. Import metadata through Python aliases; the Kedi type grammar does not gain arbitrary function calls.
+Describe finite choices, binary evidence, probabilities, and ordered score levels.
+Import the primitives directly with `> import: typesafe`, or select only the names
+you need. This requires the optional `kedi-typesafe` package but does not select
+a model or make a provider request. Python callers still import from `kedi.typesafe`.
+
+```kedi
+> import: typesafe:
+  Probability
+  Rubric
+
+~Assessment(
+  correctness: Probability,
+  quality: Annotated[
+    float,
+    "Assess the answer against the reference",
+    `Rubric(["Incorrect", "Partly correct", "Fully correct"])`
+  ]
+)
+```
+
+Native metadata calls use backticks; arbitrary bare function calls are not added
+to the type grammar. Python aliases remain an alternative:
 
 ## Typed Criteria
 
@@ -37,9 +58,9 @@ Rubric bounds are automatically included and validated; no separate range is nee
 
 `ChoiceCriteria` supplies descriptions for each exact `Literal`/enum option.
 `BooleanCriteria(true=..., false=...)` supplies descriptions for positive and negative
-evidence. Import these from `kedi.typesafe` in the Python prelude and use them in
-Python `Annotated` aliases. This does not add function calls to native type syntax.
-Importing `kedi.typesafe` without the optional package fails with installation advice;
+evidence. Import them with `> import: typesafe` for Kedi, or from `kedi.typesafe` in
+Python. They can be used in native backtick metadata or Python `Annotated` aliases.
+Importing either surface without the optional package fails with installation advice;
 ordinary `import kedi` does not load Jev.
 
 

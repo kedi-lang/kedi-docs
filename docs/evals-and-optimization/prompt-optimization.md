@@ -33,7 +33,7 @@ The span name is a stable artifact key. In
 Choose names that describe the prompt's job. Renaming a span disconnects it
 from the old artifact entry.
 
-## Explicit and Legacy Block Forms
+## Required Template Marker
 
 Start new optimize templates with `>>`, just like ordinary template blocks:
 
@@ -45,10 +45,11 @@ Start new optimize templates with `>>`, just like ordinary template blocks:
   = `<title> + " by " + <author>`
 ```
 
-For compatibility, the parser also accepts older bodies without the leading
-`>>`, only inside `> optimize:` and `> auto:`. Use the explicit form in new
-programs. Bare template text at top level or in an ordinary procedure is a
-parse error. Continuation lines belong to the same template, not separate calls.
+The first prompt line must start with `>>`; an optimize body with a bare prompt
+is a parse error. Continuation lines at the same indentation belong to that
+template and do not repeat the marker. Blank lines within the prompt preserve
+paragraph breaks. Blank lines before or after the template are also allowed and
+do not create another model call.
 
 Substitutions and captures work exactly as they do in `>>` blocks:
 

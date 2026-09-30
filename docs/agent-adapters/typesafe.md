@@ -20,7 +20,10 @@ Pydantic AI release lines. Install them in separate environments; uv rejects the
 unsupported combined selections explicitly.
 
 Set `TYPESAFE_API_KEY` in the environment. The extended API described here requires
-`kedi-typesafe` 0.2.1, which includes the decision evidence used by Kedi bindings.
+`kedi-typesafe` 0.2.1 or later, which includes the decision evidence used by Kedi bindings.
+The development 0.3.0 package lives in the `kedi-decisions` monorepo and reuses
+its shared schema implementation without changing these imports. Local Laya
+inference is provided by a separate [Laya extension](laya.md), not TypeSafe.
 
 
 ## Claims and Thresholds

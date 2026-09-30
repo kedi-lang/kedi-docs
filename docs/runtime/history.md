@@ -206,10 +206,10 @@ def inspect_origins(ctx: HistoryProcessorContext) -> list:
 This logs identifiers, not tool arguments or results. Treat identifiers and
 source locations as application metadata when choosing a logging destination.
 
-For an executable tool-loop example using a deterministic `FunctionModel`, see
-[examples/history_processor.py](https://github.com/kedi-lang/kedi/blob/stable/examples/history_processor.py).
-From the repository checkout, run `uv run python examples/history_processor.py`;
-it needs no API key and makes no network requests.
+For executable, deterministic coverage of provider-native tool loops, see the
+[history-processor regression tests](https://github.com/kedi-lang/kedi/blob/stable/tests/test_pydantic_user_history_processor.py).
+From the checkout, run `uv run pytest tests/test_pydantic_user_history_processor.py --record-mode=none`.
+These checks need no API key and make no network requests.
 
 ## Callback Contract
 
