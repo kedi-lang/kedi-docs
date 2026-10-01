@@ -67,7 +67,8 @@ def review_tool(request):
     if request.tool_name != "write_report":
         return ApprovalDecision.deny(reason="tool is outside this workflow")
 
-    safe_path = Path("reports") / Path(request.arguments["path"]).name
+    path = Path(request.arguments["path"])
+    safe_path = Path("reports") / path.name
     return ApprovalDecision.edit(
         {**request.arguments, "path": str(safe_path)},
         reason="redirected to the reports directory",

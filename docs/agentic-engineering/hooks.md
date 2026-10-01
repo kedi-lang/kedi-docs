@@ -43,9 +43,9 @@ def redact_prompt(event):
 def constrain_report_path(event):
     if event.tool_name != "write_report":
         return None
-    filename = Path(event.arguments["path"]).name
+    path = Path(event.arguments["path"])
     return PreToolUseDecision.edit(
-        {**event.arguments, "path": str(Path("reports") / filename)}
+        {**event.arguments, "path": str(Path("reports") / path.name)}
     )
 
 def observe_tool(event):

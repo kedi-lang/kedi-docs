@@ -140,7 +140,8 @@ types, and the runtime type namespace.
 from pathlib import Path
 
 def basename(value: str) -> str:
-    return Path(value).name
+    path = Path(value)
+    return path.name
 ```
 
 @show(path: str) -> str:

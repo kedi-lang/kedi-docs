@@ -47,7 +47,8 @@ A direct procedure return can also be a block:
   import json
   from pathlib import Path
 
-  return json.loads(Path(path).read_text(encoding="utf-8"))
+  config_path = Path(path)
+  return json.loads(config_path.read_text(encoding="utf-8"))
   ```
 ````
 

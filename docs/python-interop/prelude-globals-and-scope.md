@@ -17,7 +17,8 @@ from typing import Literal
 Environment = Literal["dev", "staging", "prod"]
 
 def normalize_path(value: str) -> str:
-    return Path(value).as_posix()
+    path = Path(value)
+    return path.as_posix()
 ```
 
 @artifact(path: str, environment: Environment) -> str:
@@ -37,7 +38,11 @@ It is available in the prelude, inline expressions, and procedure bodies:
 from pathlib import Path
 ```
 
-[notes] = `Path(__file__).with_name("notes.md").read_text(encoding="utf-8")`
+[notes] = ```
+path = Path(__file__)
+path = path.with_name("notes.md")
+return path.read_text(encoding="utf-8")
+```
 ````
 
 Every imported module receives its own `__file__`; it does not inherit the

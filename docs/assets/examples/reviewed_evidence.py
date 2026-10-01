@@ -8,7 +8,8 @@ from kedi.lang import compile_program, parse_program
 
 
 def run_review(adapter, output_dir):
-    destination = Path(output_dir).resolve() / "review.txt"
+    destination = Path(output_dir)
+    destination = destination.resolve() / "review.txt"
     destination.parent.mkdir(parents=True, exist_ok=True)
     observations = []
     approvals = []
@@ -28,7 +29,8 @@ def run_review(adapter, output_dir):
     @tool(risk="mutating")
     def write_report(path: str, text: str) -> str:
         """Write the approved report and return its actual path."""
-        if Path(path).resolve() != destination:
+        requested_path = Path(path)
+        if requested_path.resolve() != destination:
             raise ValueError("Unapproved destination")
         destination.write_text(text, encoding="utf-8")
         writes.append({"path": path, "text": text})
@@ -43,7 +45,8 @@ def run_review(adapter, output_dir):
             reason="Confine the write to this application's report file",
         )
 
-    source = Path(__file__).with_suffix(".kedi")
+    source = Path(__file__)
+    source = source.with_suffix(".kedi")
     runtime = compile_program(
         parse_program(source.read_text(encoding="utf-8")),
         adapter=adapter,
