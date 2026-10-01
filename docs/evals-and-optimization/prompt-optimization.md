@@ -33,6 +33,8 @@ The span name is a stable artifact key. In
 Choose names that describe the prompt's job. Renaming a span disconnects it
 from the old artifact entry.
 
+<span id="explicit-and-legacy-block-forms"></span>
+
 ## Required Template Marker
 
 Start new optimize templates with `>>`, just like ordinary template blocks:

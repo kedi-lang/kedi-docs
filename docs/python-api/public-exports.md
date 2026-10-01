@@ -41,5 +41,8 @@ while runtime and artifact handles are advanced integration surfaces.
 | `LoopIterationLimitError` | Conditional-loop guard exceeded, not normal completion. [Loops](../core-language/loops-and-map.md) |
 | `Executor`, `DefaultExecutor`, `ExecutorDebugEvent`, `ExecutorDebugExporter`, `MarkdownDebugExporter`, `default_debug_export_path` | Python execution protocol and diagnostic exports; default execution is unsandboxed and exports are not secret-redacted. [Executors](executors.md) |
 
-Optional `kedi.typesafe` exports are separate from this root index. Importing
-that module requires `kedi-typesafe`; see [Jev Criteria](../agent-adapters/jev-criteria.md).
+`kedi.decisions` additionally exports `Probability`, `Rubric`, `BooleanCriteria`,
+and `ChoiceCriteria` from the optional `kedi-decisions` package. Importing these
+types requires that package, but ordinary decision-evidence inspection does not.
+The criteria are shared by Jev and Laya, without importing either provider SDK;
+see [Decision Criteria](../agent-adapters/jev-criteria.md).

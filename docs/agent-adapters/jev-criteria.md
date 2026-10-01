@@ -1,12 +1,19 @@
 # Jev Criteria and Output Types
 
 Describe finite choices, binary evidence, probabilities, and ordered score levels.
-Import the primitives directly with `> import: typesafe`, or select only the names
-you need. This requires the optional `kedi-typesafe` package but does not select
-a model or make a provider request. Python callers still import from `kedi.typesafe`.
+Import the primitives directly with `> import: decisions`, or select only the names
+you need. The types come from the optional `kedi-decisions` package and also
+work with Laya. Importing them does not select a model, load weights, or require
+a provider SDK. Python callers use `kedi.decisions`; standalone callers without
+Kedi can import from `kedi_decisions`.
+
+The shared package is currently available from the
+[decision-model monorepo](https://github.com/kedi-lang/kedi-decisions).
+It is included in Kedi's source development environment. For other environments,
+install that checkout with `uv pip install -e /path/to/kedi-decisions`.
 
 ```kedi
-> import: typesafe:
+> import: decisions:
   Probability
   Rubric
 
@@ -28,7 +35,7 @@ to the type grammar. Python aliases remain an alternative:
 ````kedi
 ```
 from typing import Annotated
-from kedi.typesafe import Probability, Rubric
+from kedi.decisions import Probability, Rubric
 
 Correctness = Annotated[
     Probability,
@@ -58,10 +65,12 @@ Rubric bounds are automatically included and validated; no separate range is nee
 
 `ChoiceCriteria` supplies descriptions for each exact `Literal`/enum option.
 `BooleanCriteria(true=..., false=...)` supplies descriptions for positive and negative
-evidence. Import them with `> import: typesafe` for Kedi, or from `kedi.typesafe` in
+evidence. Import them with `> import: decisions` for Kedi, or from `kedi.decisions` in
 Python. They can be used in native backtick metadata or Python `Annotated` aliases.
-Importing either surface without the optional package fails with installation advice;
-ordinary `import kedi` does not load Jev.
+Importing criteria without the optional package fails with installation advice.
+Ordinary `import kedi` and decision-evidence inspection remain available without
+it. The former provider-specific Kedi type-import modules are removed; provider
+model IDs, settings, and standalone model package APIs are unchanged.
 
 
 ## Outputs and Limitations

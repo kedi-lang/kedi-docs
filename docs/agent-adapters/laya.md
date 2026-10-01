@@ -25,7 +25,7 @@ checkpoint. An existing local checkpoint directory avoids network downloads.
 ## A Kedi Program
 
 ```kedi
-> import: laya
+> import: decisions
 > adapter: pydantic
 > model: laya/aac6fef/laya-multilingual-mlx
 
@@ -40,10 +40,10 @@ The probability that a refund is requested is [refund: Probability].
 ```
 
 Change the adapter directive to `> adapter: langchain` to use the same program
-through LangChain. `> import: laya` exposes `Probability`, `Rubric`,
+through LangChain. `> import: decisions` exposes `Probability`, `Rubric`,
 `BooleanCriteria`, and `ChoiceCriteria`; importing these types does not select
-a model or start inference. Python code can import them from `kedi.laya`.
-Existing `kedi.typesafe` and `> import: typesafe` imports remain supported.
+a model or start inference. Python code can import them from `kedi.decisions`.
+The same import works for Jev; only the model and its provider settings change.
 
 ## Provider and Backend
 
