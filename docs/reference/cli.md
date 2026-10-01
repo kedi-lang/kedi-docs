@@ -5,7 +5,7 @@
 ```text
 kedi SOURCE [OPTIONS] [PROGRAM_OPTIONS]
 kedi -c SOURCE_TEXT [OPTIONS] [PROGRAM_OPTIONS]
-kedi --idle [RUNTIME_BACKEND_OPTIONS] [--record] [--load SESSION_PATH] [--highlight]
+kedi --idle [RUNTIME_BACKEND_OPTIONS] [--record] [--load SESSION_PATH] [--no-color]
 kedi parse SOURCE
 kedi SOURCE --parse
 kedi install [PACKAGE.KEDI]
@@ -49,11 +49,14 @@ that submits on a complete double Enter; `Alt+Enter` forces submission.
 before the REPL exits. `--load` restores the supplied snapshot and keeps
 recording subsequent changes to the same file.
 
-`--highlight` enables live Kedi and embedded-Python syntax highlighting while
-preserving the shared REPL history. Interactive mode accepts `--adapter` and
+Live Kedi and embedded-Python syntax highlighting is enabled by default while
+preserving the shared REPL history. `--no-color` disables input highlighting and
+REPL error colors; a nonempty `NO_COLOR` environment variable does the same.
+Redirected input or output uses plain line input. The existing `--highlight`
+flag remains supported. Interactive mode accepts `--adapter` and
 `--adapter-model`. It rejects a source
 file, `-c/--command`, program arguments, `--parse`, `--test`, `--eval`, and
-`--optimize`. `--record`, `--load`, and `--highlight` require `--idle`. See
+`--optimize`. `--record`, `--load`, `--highlight`, and `--no-color` require `--idle`. See
 [Interactive Execution](../runtime/interactive-execution.md)
 for state persistence, native results, imports, history, and complete terminal
 behavior.

@@ -66,16 +66,21 @@ after pasting to execute it.
 
 ### Syntax Highlighting
 
-Enable live Kedi and embedded-Python highlighting explicitly:
+Live Kedi and embedded-Python highlighting is enabled by default:
 
 ```bash
-kedi --idle --highlight
+kedi --idle
 ```
 
 Highlighting changes terminal presentation only. It does not start the Kedi
 language server or add diagnostics, completion, or hover. Very large fragments
 fall back to plain input to keep editing responsive. Highlighted input uses the
 same `~/.kedi_history` file as ordinary and multiline input.
+
+Use `kedi --idle --no-color` to disable highlighting and REPL error colors.
+A nonempty `NO_COLOR` environment variable also disables them. Redirected
+input or output uses plain line input rather than the interactive editor.
+`--highlight` remains accepted for existing commands, but is no longer necessary.
 
 ### Inspecting Values
 
@@ -144,4 +149,4 @@ kedi --idle --adapter pydantic --adapter-model openai:gpt-5.6-luna
 
 Interactive mode does not accept a source file, `-c/--command`, program
 arguments, `--parse`, `--test`, `--eval`, or `--optimize`.
-`--record`, `--load`, and `--highlight` require `--idle`.
+`--record`, `--load`, `--highlight`, and `--no-color` require `--idle`.
