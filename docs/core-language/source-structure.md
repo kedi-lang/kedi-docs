@@ -108,7 +108,7 @@ Profiles also support a docstring when the first member is a block comment:
     ###
     Review a change against repository evidence.
     ###
-    > system: Cite evidence for each finding.
+    > instructions: Cite evidence for each finding.
 ```
 
 This documents the profile; it is not a system instruction. A later block

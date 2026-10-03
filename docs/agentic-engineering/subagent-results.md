@@ -14,7 +14,7 @@ delegation interface.
     Inspect supplied test evidence without inventing missing results.
     ###
     > adapter: pydantic
-    > system: Return only facts supported by the task's evidence.
+    > instructions: Return only facts supported by the task's evidence.
     > output: Evidence
 
 > profile: coordinator:

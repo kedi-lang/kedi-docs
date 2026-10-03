@@ -47,9 +47,9 @@ scope. They are not separate priority tiers:
 
 ```kedi
 > profile: concise:
-    > system: Return one sentence.
+    > instructions: Return one sentence.
 
-> system: Return a paragraph.
+> instructions: Return a paragraph.
 > use: concise
 ```
 

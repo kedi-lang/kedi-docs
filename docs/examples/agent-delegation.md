@@ -16,7 +16,7 @@ they are unnecessary for deterministic helper procedures.
     > adapter: pydantic
     > model: openai:gpt-5.6-luna
     > output: ResearchAnswer
-    > system: Return concise evidence and identify uncertainty.
+    > instructions: Return concise evidence and identify uncertainty.
 
 > profile: coordinator:
     ###

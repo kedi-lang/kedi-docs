@@ -21,7 +21,7 @@ Download both files into one directory:
     > adapter: pydantic
     > use: read_evidence
     > output: Review
-    > system:
+    > instructions:
         Read evidence for the requested suite.
         Release only if no tests failed.
 
@@ -31,7 +31,7 @@ Download both files into one directory:
     > max_agents: 2
     > use: write_report
     > approval: `approve_report`
-    > system:
+    > instructions:
         Delegate the review and use its validated result.
         Write failure names and the release decision to requested.txt.
         Use write_report and return the actual saved path.

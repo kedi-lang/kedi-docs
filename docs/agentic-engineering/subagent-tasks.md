@@ -12,7 +12,7 @@ This program starts two independent reviews before waiting for either one:
 > profile: reviewer:
     > adapter: pydantic
     > model: openai:gpt-5.6-luna
-    > system: Review only the supplied change. Separate evidence from assumptions.
+    > instructions: Review only the supplied change. Separate evidence from assumptions.
 
 > profile: coordinator:
     > adapter: pydantic

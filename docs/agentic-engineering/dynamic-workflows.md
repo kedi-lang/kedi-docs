@@ -10,12 +10,12 @@ composition; it does not grant access to arbitrary profiles.
 ```kedi
 > profile: evidence:
     > adapter: pydantic
-    > system: Assess the supplied evidence and return an integer count of failures.
+    > instructions: Assess the supplied evidence and return an integer count of failures.
     > output: int
 
 > profile: explanation:
     > adapter: pydantic
-    > system: Explain the supplied findings concisely.
+    > instructions: Explain the supplied findings concisely.
 
 > profile: coordinator:
     > adapter: pydantic

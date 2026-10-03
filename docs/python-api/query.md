@@ -23,7 +23,7 @@ header, or an empty program fails when the decorator is evaluated.
 
 The docstring therefore contains procedure-body statements, not another
 top-level `@procedure` declaration. Procedure-valid directives such as
-`> model:`, `> system:`, and `> use:` may appear in the body.
+`> model:`, `> instructions:`, and `> use:` may appear in the body.
 
 ## Function Signatures
 

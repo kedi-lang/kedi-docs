@@ -2,7 +2,7 @@
   "use strict";
 
   const KEDI_DIRECTIVES = new Set([
-    "adapter", "agent", "model", "effort", "approval", "system", "settings",
+    "adapter", "agent", "model", "effort", "approval", "instructions", "settings",
     "profile", "subagent", "max_agents", "mcp", "use", "import", "export",
     "package", "case", "data", "test_data", "metric", "optimize", "auto"
   ]);

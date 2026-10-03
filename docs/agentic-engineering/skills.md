@@ -164,7 +164,7 @@ and installed skills, and keep approvals/tool boundaries active.
 
 Use a skill for repeatable operational guidance that should be selected at task
 time: release procedures, code-review policy, migration checklists, or domain
-workflows. Put unconditional behavior in `> system:` and executable typed
+workflows. Put unconditional behavior in `> instructions:` and executable typed
 operations in tools instead.
 
 Skills do not grant capabilities. A skill may instruct use of a tool, but the

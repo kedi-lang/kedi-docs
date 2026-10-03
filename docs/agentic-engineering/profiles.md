@@ -25,7 +25,7 @@ may request. These are different roles even when they share the same tools.
     > adapter: pydantic
     > model: openai:gpt-5.6-luna
     > effort: medium
-    > system: Cite the evidence used for every finding.
+    > instructions: Cite the evidence used for every finding.
     > settings:
         timeout: 120
 ```
@@ -35,7 +35,7 @@ A profile body contains directives, not an executable procedure body:
 | Concern | Members | Meaning |
 | --- | --- | --- |
 | Backend | `adapter`, `agent`, `model`, `effort` | Select execution backend and model behavior. |
-| Instructions | `system`, `settings` | Supply instructions and supported runtime/model settings. |
+| Instructions | `instructions`, `settings` | Supply instructions and supported runtime/model settings. |
 | Tools | `use`, `mcp`, `skills` | Expose procedures, external tools, and skill discovery. |
 | Permissions and lifecycle | `approval`, `hooks` | Mediate sensitive calls and lifecycle boundaries. |
 | Context | `history`, `artifacts` | Configure conversation retention and artifact handling. |
@@ -76,7 +76,7 @@ It is not a reset to an empty configuration:
 
 | Member | Composition rule |
 | --- | --- |
-| Backend, model, effort, system, approval, output type, maximum starts, workflow mode | A specified value replaces the earlier value. System instructions are replaced, not concatenated. |
+| Backend, model, effort, instructions, approval, output type, maximum starts, workflow mode | A specified value replaces the earlier value. Instructions are replaced, not concatenated. |
 | Settings | Merge by key; later values replace the same key. Nested dictionaries are not recursively merged. |
 | Tools and children | Merge by name. Later bindings win, and reintroduced names move to the end of the ordered list. |
 | MCP servers | Append in declaration/application order. |
@@ -116,7 +116,7 @@ Procedures capture the configuration at their definition site; see
     ###
     > adapter: pydantic
     > model: openai:gpt-5.6-luna
-    > system: Base findings only on the evidence supplied in the task.
+    > instructions: Base findings only on the evidence supplied in the task.
     > output: list[Finding]
 ```
 
@@ -171,7 +171,7 @@ produce diagnostics or compile-time errors.
 
 > profile: researcher:
     > adapter: pydantic
-    > system: Investigate one self-contained question.
+    > instructions: Investigate one self-contained question.
 ```
 
 Only directly listed children can be delegated to. `max_agents` bounds the

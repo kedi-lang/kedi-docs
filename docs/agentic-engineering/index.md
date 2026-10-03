@@ -44,7 +44,7 @@ scope:
 > adapter: pydantic
 > model: openai:gpt-5.6-luna
 > effort: low
-> system: Use tools only when they improve factual accuracy.
+> instructions: Use tools only when they improve factual accuracy.
 ```
 
 Top-level state is captured by following procedures. A procedure-body override
@@ -59,7 +59,7 @@ Profiles name reusable state:
 > profile: reviewer:
     > adapter: pydantic
     > model: openai:gpt-5.6-luna
-    > system: Review evidence before making a claim.
+    > instructions: Review evidence before making a claim.
 
 > use: reviewer
 ```

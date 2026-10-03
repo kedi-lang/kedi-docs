@@ -33,7 +33,7 @@ INCIDENTS = {
 > profile: analyst:
     > adapter: pydantic
     > model: openai:gpt-5.6-luna
-    > system: Look up the requested identifier. Infer severity from the report, not invented facts.
+    > instructions: Look up the requested identifier. Infer severity from the report, not invented facts.
     > use: lookup_incident
     > approval: allow
 

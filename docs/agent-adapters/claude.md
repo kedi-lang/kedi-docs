@@ -29,7 +29,7 @@ Effort is normalized through the shared Kedi effort mapping.
 
 ## System Presets
 
-Claude Code's system prompt preset remains active. `> system:` is appended to
+Claude Code's system prompt preset remains active. `> instructions:` is appended to
 that preset rather than replacing it, preserving coding/file-tool behavior.
 
 ## Working Directory

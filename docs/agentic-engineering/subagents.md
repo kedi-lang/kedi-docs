@@ -13,7 +13,7 @@ any profile or inspect the parent's local variables.
     Inspect supplied test evidence and identify what remains unverified.
     ###
     > adapter: pydantic
-    > system: Separate observed results from missing evidence.
+    > instructions: Separate observed results from missing evidence.
 
 > profile: coordinator:
     > adapter: pydantic

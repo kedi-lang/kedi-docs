@@ -11,7 +11,7 @@ remain unchanged.
 > profile: reviewer:
     > adapter: pydantic
     > model: openai:gpt-5.6-luna
-    > system: Review the supplied evidence. State uncertainties explicitly.
+    > instructions: Review the supplied evidence. State uncertainties explicitly.
 
 > profile: coordinator:
     > adapter: pydantic
@@ -66,11 +66,11 @@ restart the release note or consume another delegation slot:
 
 > profile: reviewer:
     > adapter: pydantic
-    > system: Review the supplied change and identify concrete security concerns.
+    > instructions: Review the supplied change and identify concrete security concerns.
 
 > profile: writer:
     > adapter: pydantic
-    > system: Write a release note using only the supplied facts.
+    > instructions: Write a release note using only the supplied facts.
 
 > profile: coordinator:
     > adapter: pydantic

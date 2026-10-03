@@ -25,7 +25,7 @@ Only an explicitly exported profile can become the server entry:
 > profile: researcher:
     > adapter: pydantic
     > model: openai:gpt-5.6-luna
-    > system:
+    > instructions:
         Inspect the available evidence before answering.
         State uncertainty instead of inventing missing facts.
 

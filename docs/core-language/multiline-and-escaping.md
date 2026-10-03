@@ -30,10 +30,10 @@ response. Use `[answer] << ...` to keep unstructured response text.
 
 ## Multiline Instructions and Directives
 
-Block directives such as `> system:` use indented continuation text:
+Block directives such as `> instructions:` use indented continuation text:
 
 ```kedi
-> system:
+> instructions:
     Act as a release engineer.
     Prefer evidence from tools over assumptions.
     Keep the final answer concise.

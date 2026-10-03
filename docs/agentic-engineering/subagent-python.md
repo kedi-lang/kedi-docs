@@ -19,7 +19,7 @@ from kedi.lang import compile_program, parse_program
 source = """
 > profile: reviewer:
     > adapter: pydantic
-    > system: Identify what the supplied evidence does not establish.
+    > instructions: Identify what the supplied evidence does not establish.
 
 > profile: coordinator:
     > adapter: pydantic

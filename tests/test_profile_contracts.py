@@ -61,7 +61,7 @@ class ProfileContractTests(unittest.TestCase):
 
     def test_later_directive_replaces_profile_system(self):
         source = example("scoping-and-capabilities.md", "> profile: concise:")
-        source += "\n> system: Return a paragraph.\n>> Answer [answer: str].\n= <answer>\n"
+        source += "\n> instructions: Return a paragraph.\n>> Answer [answer: str].\n= <answer>\n"
         result, calls = self.execute(source)
         self.assertEqual(result, "verified")
         self.assertIn("Return a paragraph.", calls[0].instructions)

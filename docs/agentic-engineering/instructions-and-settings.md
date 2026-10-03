@@ -1,5 +1,10 @@
 # Instructions and Settings
 
+Use `> instructions:` for scoped agent instructions. The old spelling
+`> system:` is no longer accepted and produces a parse error. Replace the
+name without changing the body; lexical scope and override rules stay the
+same. Python's `system=` configuration parameter is unchanged.
+
 Instructions define agent behavior; settings define adapter/model mechanics.
 Both are lexical and apply to following calls.
 
@@ -11,7 +16,7 @@ to "never write outside reports" does not replace a path check.
 ## Single-Line Instructions
 
 ```kedi
-> system: Answer with evidence from available tools.
+> instructions: Answer with evidence from available tools.
 ```
 
 Use a single line for one stable rule. It is rendered when active state is
@@ -22,22 +27,22 @@ materialized.
 ```kedi
 [audience] = maintainers
 
-> system:
+> instructions:
     Act as a release engineer for <audience>.
     Inspect evidence before reaching a conclusion.
     Report uncertainty explicitly.
 ```
 
-Continuation lines are newline-joined. Multiline system bodies are read-only
+Continuation lines are newline-joined. Multiline instruction bodies are read-only
 templates: literal text, `<name>` substitutions, and inline Python
 substitutions are allowed. Output fields and procedure calls are not.
 
-A later `> system:` replaces the previous instruction value; it does not append
+A later `> instructions:` replaces the previous instruction value; it does not append
 another paragraph. Compute one combined instruction explicitly when both parts
 must survive. [Profile composition](profiles.md#merge-rules) uses the same rule.
 
 ```kedi
-> system:
+> instructions:
     Current audience: <audience>.
 ```
 
@@ -123,7 +128,7 @@ ACP accepts `cwd`, `env`, and `timeout`. Codex accepts fields including `cwd`,
 `cwd` is passed to ACP, Codex, and Claude where supported. Relative child-agent
 working directories are constrained by their parent safety boundary.
 
-Claude appends `> system:` content to its Claude Code preset, preserving
+Claude appends `> instructions:` content to its Claude Code preset, preserving
 built-in file behavior. Non-interactive Claude defaults to
 `permission_mode: acceptEdits`; set tool and permission fields explicitly to
 narrow it. Codex defaults to `workspace-write` unless settings narrow or replace

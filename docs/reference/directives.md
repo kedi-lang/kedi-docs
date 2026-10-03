@@ -12,7 +12,7 @@
 | `> requires: capability` | Require one adapter capability before model I/O |
 | `> requires:` | Require an indented list of adapter capabilities |
 | `> effort: level` | Set `minimal`, `low`, `medium`, `high`, `xhigh`, or `max` |
-| `> system: text` | Replace active instructions; block form joins lines |
+| `> instructions: text` | Replace active instructions; block form joins lines |
 | `> settings:` | Merge adapter settings by key |
 | `> history: enabled\|disabled` | Enable or disable scoped conversation continuity |
 | `> history:` | Configure history ownership and native compaction settings |
@@ -35,6 +35,10 @@ rejected according to that adapter's contract.
 A directive block has one body shape. Configuration directives contain
 unprefixed `name: value` subsettings; composite directives such as `> profile:`
 contain `>`-prefixed subdirectives. Kedi does not mix both forms in one body.
+
+`> system:` has been removed and produces a parse error. Use `> instructions:`
+instead; its body, substitutions, lexical scope, and precedence stay the same.
+The Python `system=` configuration parameter is unchanged.
 
 `> artifacts:` fields are `enabled`, `query_artifacts`, `store`, `path`, `threshold`, `ttl`,
 `idle_ttl`, `preview_chars`, `read_max_chars`, `session_quota`,
@@ -106,7 +110,7 @@ return validation are not retried. See
 | `> workflow: delegate\|dynamic` | Select direct or sandboxed dynamic child orchestration |
 | `> output: Type` | Declare a profile's default structured child result; an explicit child-call `final_schema` overrides it |
 
-A profile body may contain adapter or agent selection, model, effort, system,
+A profile body may contain adapter or agent selection, model, effort, instructions,
 settings, explicit requirements, approval, hooks, history, skills, CodeMode,
 artifact policy, MCP, tools, child profiles, descendant budget, workflow mode,
 and output type. See
