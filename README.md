@@ -5,7 +5,7 @@ The Kedi documentation site is built with Zensical.
 ## Develop
 
 ```bash
-uv tool run zensical serve
+uv tool run --from zensical==0.0.51 zensical serve
 ```
 
 ## Validate
@@ -59,6 +59,11 @@ manual against Kedi's `stable` branch and its pinned tree-sitter revision,
 builds and browser-tests the documentation, then publishes `site/` to
 `https://docs.kedi-lang.org` through GitHub Pages. The homepage is built and
 published independently from `kedi-lang/homepage`.
+
+Deployment waits for Kedi's `stable` branch to pin the documentation commit.
+After pushing this repository, update and push the `kedi-docs` submodule pin
+in Kedi as well. A documentation-only push does not publish until that check
+passes; if the wait expires, dispatch the workflow again after updating the pin.
 
 Canonical URLs, search, Markdown copy links, sitemaps, and LLM exports all use
 the documentation domain root. The homepage owns compatibility redirects from

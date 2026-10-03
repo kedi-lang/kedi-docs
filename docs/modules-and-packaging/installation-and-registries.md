@@ -29,13 +29,38 @@ from a source package.
 ## Add a Named Package
 
 ```console
-$ kedi add package_name
+$ kedi add textkit
+$ kedi audit
 ```
 
-Named add targets the future `registry.kedi-lang.org/v1/package/<name>`
-contract. A verified public registry is not provided by this implementation.
-Use local installation or explicit Git sources; the local mock below is for
-testing the future contract, not a public registry service.
+Named add uses [the public Kedi registry](https://registry.kedi-lang.org).
+It reads `v1/package/<name>.json`, rejects yanked or revoked packages, and
+fetches the exact verified Git commit in that record rather than repository
+HEAD. The manifest must match the registered package name and version.
+
+`textkit` provides deterministic whitespace normalization, word counting, and
+slug creation without a model or API key:
+
+```kedi
+> import: textkit
+
+> show: <slugify(`"Release Notes"`)>
+```
+
+The output is `release-notes`. Dependencies listed in `python_dependencies`
+are not installed automatically.
+
+### Development Registries
+
+Set `KEDI_REGISTRY_URL` to use another HTTPS registry or a local HTTP server:
+
+```console
+$ KEDI_REGISTRY_URL=http://127.0.0.1:8767 kedi add textkit
+$ KEDI_REGISTRY_URL=http://127.0.0.1:8767 kedi audit
+```
+
+Plain HTTP is accepted only for loopback addresses. Use the same registry
+override for installation and subsequent audits.
 
 For local registry-contract testing, set `KEDI_REGISTRY_MOCK_ROOT` to a directory
 whose children are package source directories:
@@ -60,7 +85,8 @@ printed and recorded.
 
 Arbitrary hosts, embedded credentials, unsafe source patterns, manifest
 symlinks, and files escaping the checkout are rejected. A Git URL is an explicit
-source install; it is separate from future registry release resolution.
+source install; it is separate from verified registry resolution and is reported
+as `unverified` by `kedi audit`.
 
 ## Registry Location
 
@@ -94,6 +120,28 @@ signature or security audit.
 Do not publish a source-owned `.kedi-install.json` and do not treat receipt
 fields as package-controlled metadata.
 
+## Audit Installed Packages
+
+`kedi audit` reads receipts and checks the registry's `v1/audit.json` index once.
+It does not execute imported packages, fetch repository HEAD, or update code.
+Findings match the package name, repository, and exact verified commit; an
+unchanged version string does not conceal a revoked commit.
+
+| Status | Meaning |
+| --- | --- |
+| `active` | The installed commit remains active in the registry. |
+| `superseded` | A historical commit, not withdrawn. |
+| `yanked` / `revoked` | A withdrawn commit; review the registry's reason and replace it. |
+| `unknown` | The verified commit is absent from the audit index. |
+| `malformed` | The receipt or installed manifest fails validation. |
+| `unverified` | A local or explicit Git source without verified registry provenance. |
+
+Exit code `0` means no actionable findings, `1` means a yanked, revoked,
+unknown, or malformed installation, and `2` means the online audit could not
+complete. `unverified` is not a security endorsement even though it does not
+make the command fail. The audit checks manifest receipts and registry status,
+not the contents of every installed source file.
+
 ## Source Safety and Limits
 
 Installation accepts regular files and directories within the declared source
@@ -115,5 +163,5 @@ top-level statements with the Kedi process's host permissions. Review the exact
 source and commit, install in an isolated Python environment, and restrict host
 credentials and filesystem access as you would for any Python dependency.
 
-A future registry-verified commit would establish identity and integrity. It would not
+A registry-verified commit pins identity and source provenance. It does not
 sandbox behavior, prove correctness, or approve capabilities.
