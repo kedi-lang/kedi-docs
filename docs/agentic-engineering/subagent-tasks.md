@@ -78,6 +78,10 @@ guarantee that application-owned synchronous side effects can be undone.
 
 ## Capacity and Ready-First Processing
 
+For additional evidence or a change of scope while a task is running, see
+[Task Input and Redirection](subagent-messaging.md). `> send` preserves active
+work; `> interrupt` replaces the current attempt without changing the handle.
+
 `max_agents` limits admitted descendant starts. It does not increase concurrent
 capacity. The separate `compile_program(subagent_max_concurrency=...)` limit rejects
 excess starts rather than silently queueing them. See

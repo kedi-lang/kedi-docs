@@ -46,6 +46,8 @@ CAPABILITIES = (
     ("Dynamic native approval handler", "supports_native_approval_handler"),
     ("Foreground subagents", "supports_subagents"),
     ("Background subagents", "supports_background_subagents"),
+    ("Live subagent input", "supports_live_subagent_input"),
+    ("Subagent interruption", "supports_subagent_interrupt"),
     ("Semantic stream events", "supports_stream_events"),
     ("Native history processing", "supports_history_processing"),
     ("Agent lifecycle hooks", "hooks"),

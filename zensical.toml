@@ -98,6 +98,7 @@ nav = [
     { "Subagents and Workflows" = [
       { "Overview" = "agentic-engineering/subagents.md" },
       { "Native Tasks and Await" = "agentic-engineering/subagent-tasks.md" },
+      { "Task Input and Redirection" = "agentic-engineering/subagent-messaging.md" },
       { "Typed Child Results" = "agentic-engineering/subagent-results.md" },
       { "Foreground and Background Runs" = "agentic-engineering/subagent-lifecycle.md" },
       { "Concurrent Result Processing" = "agentic-engineering/subagent-processing.md" },

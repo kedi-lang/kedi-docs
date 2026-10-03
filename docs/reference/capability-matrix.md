@@ -26,6 +26,8 @@ part of the base adapter protocol rather than an optional capability.
 | Dynamic native approval handler | yes | no | yes |
 | Foreground subagents | yes | yes | yes |
 | Background subagents | yes | no | yes |
+| Live subagent input | yes | no | yes |
+| Subagent interruption | yes | no | yes |
 | Semantic stream events | yes | no | yes |
 | Native history processing | yes | no | yes |
 | Agent lifecycle hooks | yes | no | yes |
@@ -46,6 +48,8 @@ part of the base adapter protocol rather than an optional capability.
 | Dynamic native approval handler | yes | no | no | no |
 | Foreground subagents | yes | yes | no | yes |
 | Background subagents | yes | yes | no | yes |
+| Live subagent input | yes | yes | no | no |
+| Subagent interruption | yes | yes | no | no |
 | Semantic stream events | yes | yes | yes | yes |
 | Native history processing | no | no | no | no |
 | Agent lifecycle hooks | yes | yes | yes | yes |

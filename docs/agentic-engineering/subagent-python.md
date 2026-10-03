@@ -96,6 +96,10 @@ Use `await runtime.aclose()` when the application is done with the runtime.
 
 ## Inspect a Child From Its Tool
 
+Running tasks also expose `await job.send(message, interrupt=False)`. For receipts,
+redirection, and explicit owner message reception, see
+[Task Input and Redirection](subagent-messaging.md).
+
 `current_subagent_execution()` returns a `SubagentExecutionContext` inside a
 child execution, or `None` outside it. Its public fields are `run_id`, `profile`,
 and `conversation_id`. It is task-local, so concurrent children do not share one
