@@ -29,6 +29,15 @@ test.beforeEach(async ({ context }) => {
   await keepCanonicalRequestsLocal(context);
 });
 
+test("page titles capitalize Kedi while the logo wordmark stays lowercase", async ({ page }) => {
+  for (const path of ["/", article]) {
+    await page.goto(path);
+    await expect(page).toHaveTitle(/Kedi Programming Language/);
+    await expect(page.locator(".kedi-brand span")).toHaveText("kedi");
+    await expect(page.locator(".md-copyright")).toContainText("kedi contributors");
+  }
+});
+
 for (const width of [390, 1440]) {
   test(`${width}px: navigation mascot sits above the chapters without a duplicate shortcut`, async ({ page }, info) => {
     await page.setViewportSize({ width, height: 900 });
