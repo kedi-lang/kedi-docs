@@ -25,6 +25,14 @@ Select the adapter and a Pydantic-style or LiteLLM-style model:
 Strings using `vendor/model` are normalized to Pydantic's model naming form.
 An existing Pydantic AI `Model` may be passed to `PydanticAdapter` directly.
 
+CLI and Python API lazy adapter selection defer native provider-name validation
+until the model is selected for a call. A program with its own `> model:` does
+not require credentials for an unused default provider. This does not waive
+credentials for the selected model. Direct `PydanticAdapter(...)` construction
+keeps Pydantic AI's eager-validation default; pass `defer_model_check=True` to
+opt in. Python API adapter options can explicitly set `defer_model_check=False`
+to retain eager validation when the lazy adapter is constructed.
+
 
 ## Model Settings
 

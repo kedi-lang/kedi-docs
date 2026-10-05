@@ -103,6 +103,10 @@ history, not a reconstructed text transcript. Other adapters can persist
 stateless task results, but history-enabled serving with an unsupported adapter
 fails at startup. Without `--state-dir`, the existing in-memory behavior remains.
 
+Artifact-producing tools and `read_artifact`/`query_artifact` use the same
+session-owned store. Tools are rebound to that store after restoration. They do
+not share the compiled program's artifact storage with other remote sessions.
+
 A task that was `submitted` or `working` when the server stopped becomes
 `failed` with `server_interrupted` metadata on the next startup. It is not
 replayed automatically: a model call or tool may already have had external
@@ -115,6 +119,13 @@ cancellation events. Task completion and the session checkpoint are committed
 in one database transaction. Cancellation and shutdown wait for in-flight
 storage work before releasing session resources or the directory lock; this
 does not make external tool effects transactional.
+
+Failed checkpoint writes also restore the SDK's in-memory task view. A transient
+storage error can then be recorded as `failed` instead of leaving the client
+polling a stale `working` task. If storage remains unwritable, Kedi cannot promise
+a durable failure update: the operation errors, and the last committed task is
+reconciled as interrupted after storage recovers and the server restarts. Neither
+case automatically repeats model calls or external tool effects.
 
 This mode is single-process and requires a local filesystem with OS file locks.
 It does not preserve provider sockets, runtime globals, tool-created files,

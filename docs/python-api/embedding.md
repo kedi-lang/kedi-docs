@@ -32,6 +32,35 @@ No model is called. In an async host, use `await runtime.aclose()` in its
 existing event loop rather than nesting `asyncio.run`. Close caller-owned
 adapters and external clients according to their integration's contract.
 
+## Async Hosts With Reusable Clients
+
+An async HTTP client can keep sockets bound to the event loop where it was
+used. Do not reuse it across independent `asyncio.run()` calls. In an async
+server or notebook host, keep model requests on the host's existing loop while
+the synchronous Kedi program runs in a worker:
+
+```python
+import asyncio
+
+from kedi.agent_adapter.execution import use_async_owner_loop
+from kedi.lang import compile_program, parse_program
+
+async def run_program(source, adapter):
+    with use_async_owner_loop():
+        runtime = compile_program(parse_program(source), adapter=adapter)
+        try:
+            return await asyncio.to_thread(runtime.run_main)
+        finally:
+            await runtime.aclose()
+```
+
+This applies to both Pydantic and LangChain adapters. The context propagates
+through Kedi's workers, preserves deadlines and cancellation, and does not
+take ownership of the loop or client. Create and close caller-owned clients
+on that same host loop. Calling synchronous Kedi code directly on the selected
+loop is rejected instead of blocking the loop on itself. Outside this explicit
+scope, the existing synchronous execution behavior is unchanged.
+
 ## Which Configuration Surface?
 
 | Entry point | Owns | Does not provide |

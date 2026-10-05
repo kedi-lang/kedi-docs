@@ -18,18 +18,21 @@ The shared CodeMode instruction teaches the verified Monty subset:
 - small helper functions;
 - `asyncio.gather` for independent hydrated tool calls.
 
-Read mapping values with `mapping[key]`. Monty does not expose mapping methods
-such as `mapping.get(...)`.
+Monty 1.0 supports both `mapping[key]` and mapping methods such as `mapping.get(...)`.
 
 CodeMode does not provide host filesystem, environment, process, unrestricted
-network, third-party package, `eval`, or `exec` access. It is not general
-CPython execution.
+network, or third-party package access. Monty's `eval` and `exec` remain inside
+the same sandbox; they do not grant host access. Prefer direct expressions.
+Generators are not supported. This is not general CPython execution.
 
 ## Lifecycle and Limits
 
 Every agent run receives an isolated catalog, hydration set, Monty process
 checkout, and variable state. Kedi closes the session and cancels active host
 callbacks on normal completion, errors, cancellation, and early close.
+After a worker crash or watchdog timeout, its session is discarded. A subsequent
+cell starts with empty variables. Cancellation also discards the interrupted
+session; it must not reuse partially executed state or automatically replay tools.
 Preloaded schemas count toward the same hydration set. Restarting Monty clears
 variables but preserves that run's hydrated allowlist; it never carries the
 allowlist into another run.

@@ -54,7 +54,13 @@ cell. Reset the runtime before choosing another interpreter.
 
 Use the square interrupt action while a Kedi or terminal cell is running. The
 active worker is terminated and replaced, so the cell remains editable and
-rerunnable while its previous live state is discarded. Embedded-Python bridge
+rerunnable while its previous live state is discarded. The session's in-flight
+Pydantic AI or LangChain model and async tool work receives cancellation too;
+other sessions retain their own work. Completed effects are not rolled back,
+and arbitrary synchronous tool code in a server thread cannot be forcibly
+stopped by cancelling an async call.
+
+Embedded-Python bridge
 operations and terminal execution have 120-second timeouts; this is not a
 universal 120-second deadline for a complete model-backed cell. Sessions with
 no activity expire after 30 minutes.

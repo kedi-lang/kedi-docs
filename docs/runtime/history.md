@@ -234,6 +234,25 @@ by the adapter.
 
 ## Editing Boundaries
 
+### Context Budget Accounting
+
+The host request budget is separate from the callback's inspection estimate.
+After a successful Pydantic AI or LangChain run, Kedi can bind the last native
+response's measured input plus output usage to the exact saved history digest.
+Tool-result messages appended after that response are added conservatively.
+This avoids treating serialized history bytes as model tokens on an unchanged
+continuation. New instructions, schemas and prompt content still enter the next
+request's reservation; request and cumulative-input limits are unchanged.
+
+If history is edited, reordered or extended outside the captured run, or native
+usage is absent, Kedi falls back to its conservative content estimate. Local
+lineage and usage-checkpoint metadata are not model-visible text. Unknown state
+is still counted. This uses provider-reported usage, not a tokenizer guarantee.
+A2A and subagent persistence retain and validate the digest-bound checkpoint;
+older checkpoints without this optional field remain supported.
+
+### Atomic Groups
+
 `group.entry_start` and `group.entry_end` are half-open indices into
 `ctx.messages`. Groups cover complete user/assistant cycles, including their
 tool exchanges. Keep or replace an eligible group as a whole. Redacting one

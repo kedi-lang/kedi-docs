@@ -7,7 +7,7 @@ newline-delimited JSON-RPC over stdio:
 
 ```kedi
 > agent: acp:
-    command: npx @zed-industries/codex-acp
+    command: npx @agentclientprotocol/codex-acp
 ```
 
 Command strings are shell-split without invoking a shell. Python may pass a
@@ -38,6 +38,23 @@ session. Stdio process cwd and `session/new.cwd` receive the configured cwd.
 `request_timeout` on `ACPAdapter` governs protocol requests by default.
 Disconnect errors include the last 40 stderr lines for diagnosis.
 
+When a prompt times out or its async caller is cancelled, Kedi sends
+`session/cancel` for that prompt's session and waits for the agent to stop.
+Other sessions are not cancelled. If the agent does not acknowledge within
+five seconds, Kedi closes the connection; other calls sharing that unresponsive
+process then fail as disconnected. Cancellation during session setup does not
+submit a prompt after the setup finishes.
+
+Closing an adapter first closes its input stream so the agent can stop its own
+children. On POSIX systems Kedi also cleans up the process group it created,
+then joins the reader threads. This does not terminate unrelated agent processes.
+
+Only an `end_turn` response is a completed answer. Token/request exhaustion,
+refusal, cancellation, and invalid stop reasons raise an error rather than
+returning partial text as success. Unsupported inbound client requests receive
+a protocol error; permission requests are denied with the ACP `cancelled`
+outcome. Kedi does not silently approve remote tools.
+
 ## Model Selection
 
 Generic ACP model selection is not currently mapped. `> model:` and
@@ -50,7 +67,7 @@ ACP supports raw text only:
 
 ```kedi
 > agent: acp:
-    command: npx @zed-industries/codex-acp
+    command: npx @agentclientprotocol/codex-acp
 [answer] << Inspect the repository and summarize the risk.
 = `answer`
 ```
@@ -63,6 +80,10 @@ raises `NotImplementedError`; no prompting shim fabricates a schema.
 Kedi sends protocol initialization, `session/new` with cwd and an empty
 `mcpServers` list, `session/prompt`, streamed updates, then `session/close`.
 Each call is independent.
+
+Unsupported model/effort overrides and local tool or MCP registration are
+rejected rather than ignored. Remote tools configured inside the child agent
+are separate from Kedi's local tool registry.
 
 ## Current Limits
 

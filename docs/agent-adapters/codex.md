@@ -89,6 +89,18 @@ Supported string formats are `date`, `date-time`, `duration`, `email`, and
 Codex supports foreground/background children. Dynamic tools, sandbox, cwd,
 model, instructions, and approval ceilings are rebuilt per child scope.
 
+Each native turn owns its active Kedi tools and approval callbacks. Turn timeout
+or cancellation stops async callbacks and waits for their cleanup before the
+call returns. Repeated cancellation does not interrupt that cleanup a second
+time, and sibling turns retain their own bindings. Closing an event consumer
+alone does not cancel the underlying run.
+
+Cancellation does not undo committed effects or forcibly stop arbitrary
+synchronous Python code. Cleanup that cannot finish within its bounded deadline
+raises an error instead of claiming the work stopped. An interrupted native
+turn may end without a final token-usage notification; missing usage is not
+evidence that no inference occurred.
+
 ## Capability Limits
 
 - Kedi MCP server declarations are unsupported.

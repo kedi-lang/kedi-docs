@@ -89,6 +89,13 @@ Repeated waits return the same result. The handle cannot be reused after its
 scope closes or from another invocation. Leaving a task unawaited cancels it
 and fails the scope; child failures and schema errors raise at `wait`.
 
+A failure or child cancellation caught at `wait` counts as observed: closing
+the scope does not raise that same outcome again. You can handle the failure
+and start a replacement within the remaining budget. The failed or cancelled
+invocation still consumes its `max_agents` slot. Cancelling only a waiter does
+not cancel or observe the running child; await that child later or let scope
+cleanup reject the unawaited work.
+
 The `parent` must be the effective profile when this scope is called inside
 Kedi execution. An independent embedding scope may select a compiled profile,
 but it cannot use that choice to bypass a running child profile's permissions.

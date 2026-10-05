@@ -30,6 +30,29 @@ inference is provided by a separate [Laya extension](laya.md), not TypeSafe.
 
 See [Claims and Thresholds](jev-claims.md).
 
+## Custom Endpoint
+
+The development SDK integration accepts `TYPESAFE_BASE_URL` for both adapters.
+Set it to the HTTPS service origin; the SDK appends `/v1/systemone`. Keep the
+key in `TYPESAFE_API_KEY`. An explicit `base_url=` on `TypeSafeModel` or
+`TypeSafeChatModel` overrides the environment value.
+
+```python
+import os
+from kedi_typesafe import TypeSafeModel
+
+model = TypeSafeModel(
+    "jev-latest",
+    api_key=os.environ["TYPESAFE_API_KEY"],
+    base_url=os.environ["TYPESAFE_BASE_URL"],
+)
+```
+
+A failed custom-endpoint request does not fall back to the public service.
+This integration targets TypeSafe SDK 0.7.2 and Pydantic AI 2.54.0; it is not
+available in the previously published `kedi-typesafe` package. Use the reviewed
+development checkout until its compatible release is published.
+
 ## Typed Criteria
 
 See [Typed Criteria](jev-criteria.md).

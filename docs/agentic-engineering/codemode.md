@@ -189,11 +189,16 @@ traceback message separately:
 ```
 
 `output` contains only text printed before the failure, while `error` contains
-only the sandbox error. Variables assigned before the failure remain available
-to the next cell, so the model can inspect the checkpoint and continue without
+only the sandbox error. For ordinary interpreter errors, variables assigned
+before the failure remain available to the next cell, so the model can inspect
+the checkpoint and continue without
 repeating successful host calls. Application-tool failures, approval denials,
 and Kedi execution limits remain failed tool calls rather than successful
 sandbox results.
+
+A worker crash or watchdog timeout is different: Monty has lost that session.
+Kedi discards it, and the next cell starts with empty variables. Cancellation
+also discards the interrupted session. No completed host tool is automatically replayed.
 
 ## Supported Sandbox Subset
 

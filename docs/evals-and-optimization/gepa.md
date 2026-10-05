@@ -43,6 +43,11 @@ Environment equivalents are `KEDI_OPTIMIZER_MODEL` and
 `KEDI_OPTIMIZER_REFLECTION_MODEL`. These are optimizer models, not necessarily
 the normal runtime `--adapter-model`.
 
+Without an explicit reflection model, GEPA reuses the configured main DSPy LM,
+including its provider and model settings. A main LM must therefore be configured.
+To give reflection a separate model or token limit, set the reflection model
+explicitly.
+
 ## Metric Call Budget
 
 Bound optimization work with:
@@ -109,6 +114,11 @@ program.kedi.gepa/
 Later runs resume from this state and seed from the saved optimized prefix. If
 a resumed run ends immediately, its prior evaluation count may already meet
 the current budget; increase `--optimizer-max-metric-calls`.
+
+Resume does not guarantee zero model calls: GEPA can reevaluate the seed
+validation set before loading the checkpoint, and Kedi computes a final training
+score after selecting the candidate. These calls can occur even when the search
+budget has already been spent. Output-format repairs can add further requests.
 
 ## Start Fresh
 

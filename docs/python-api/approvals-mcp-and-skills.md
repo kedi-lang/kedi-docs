@@ -58,6 +58,13 @@ An async handler requires an async-capable tool path when an event loop is
 already running. Returning any object other than `ApprovalDecision` is an
 invalid decision error.
 
+On the async approval path, synchronous handlers run in an owned worker thread
+with the current configuration and trace context. A Kedi approval procedure may
+therefore make a nested model call without blocking the model client's event
+loop. Async handlers remain on that loop. Cancellation interrupts nested Kedi
+model work and waits for the handler worker to unwind before returning; arbitrary
+blocking Python code cannot be forcibly terminated or have its effects rolled back.
+
 
 ## Approval Requests and Decisions
 

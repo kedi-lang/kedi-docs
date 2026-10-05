@@ -1,5 +1,10 @@
 # Dynamic Workflows
 
+`run_workflow` accepts only `code`. A child's optional `final_schema` belongs
+inside the generated code, on that child call. Missing code or extra outer
+arguments produce a correctable tool error before any child starts; they do
+not grant a new delegation attempt or bypass the existing run budgets.
+
 Delegate mode lets the parent choose one child call at a time. Dynamic mode
 lets it write a bounded orchestration program over its declared children. This
 is useful for dependency graphs, concurrent independent work, and typed result
