@@ -1,7 +1,11 @@
-# Scoping and Capabilities
+# Agent Scope and Adapter Requirements {#scoping-and-capabilities}
 
 Agent state follows lexical source scope. Capability metadata determines whether
 the selected adapter can honor the resulting contract.
+
+Adapter capability metadata describes backend support. It is distinct from
+[composable capabilities](capabilities.md), the `> capability:` language surface
+for reusable instructions and owned tools.
 
 ## Lexical Agent State
 

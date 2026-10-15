@@ -97,6 +97,10 @@ def search_docs(query: str) -> list[str]:
 Registering a tool makes it available to the runtime environment. The Kedi
 program must still opt into it with `> use: search_docs`.
 
+For a reusable group of tools and additive guidance, use a
+[Capability definition](capabilities.md). Profiles continue to override agent
+configuration; capabilities do not change that existing behavior.
+
 ## Runtime Control
 
 Independent template calls run concurrently by default. Adjust the worker bound:

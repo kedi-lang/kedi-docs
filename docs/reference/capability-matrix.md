@@ -14,6 +14,8 @@ part of the base adapter protocol rather than an optional capability.
 
 | Capability | Pydantic AI | DSPy | LangChain |
 | --- | :---: | :---: | :---: |
+| Capability composition | yes | no | yes |
+| On-demand capability tools | yes | no | no |
 | Structured output | yes | yes | yes |
 | Kedi tool registration | yes | yes | yes |
 | Kedi-declared MCP | yes | yes | yes |
@@ -36,6 +38,8 @@ part of the base adapter protocol rather than an optional capability.
 
 | Capability | Claude Agent SDK | Codex App Server | ACP | A2A |
 | --- | :---: | :---: | :---: | :---: |
+| Capability composition | no | no | no | no |
+| On-demand capability tools | no | no | no | no |
 | Structured output | yes | yes | no | conditional |
 | Kedi tool registration | yes | yes | no | no |
 | Kedi-declared MCP | yes | no | no | no |
@@ -84,6 +88,8 @@ not only the adapter.
 
 | Capability | Required by |
 | --- | --- |
+| `capabilities` | `> use:` of a [capability bundle](../agentic-engineering/capabilities.md) |
+| `deferred_tools` | Capability bundles with `> defer: true` |
 | `structured_output` | Any `>>` block containing output fields |
 | `tool_registration` | `> use:` of a procedure or Python callable |
 | `mcp` | One or more `> mcp:` servers |

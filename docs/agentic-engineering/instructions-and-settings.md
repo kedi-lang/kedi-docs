@@ -41,6 +41,12 @@ A later `> instructions:` replaces the previous instruction value; it does not a
 another paragraph. Compute one combined instruction explicitly when both parts
 must survive. [Profile composition](profiles.md#merge-rules) uses the same rule.
 
+For named reusable instruction contributions, use
+[capabilities](capabilities.md). They append without changing profile override
+semantics. A later explicit `> instructions:` clears those contributions as well,
+including when the replacement text is identical. Runtime-owned instruction
+sections are not removed.
+
 ```kedi
 > instructions:
     Current audience: <audience>.
@@ -49,6 +55,34 @@ must survive. [Profile composition](profiles.md#merge-rules) uses the same rule.
 An instruction cannot declare `[output]` or call `<helper()>`; compute that
 value before the directive and substitute the resulting variable. Use `<``>`
 when the instruction itself must mention a literal triple-backtick fence.
+
+## Runtime Instruction Sections
+
+Kedi keeps scoped user instructions separate from its runtime rules. For an LLM
+template with output captures, the runtime adds a `<TemplateInstructions>` section
+to the request's instructions. The user message contains the field list and the
+rendered template, without repeating the completion rules in its prefix or in
+conversation history.
+
+Profiles with tools, MCP, or enabled skills also receive a separate
+`<ToolCallInstructions>` section. It covers evidence, explicit tool requirements,
+permissions, and untrusted retrieved content. It does not prescribe a tool-use
+strategy or require a lookup for every answer. The two sections are siblings,
+not nested, and neither replaces the active `> instructions:` value.
+
+When enabled, artifact and skill guidance use sibling `<ArtifactInstructions>`
+and `<SkillInstructions>` sections. Built-in instruction XML tags, including
+their internal headings, consistently use PascalCase. These headings do not
+rename tool parameters, output fields, or serialized protocol data.
+
+Raw invokes and claims do not receive template-completion rules. Jev and Laya
+keep their decision-specific prompt semantics rather than sentence-completion
+instructions. Runtime sections are assembled for the current call, not appended
+to the stored user conversation on each turn.
+
+These section names are internal prompt formatting, not Kedi syntax or security
+boundaries. Typed validation and approval policies remain responsible for enforcing
+contracts; provider caching still depends on the model and transport.
 
 ## Settings Blocks
 

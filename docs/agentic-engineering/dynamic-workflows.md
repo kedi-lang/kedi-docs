@@ -35,6 +35,12 @@ instead of the delegation/lifecycle tool set. At least one direct child is
 required. Each exposed child is an async, keyword-only function accepting
 `task` and optional `final_schema`.
 
+A direct child may also come from a capability applied with `> use:`. With a
+deferred capability, the model loads that capability before the child becomes
+available to `run_workflow`; nested capabilities retain their individual load
+boundaries. A profile whose resolved contributions contain no child is rejected
+before inference.
+
 ## Dependent Work
 
 This is **model-generated Monty code**, not a host Python script:

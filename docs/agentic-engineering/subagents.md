@@ -34,6 +34,12 @@ Forward profile references are valid. Unknown children and cycles are rejected.
 For a graph A -> B -> C, A may call B but cannot call C unless A also lists C
 directly. The first block comment in each profile supplies its description.
 
+An eager [capability](capabilities.md) can contribute an existing child binding
+through `> subagent:`. Its approval and hooks apply only to calls targeting that
+bound child, not every child behind the shared `delegate_task` tool. The child's
+own model and instructions remain independent. Deferred child bindings are not
+supported in the initial capability implementation.
+
 ## Choose an Orchestration Mode
 
 The default `> workflow: delegate` gives the model delegation and supported

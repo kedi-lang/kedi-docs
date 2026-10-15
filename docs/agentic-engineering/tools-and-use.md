@@ -1,7 +1,8 @@
 # Tools and `> use:`
 
-`> use:` exposes a callable as an agent tool or applies a profile. Its block
-form registers tools only.
+`> use:` exposes a callable as an agent tool, applies a profile, or composes a
+[capability](capabilities.md). Its block form resolves each listed target in order.
+Profiles override configuration; capabilities add owned tools and instructions.
 
 ## Expose a Procedure
 

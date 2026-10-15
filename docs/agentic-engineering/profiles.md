@@ -15,6 +15,10 @@ A procedure describes executable steps; a profile supplies configuration to
 those steps. A child profile describes a separate agent invocation that a parent
 may request. These are different roles even when they share the same tools.
 
+[Capabilities](capabilities.md) are the separate additive surface for reusable
+tool and instruction bundles. A profile may use them with `> use:` without
+changing its own override semantics.
+
 ## Define a Profile
 
 ```kedi
@@ -84,6 +88,11 @@ It is not a reset to an empty configuration:
 | Skills, CodeMode, history/compaction | Supplied configuration replaces the corresponding earlier configuration. |
 | Artifacts | Overlay the explicitly supplied policy fields. |
 | Omitted members | Keep their earlier values. |
+
+These are ordinary profile merge rules. Capability-owned resources are stricter:
+conflicting concrete bindings or approval policies fail instead of transferring
+ownership to a later same-named tool. An explicit instruction replacement also
+clears preceding capability guidance, without removing its tools or policies.
 
 An empty tools list is not a request to revoke tools inherited through profile
 composition. For a separate restricted agent, define a child with its own tool

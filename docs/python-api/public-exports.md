@@ -18,6 +18,7 @@ while runtime and artifact handles are advanced integration surfaces.
 | `configure`, `context`, `reset_config`, `parallel`, `interactive` | Configuration replacement, scoped overlay, reset, concurrent override and incremental construction. [Parameters](public-parameters.md) |
 | `AdapterLike`, `AgentName`, `FrameworkAdapterName` | Selection aliases; framework and harness selectors are not interchangeable. [Selection](configuration-and-context.md#framework-and-harness-selection) |
 | `type`, `tool`, `Constraints` | Class registration, callable metadata/retries/risk, validation-only field metadata. [Types and Tools](types-and-tools.md) |
+| `Capability` | Reusable tools, guidance, and owned policies applied with `> use:`; requires supporting adapters. [Capability Definitions](capabilities.md) |
 | `approval`, `ApprovalPolicy`, `ApprovalMode`, `ApprovalHandler`, `ApprovalRequest`, `ApprovalDecision`, `ApprovalCancelled` | Policy registration, static/dynamic policy types, immutable request and allow/deny/edit results; cancellation is not denial. [Approvals](approvals-mcp-and-skills.md) |
 | `McpServerSpec`, `SkillsSettings` | Normalized server transport specification and scoped skill-discovery policy. [MCP](mcp.md), [Skills](skills.md) |
 | `CodeModeSettings` | Activation, preloaded tool names, and limits for the scoped tool catalog. [CodeMode](../agentic-engineering/codemode.md) |

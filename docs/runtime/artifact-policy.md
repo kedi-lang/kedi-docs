@@ -81,6 +81,7 @@ current scope. A nested policy overlays only the fields it specifies. Setting
 | --- | --- | --- | --- |
 | `enabled` | `true` | Boolean | Enables artifact admission and management tools |
 | `query_artifacts` | `disabled` | `enabled` or `disabled` | Exposes bounded lexical retrieval for known artifacts |
+| `exclude_tools` | `[]` | Exact tool names, no wildcards | Keeps selected tool results inline without bypassing the 100,000-byte limit |
 | `store` | `memory` | `memory` or `file` | Payload store for newly admitted values |
 | `path` | `.kedi/artifacts` | String or `Path` | Root directory for the file store |
 | `threshold` | `100kb` | Non-negative byte size | Minimum serialized size for ordinary artifact conversion |
@@ -102,6 +103,44 @@ use powers of 1,000; binary units use powers of 1,024. Durations accept `ms`,
     ttl: `timedelta(minutes=30)`
 ```
 
+
+## Tool-Specific Exclusions
+
+Keep selected tool results inline without changing the rest of the agent's
+artifact policy:
+
+```kedi
+> artifacts:
+    threshold: 32kb
+    exclude_tools: `["read_status", "lookup_region"]`
+```
+
+Names match the exposed tool name exactly, not a substring or wildcard. Duplicate
+entries are normalized. A nested `exclude_tools` list replaces the inherited
+list, and `exclude_tools: \`[]\`` clears it.
+
+Excluded results still pass through the tool-result boundary. Approval, hooks,
+tracing, and inline size limits remain active. A result larger than 100,000 bytes
+is rejected, including streamed results; exclusion is not permission to fill
+model history with an unbounded payload. Generated captures and existing artifact
+references are unaffected.
+
+Pydantic AI and LangChain report unmatched exclusion names as Python warnings,
+not execution failures. Matching uses resolved MCP names and the underlying
+CodeMode tools rather than only the `execute_code` wrapper. LangChain checks its
+resolved catalog before inference; Pydantic AI checks all catalogs observed
+during the completed run so later tool activation can satisfy an exclusion.
+
+An already-known deferred tool is valid before activation. If a name remains
+unmatched while deferred capabilities are inactive, Pydantic AI reports it as
+unverified, not definitively unknown. Validation does not activate capabilities,
+make additional catalog queries, or execute tools. Native MCP discovery may open
+sessions before activation; deferring a capability does not promise that its
+server remains disconnected. Disabled artifact policies do not emit exclusion
+warnings.
+
+In Python, use `ArtifactPolicy(exclude_tools=("read_status",))` or the equivalent
+`kedi.configure(artifacts={"exclude_tools": ["read_status"]})` configuration.
 
 ## Reference Contract
 

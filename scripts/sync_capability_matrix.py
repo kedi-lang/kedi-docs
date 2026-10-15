@@ -34,6 +34,8 @@ ADAPTERS = (
     ("A2A", A2AAdapter),
 )
 CAPABILITIES = (
+    ("Capability composition", "supports_capabilities"),
+    ("On-demand capability tools", "supports_deferred_tools"),
     ("Structured output", "supports_structured_output"),
     ("Kedi tool registration", "supports_tool_registration"),
     ("Kedi-declared MCP", "supports_mcp"),

@@ -126,6 +126,11 @@ schema rather than inventing a Kedi output format.
 
 ## Tool Binding
 
+LangChain supports eager [capability bundles](../agentic-engineering/capabilities.md)
+through its tool and middleware surfaces. `> use:` registers their tools, guidance,
+and owned policies without a loading call. Deferred capabilities are rejected
+before inference; `supports_deferred_tools` remains false.
+
 Kedi tools become `StructuredTool` instances with JSON argument schemas.
 Sync and async functions retain the correct invocation path. Kedi's approval
 middleware guards projected tools and preserves tool metadata.

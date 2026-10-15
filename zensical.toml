@@ -82,7 +82,8 @@ nav = [
     { "Profiles and Configuration" = [
       { "Instructions and Settings" = "agentic-engineering/instructions-and-settings.md" },
       { "Profiles and Composition" = "agentic-engineering/profiles.md" },
-      { "Agent Scope and Capabilities" = "agentic-engineering/scoping-and-capabilities.md" },
+      { "Composable Capabilities" = "agentic-engineering/capabilities.md" },
+      { "Agent Scope and Adapter Requirements" = "agentic-engineering/scoping-and-capabilities.md" },
     ] },
     { "Tools and Permissions" = [
       { "Procedure and Python Tools" = "agentic-engineering/tools-and-use.md" },
@@ -151,6 +152,7 @@ nav = [
     ] },
     { "Integration" = [
       { "Types and Tools" = "python-api/types-and-tools.md" },
+      { "Capability Definitions" = "python-api/capabilities.md" },
       { "Permissions and External Tools" = "python-api/approvals-mcp-and-skills.md" },
       { "MCP Configuration" = "python-api/mcp.md" },
       { "Skill Discovery" = "python-api/skills.md" },

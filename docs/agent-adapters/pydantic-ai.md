@@ -51,6 +51,21 @@ Supported settings are `max_tokens`, `temperature`, `top_p`, `timeout`,
 `max` reasoning effort maps to Pydantic AI's `xhigh`.
 
 
+## Capability Bundles
+
+[Capabilities](../agentic-engineering/capabilities.md) compose tools, instructions,
+and owned tool policies through `> use:`. Eager use needs no loading call.
+`> defer: true` uses Pydantic AI's native `load_capability` path and withholds
+the bundle's callable tools until activation. Activation is run-local; model
+retries do not reevaluate a Kedi `defer` expression.
+
+An instruction reset suppresses current Kedi guidance without erasing an older
+load result from history. A deferred parent reveals its nested catalog only
+after activation; nested deferred bundles and their subagent tools require
+their own load. See the capability guide for explicit reuse, history,
+MCP connection lifetime, and cache limitations.
+
+
 ## CodeMode
 
 Use `> codemode: enabled` to replace application tool schemas with Kedi's
@@ -80,6 +95,10 @@ Kedi builds a dynamic Pydantic model from each output field:
 
 Field descriptions from `Annotated[T, "description"]` are preserved. Pydantic
 AI produces and validates the result before Kedi publishes captured fields.
+For completion templates, the generated output schema reinforces that captures
+contain replacement values rather than the completed template. This preserves
+the provider's output mode and does not trim or otherwise rewrite returned
+strings. Raw invokes and decision-model templates do not receive this rule.
 
 
 ## Python and Procedure Tools
@@ -148,6 +167,14 @@ sanitized child error to the parent instead of failing the parent run.
 ## Codex Responses Connections
 
 See [Codex Responses Connections](codex-models.md).
+
+On Codex WebSocket models, Kedi reveals activated capability tools through
+Pydantic AI's ordinary tool list instead of native tool-addition/deferral
+parameters that the gateway rejects. `load_capability` and run-local activation
+still apply. The compatibility profile is scoped to the call: the caller's
+model is not mutated, the WebSocket client is retained, and request budgets
+remain enforced. HTTP models and other providers keep their original profiles.
+Changing the visible tool list is not a prefix-cache preservation guarantee.
 
 
 ## Native History Policy
