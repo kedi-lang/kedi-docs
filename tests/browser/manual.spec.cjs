@@ -38,6 +38,25 @@ test("page titles capitalize Kedi while the logo wordmark stays lowercase", asyn
   }
 });
 
+for (const colorScheme of ["light", "dark"]) {
+  test(`${colorScheme}: capability and profile declarations share keyword highlighting`, async ({ page }, info) => {
+    await page.emulateMedia({ colorScheme });
+    await page.goto("/agentic-engineering/capabilities/");
+    const blocks = page.locator("pre.kedi > code[data-kedi-highlighted]");
+    const example = blocks.filter({ hasText: "> profile: release_reviewer:" }).first();
+    await expect(example).toBeVisible();
+    const keywords = example.locator(".k");
+    await expect(keywords.filter({ hasText: /^capability$/ })).toHaveCount(2);
+    await expect(keywords.filter({ hasText: /^profile$/ })).toHaveCount(1);
+    const colors = await example.locator(".k").evaluateAll((tokens) => tokens
+      .filter((token) => ["capability", "profile"].includes(token.textContent))
+      .map((token) => getComputedStyle(token).color));
+    expect(new Set(colors).size).toBe(1);
+    await expect(blocks.locator(".k").filter({ hasText: /^defer$/ }).first()).toBeVisible();
+    await example.screenshot({ path: info.outputPath("capability-highlighting.png") });
+  });
+}
+
 for (const width of [390, 1440]) {
   test(`${width}px: navigation mascot sits above the chapters without a duplicate shortcut`, async ({ page }, info) => {
     await page.setViewportSize({ width, height: 900 });

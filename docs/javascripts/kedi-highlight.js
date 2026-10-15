@@ -3,7 +3,10 @@
 
   const KEDI_DIRECTIVES = new Set([
     "adapter", "agent", "model", "effort", "approval", "instructions", "settings",
-    "profile", "subagent", "max_agents", "mcp", "use", "import", "export",
+    "profile", "capability", "defer", "subagent", "max_agents", "mcp", "use", "import", "export",
+    "hooks", "history", "skills", "codemode", "requires", "budget", "show", "tool",
+    "artifacts", "output", "workflow", "if", "else", "loop", "task", "await",
+    "send", "interrupt", "task_group", "process", "map",
     "package", "case", "data", "test_data", "metric", "optimize", "auto"
   ]);
   const KEDI_TYPES = new Set([
