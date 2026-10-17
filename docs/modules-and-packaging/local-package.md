@@ -21,7 +21,7 @@ consumer.kedi
 > package: release_labels:
   version: 0.1.0
   source: src/release_labels
-  python: python@3.10-3.14
+  python: python@3.11-3.14
 ```
 
 `release_labels/src/release_labels/formatting.kedi`:

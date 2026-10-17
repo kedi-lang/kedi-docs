@@ -31,7 +31,7 @@ This is intentionally small, but it demonstrates the main execution model:
 
 ## Prerequisites
 
-- Python 3.10 or newer;
+- Python 3.11 or newer;
 - a Kedi installation;
 - credentials required by the selected model provider;
 - optionally, an agent harness installation when using Codex, Claude, or ACP.

@@ -2,7 +2,7 @@
 
 ## Supported Python Versions
 
-The core package requires Python 3.10 or newer and advertises Python 3.10
+The core package requires Python 3.11 or newer and advertises Python 3.11
 through 3.14. Optional integrations can require a newer interpreter; this is
 not a promise that every extra runs on every core-supported Python version.
 
