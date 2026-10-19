@@ -19,8 +19,10 @@ Or identify the manifest:
 $ kedi install path/to/package.kedi
 ```
 
-The command copies `package.kedi` and its declared source directory. It does not
-install `python_dependencies`.
+The command validates and stages `package.kedi` and its declared source directory,
+installs `python_dependencies` into the interpreter running Kedi, then commits
+the staged package. Dependency errors leave the previous Kedi package intact.
+Python environment changes are not part of the registry's atomic transaction.
 
 Installing the same package name replaces the previous installation as one
 validated transaction. Do not edit installed registry files manually; reinstall
@@ -47,8 +49,9 @@ slug creation without a model or API key:
 > show: <slugify(`"Release Notes"`)>
 ```
 
-The output is `release-notes`. Dependencies listed in `python_dependencies`
-are not installed automatically.
+The output is `release-notes`. Named and Git installs automatically install
+requirements listed in `python_dependencies` into the same interpreter running
+the command. Dependency-free packages such as `textkit` do not run pip or uv.
 
 ### Development Registries
 

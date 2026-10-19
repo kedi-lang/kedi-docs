@@ -29,10 +29,11 @@ not close the lexical procedure. Start a new `>>` after the blank.
 | Python incompatible | Closed `python@...` range includes installer |
 | Dependency invalid | Every entry parses as PEP 508 |
 | Source-tree escape | No absolute path, `..`, symlink escape, or pattern |
-| Registry package unavailable | Configure mock root or use explicit GitHub source |
+| Registry package unavailable | Check registry status/network or use an explicit GitHub source |
+| Python dependency install failed | Check the installer output and the Python running Kedi; use a writable venv with pip or uv |
 
-Package install does not install Python dependencies. A valid receipt also does
-not make imported Python safe.
+Package installation installs declared Python dependencies into the interpreter
+running Kedi. A valid receipt does not make imported Python safe.
 
 ## Backend and Capability Errors
 

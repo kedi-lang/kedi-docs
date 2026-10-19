@@ -66,8 +66,8 @@ though exported procedures can use it.
     pydantic>=2
 ```
 
-The manifest is declarative only. It records PEP 508 dependencies but does not
-install them into the active Python environment.
+The manifest is declarative only. Installation commands install its PEP 508
+dependencies into the interpreter running Kedi; parsing the manifest does not.
 
 ## Install and Consume
 

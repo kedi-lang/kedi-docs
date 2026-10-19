@@ -88,5 +88,56 @@ override does not grant tools or widen permissions.
   `final_result`. Adapter repair may occur within its configured limits, but
   exhausted validation fails the child run.
 
+Pydantic children validate the complete JSON Schema inside the model's output
+retry loop, including required fields, extra-property restrictions, and the
+1,000-character `task_summary` limit. An invalid result is returned to the model
+as validation feedback. Repairs consume the same child's request/token budget
+and configured output retries; they do not restart the workflow or completed
+siblings. When a native `> task` capture or the child profile's `> output:` uses
+a Python type, its Pydantic validators run in that same retry loop. A result is
+recorded as completed only after both checks pass. The native `> await` value
+retains its type; delegation tools and persisted child history use JSON values.
+Other adapters still reject invalid results before completion, but do not gain
+Pydantic's native output retry mechanism.
+
+Native conversion uses strict JSON validation. A date's JSON string, a UUID's
+string, an enum's declared JSON value, or a tuple's JSON array becomes the
+corresponding Python value when the declared type allows it. Nested and optional
+values follow the same rules. This does not enable general coercion: `"3"` does
+not satisfy `int`, and `1` does not satisfy `bool`. Custom validators run before
+completion; awaiting the same successful task again reuses its validated value.
+The tool result and persisted history retain JSON representations of those values.
+
+Provider strict mode is not a substitute for local validation. For a Pydantic
+child, the model-facing envelope describes the 1,000-character summary limit
+without the strict-incompatible `maxLength` keyword. Kedi checks the original
+length constraint locally. Other unsupported constraints may still make a
+provider request non-strict; Kedi does not force strict mode.
+
+An application can enforce relationships that JSON Schema does not express,
+such as `available >= requested` whenever `sufficient` is true, with a
+Pydantic `model_validator` on its native task output type. Kedi returns that
+validation error to the Pydantic child within the configured retry budget.
+
+```python
+from pydantic import BaseModel, model_validator
+
+
+class StockDecision(BaseModel):
+    available: int
+    requested: int
+    sufficient: bool
+
+    @model_validator(mode="after")
+    def check_quantities(self):
+        if self.sufficient != (self.available >= self.requested):
+            raise ValueError("Stock decision contradicts the quantities")
+        return self
+```
+
+A native task can capture `[decision: StockDecision]` after the embedding
+application makes the type available to the program. The same check applies
+when a child profile declares `> output: StockDecision`.
+
 For executable validation of the parent consuming a child result, see
 [Reviewed Evidence Workflow](reviewed-evidence.md).

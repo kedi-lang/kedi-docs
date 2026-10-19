@@ -94,10 +94,23 @@ This field expresses host compatibility, not a dependency to install.
     httpx[http2]>=0.27; python_version >= "3.11"
 ```
 
-Kedi validates each requirement string but does not install it into the active
-environment. Package authors must document or provide the environment setup
-that satisfies these dependencies. Use the bundled `require` module for a clear
-runtime check when an optional feature needs a package.
+`kedi install` and `kedi add` validate these requirements and install them into
+the Python interpreter running Kedi. A venv-local Kedi command installs into
+that venv; a command running on another Python installs into that Python.
+The installer uses `sys.executable`, not an unrelated `python` or `pip` on PATH.
+It uses that interpreter's pip, falling back to `uv pip --python` if pip is absent.
+At least one of pip or uv must be available.
+
+PEP 508 extras, version constraints, and environment markers are passed to the
+Python installer together, without forcing an upgrade of satisfied requirements.
+Imports and manifest inspection never trigger installation. Use the bundled
+`require` module for runtime checks of optional, undeclared features.
+
+If dependency installation fails, the Kedi installation fails without replacing
+the previous package. Kedi does not roll back changes the Python installer may
+already have made to the environment. Externally managed system Python policies
+are respected; use a writable virtual environment when system installation is
+not permitted.
 
 ## Unknown and Duplicate Fields
 

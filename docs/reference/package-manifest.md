@@ -65,9 +65,11 @@ files, missing roots, and oversized source trees are rejected.
 
 ## Dependencies
 
-`python_dependencies` records and validates dependency requirements. Kedi does
-not install them into the active Python environment. Package setup must satisfy
-them separately.
+`kedi install` and `kedi add` install `python_dependencies` into `sys.executable`,
+the interpreter running Kedi. Pip is used when available in that interpreter;
+otherwise `uv pip --python` targets the same interpreter. Requirement extras,
+version constraints and environment markers retain their PEP 508 meaning.
+Reading a manifest or importing a package does not install Python dependencies.
 
 ## Installation
 
@@ -79,7 +81,6 @@ kedi add git+https://github.com/owner/repository.git
 ```
 
 Installed content and `.kedi-install.json` receipts live below the Kedi home
-registry. A future verified registry would identify an approved source commit;
-the current implementation does not provide that public service. Identity and
-integrity are not safety. Imported packages may execute Python with
+registry. Named registry installs use an exact verified source commit. Identity
+and integrity are not safety. Imported packages may execute Python with
 the host process's authority.

@@ -14,7 +14,8 @@ Or provide the manifest:
 kedi install path/to/package.kedi
 ```
 
-The command validates the manifest and copies its declared source tree.
+The command validates the manifest, stages its declared source tree, installs
+`python_dependencies` into the interpreter running Kedi, then commits the package.
 
 ## Manifest Paths
 
@@ -34,9 +35,9 @@ Exactly one argument is required.
 
 ## Named Registry Packages
 
-Named installs use the future `registry.kedi-lang.org` contract. Until the
-service is available, `KEDI_REGISTRY_MOCK_ROOT` can point at package source
-directories for local registry testing.
+Named installs resolve exact verified commits from `registry.kedi-lang.org`.
+`KEDI_REGISTRY_MOCK_ROOT` can point at package source directories for local
+registry testing.
 
 ## Explicit GitHub Sources
 
@@ -54,6 +55,11 @@ ${KEDI_HOME:-$HOME/.kedi}/registry/<package-name>/
 
 `KEDI_HOME` must be absolute.
 
+Python dependencies install into `sys.executable`, independently of the Kedi
+source registry location. Activating a venv and using its Kedi command targets
+that venv. The command uses that interpreter's pip or `uv pip --python` when
+pip is unavailable; it does not select a different Python from PATH.
+
 ## Receipts and Reinstallation
 
 `.kedi-install.json` records source kind/path, manifest digest, and Git URL/
@@ -63,8 +69,9 @@ new validated source.
 ## Package Command Errors
 
 Missing manifests, invalid names/versions/Python ranges, unsafe paths, source
-limits, malformed Git URLs, and registry failures exit nonzero. Package
-dependencies are recorded but not installed into the active Python environment.
+limits, malformed Git URLs, registry failures, and Python dependency installation
+failures exit nonzero. A dependency failure preserves the previous Kedi package;
+changes already made by the Python installer are not rolled back.
 
 ## Skills Are Not Packages
 

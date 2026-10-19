@@ -36,6 +36,29 @@ start telemetry by itself.
 
 ## Logfire
 
+For Pydantic AI tracing from a Kedi program, the registry's
+[Logfire package](https://registry.kedi-lang.org/package/logfire) installs its
+Python dependencies alongside Kedi:
+
+```bash
+kedi add logfire
+```
+
+```kedi
+> import: logfire
+
+`configure_logfire("my-service")`
+```
+
+This explicitly configures Logfire and Pydantic AI model/tool instrumentation;
+model content capture is disabled by default. Pass `True` as the third argument
+to enable HTTPX spans. Configure before making model calls and use
+`flush_logfire()` before exiting a short-lived program. `LOGFIRE_TOKEN` selects
+the destination project; without a token, the default does not send to Logfire.
+
+For full Kedi runtime, agent and artifact instrumentation, use the Kedi
+instrumentor below instead of calling `configure_logfire` for the same process.
+
 Logfire accepts the native OpenTelemetry data emitted by the instrumentor:
 
 ```python

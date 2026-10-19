@@ -226,8 +226,12 @@ class CookbookTests(unittest.TestCase):
             (source / "main.kedi").write_text(examples[0])
             (source / "formatting.kedi").write_text(examples[1])
             (package / "package.kedi").write_text(examples[2])
-            with patch.dict(os.environ, {"KEDI_HOME": str(root / "home")}):
+            with (
+                patch.dict(os.environ, {"KEDI_HOME": str(root / "home")}),
+                patch("kedi.package_registry.install_python_dependencies") as install_dependencies,
+            ):
                 install_package(package / "package.kedi")
+                install_dependencies.assert_called_once_with(["pydantic>=2"])
                 consumer = root / "consumer/report.kedi"
                 runtime = compile_program(parse_program(examples[3], source_path=str(consumer)))
                 try:

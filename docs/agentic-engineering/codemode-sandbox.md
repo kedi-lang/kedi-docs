@@ -18,7 +18,8 @@ The shared CodeMode instruction teaches the verified Monty subset:
 - small helper functions;
 - `asyncio.gather` for independent hydrated tool calls.
 
-Monty 1.0 supports both `mapping[key]` and mapping methods such as `mapping.get(...)`.
+The pinned Monty 1.2 runtime supports both `mapping[key]` and mapping methods
+such as `mapping.get(...)`.
 
 CodeMode does not provide host filesystem, environment, process, unrestricted
 network, or third-party package access. Monty's `eval` and `exec` remain inside
@@ -36,6 +37,8 @@ session; it must not reuse partially executed state or automatically replay tool
 Preloaded schemas count toward the same hydration set. Restarting Monty clears
 variables but preserves that run's hydrated allowlist; it never carries the
 allowlist into another run.
+Concurrent cells execute in order of lock acquisition. A cell with `restart=True`
+waits for the active cell to finish before discarding its sandbox variables.
 
 The runtime bounds search pages, discovery payload bytes, hydrated tools, code
 characters, nested call count, nested concurrency, individual result bytes,
@@ -55,7 +58,7 @@ model-correctable errors rather than silent fallbacks.
 | `max_tool_result_bytes` | `256000` | Serialized bound for one nested result. |
 | `max_total_tool_result_bytes` | `1000000` | Aggregate nested-result bound per execution. |
 | `max_print_bytes` | `256000` | Captured standard-output bound. |
-| `request_timeout` | `60` | Timeout in seconds for one nested host tool call. |
+| `request_timeout` | `60` | Worker-response watchdog in seconds; expiry discards the session. Host tool execution has separate application/run limits. |
 
 CodeMode telemetry records payload-free `search tools`, `get tool schema`, and
 `execute code` spans. It records counts, byte totals, restart state, duration,
