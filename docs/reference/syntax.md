@@ -25,6 +25,15 @@ scope; tabs compare as width four, but spaces are recommended.
 
 ## Templates and Values
 
+Directive Boolean fields use `true` / `false`; activation options use
+`enabled` / `disabled`. Computed activation values must return Python `bool`.
+Other closed options use unquoted literals or Python expressions returning one
+of the same strings. Lists, mappings, objects, and callbacks require backticks.
+There is no generic `none` / `null` reset value: omit a setting for its default
+or inherited behavior. `tool_choice: none` is a string option that disables tool
+calls. See [Language Server](../tooling/language-server.md#completion) for option
+completion and static validation in VS Code and Zed.
+
 | Syntax | Role |
 | --- | --- |
 | `<name>` | Read and render a variable |

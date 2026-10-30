@@ -37,9 +37,9 @@ error. Unsupported tool/MCP/profile capabilities are reported at the relevant
 directive. Diagnostics use adapter metadata, not a hard-coded backend guess.
 An active `> history:` processor declaration, including an external callable,
 receives a non-blocking prefix-cache warning at its declaration. Adding
-`processor_condition` does not remove that warning. A statically disabled
-``processor: `None` `` does not warn, and the warning is not repeated at every
-model call. The LSP also completes and explains `processor_condition`.
+`processor_condition` does not remove that warning. The warning is attached to
+the declaration and is not repeated at every model call.
+The LSP also completes and explains `processor_condition`.
 
 ## Completion
 
@@ -48,8 +48,18 @@ settings, tools, and scoped names. Suggestions respect source position and
 imported module surfaces.
 
 Directive suggestions describe their purpose and preserve the leading `>` when
-accepted. They appear while entering a directive name, not in its value after
-`:`. The colon does not trigger a completion popup, so Enter can start the next
+accepted. Known directive and setting options appear while typing a value, or
+when completion is requested manually. Boolean fields suggest `true` / `false`;
+activation options suggest `enabled` / `disabled`. Suggestions replace only the
+value, preserve the surrounding syntax, and explain the field's meaning.
+Invalid static options receive error diagnostics (red underlines in VS Code and
+Zed). Both editors consume the same server contracts. Computed Python values
+are checked at runtime; the server never evaluates them for diagnostics.
+SDK-specific options require a statically known adapter. Dynamic selections and
+Python bindings that may shadow a profile remain unresolved rather than being
+assigned an incorrect option set. The final adapter validates computed SDK
+options before model I/O.
+The colon does not trigger a completion popup, so Enter can start the next
 line. Backtick delimiters do not trigger Kedi suggestions or insert a matching
 backtick automatically; Python completion remains available inside expressions.
 

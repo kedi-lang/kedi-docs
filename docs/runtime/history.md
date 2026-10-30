@@ -92,8 +92,9 @@ sibling fields. Python callers can use
 from `kedi.agent_profile` for the same lexical override.
 
 Omitting `processor` inherits the captured policy or adapter constructor default.
-An explicit ``processor: `None` `` disables the callback in that scope; leaving
-the scope restores the previous policy. Shared adapter fields are not mutated,
+An explicit processor value must evaluate to a callable. Omission inherits;
+it does not clear an outer processor. Leaving the scope restores the previous
+policy. Shared adapter fields are not mutated,
 so concurrent invocations can use different processors safely.
 Native procedure callbacks bind to their selected definition; a deeper procedure
 with the same name cannot replace the captured callback.
@@ -135,8 +136,8 @@ Python adapters use `history_processor_condition=needs_compaction` alongside
 `history_processor=keep_recent_cycles`. A condition alone does not choose a
 processor. A condition-only lexical override can use an outer or constructor
 processor. Replacing a processor without specifying a condition makes the new
-processor unconditional; an explicit ``processor_condition: `None` `` clears an
-inherited condition while retaining its processor. An effective condition
+processor unconditional. An explicit condition must evaluate to a callable.
+An effective condition
 without a processor is a configuration error.
 
 The LSP warns at active processor declarations, including external callables.

@@ -50,7 +50,10 @@ The expanded `> history:` form contains only subsettings. It requires
 `enabled: true|false` and accepts `compaction_mode: native|disabled` plus an
 optional positive `compaction_threshold`. Pydantic and LangChain also accept
 `processor` as a sync/async callable reference in inline Python. Omission inherits;
-an explicit ``processor: `None` `` clears the callback in that scope.
+an explicit value must evaluate to a callable. Boolean `enabled` fields may
+instead use a backtick expression returning `bool`. The short activation form
+also accepts a Boolean expression. Artifact `query_artifacts` accepts
+`enabled|disabled` or a backtick expression returning `bool`.
 `processor_condition` accepts a sync/async predicate returning exactly `bool`.
 It receives read-only history metadata before each logical request; without a
 condition, processing is unconditional. A condition alone can inherit a processor;
