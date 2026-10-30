@@ -27,9 +27,10 @@ files are limited to 5 MB and 1,000 cells. Individual cell source is limited to
 1 MB, and retained inline output is limited to 200,000 characters with an
 explicit truncation marker.
 
-`InteractiveSession.dump()` and `load()` expose the same strict snapshot
-boundary to Python callers. Snapshot creation rejects state it cannot restore
-without replay.
+Notebook uses the default portable `InteractiveSession.dump()`/`load()` boundary
+and rejects state it cannot restore without replay. The separate, explicitly trusted
+Python snapshot mode for local sessions does not enable worker serialization or
+executable snapshot uploads in Notebook.
 
 Browser draft recovery restores source/layout, not the live worker. A progress
 snapshot restores supported logical state, not installed packages, open

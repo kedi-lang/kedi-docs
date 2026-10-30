@@ -49,6 +49,13 @@ that submits on a complete double Enter; `Alt+Enter` forces submission.
 before the REPL exits. `--load` restores the supplied snapshot and keeps
 recording subsequent changes to the same file.
 
+`--snapshot-format portable|python` selects the format for `:dump`/recording.
+New sessions default to the existing pickle-free `portable` format. Python mode
+requires `kedi[snapshots]`; resuming it requires `--trust-snapshot`, acknowledging
+arbitrary Python code execution and possible saved credentials. A loaded Python
+session retains its format unless explicitly overridden. Format selection requires
+`--idle`; trust acknowledgement requires `--idle --load`.
+
 Live Kedi and embedded-Python syntax highlighting is enabled by default while
 preserving the shared REPL history. `--no-color` disables input highlighting and
 REPL error colors; a nonempty `NO_COLOR` environment variable does the same.

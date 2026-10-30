@@ -134,6 +134,22 @@ kedi --idle --record
 kedi --idle --load ~/.kedi/sessions/idle-20260826T120000-ab12cd34.kedi-state
 ```
 
+For supported local Python objects, install `kedi[snapshots]` and select
+`--snapshot-format python`:
+
+```bash
+kedi --idle --snapshot-format python --record
+kedi --idle --load PATH --trust-snapshot
+```
+
+Python snapshots can execute arbitrary code and include credentials. The printed
+resume command includes the trust option and warning; never trust a file only
+because it has a matching checksum. A loaded Python session retains Python mode
+for recording. An explicit `--snapshot-format portable` requests conversion and
+fails without replacing the existing file if the state is not portable.
+Python versions and the versions of packages the saved graph depends on must match; see [Python object snapshots](../runtime/interactive-execution.md#python-object-snapshots)
+for environment, executor, history/artifact and live-resource limits.
+
 Readline history is stored in `~/.kedi_history`. Set `KEDI_HISTORY` to use a
 different path:
 
@@ -149,4 +165,5 @@ kedi --idle --adapter pydantic --adapter-model openai:gpt-5.6-luna
 
 Interactive mode does not accept a source file, `-c/--command`, program
 arguments, `--parse`, `--test`, `--eval`, or `--optimize`.
-`--record`, `--load`, `--highlight`, and `--no-color` require `--idle`.
+`--record`, `--load`, `--snapshot-format`, `--highlight`, and `--no-color` require
+`--idle`. `--trust-snapshot` requires `--idle --load`.

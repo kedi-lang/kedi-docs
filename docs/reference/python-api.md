@@ -179,15 +179,21 @@ display them. Root `=` returns are rejected before execution, while procedure
 returns retain their ordinary early-exit semantics. `close()` is idempotent;
 the session is also a context manager.
 
-`dump_session(session, path)` atomically writes a strict, pickle-free snapshot
-or raises `SessionDumpError` without changing the destination.
+`dump_session(session, path, *, format="portable")` atomically writes a strict,
+pickle-free snapshot by default. `format="python"` requires `kedi[snapshots]`
+and stores supported user Python graphs alongside session-owned Kedi state.
+Unsupported state raises `SessionDumpError` without changing the destination.
 `load_session(path, *, session_type=InteractiveSession, adapter=None,
-executor=None, engine=None, conversation_state=None)` restores source-backed
-declarations and saved native state without replaying executable fragments.
+executor=None, engine=None, conversation_state=None,
+close_conversation_state=None, trusted=False)` restores saved logical state
+without replaying previous executable fragments. Python snapshots require explicit
+`trusted=True` and a matching environment; their deserialization can execute arbitrary
+Python code and saved values may contain credentials.
 `session_type` is keyword-only and may be an `InteractiveSession` subclass.
-The `InteractiveSession.dump()` and `InteractiveSession.load()` methods expose
-the same operations. Invalid, modified, or incompatible snapshots raise
-`SessionLoadError`.
+`InteractiveSession.dump()` and `InteractiveSession.load()` expose the same
+format/trust options. Invalid, modified, incompatible or untrusted Python snapshots
+raise `SessionLoadError`. Notebook/bridged executor state is not implicitly trusted
+or converted to local Python state.
 
 See [Interactive Execution](../runtime/interactive-execution.md) for supported
 configuration, source identity, failure semantics, restrictions, and the

@@ -84,8 +84,8 @@ not rebuild an existing session.
 
 ### Durable Snapshots
 
-`kedi.dump_session(session, path)` writes a pickle-free snapshot only when the
-complete logical session can be restored without replaying executable cells.
+`kedi.dump_session(session, path)` defaults to `format="portable"`: a pickle-free
+snapshot only when the complete logical session can be restored without replaying cells.
 Restore it with `kedi.load_session(path)`. The corresponding
 `InteractiveSession.dump()` and `InteractiveSession.load()` methods expose the
 same operations:
@@ -125,7 +125,7 @@ fragment sources and digests so procedures, types, profiles, tracebacks, and
 source identities can be rebuilt before native values are installed. The
 document integrity hash, format version, and Kedi version are checked on load.
 
-Kedi rejects state that cannot be restored with equivalent semantics:
+Portable mode rejects state that cannot be restored with equivalent semantics:
 
 - arbitrary Python callables, generators, open resources, concurrency
   primitives, tasks/futures, classes, and unknown object instances;
@@ -136,7 +136,7 @@ Kedi rejects state that cannot be restored with equivalent semantics:
 - imports, inline Python preludes, executable type defaults, and runtime-scoped
   declarations that would require old code to run during load.
 
-Lifecycle hooks are stored without pickle. A handler is restorable only when
+Portable lifecycle hooks are stored without pickle. A handler is restorable only when
 its module and qualified name resolve back to that exact callable. Importable
 top-level functions are supported; lambdas, local functions, closures, bound
 methods, and handlers from `__main__` make the dump fail during preflight.
@@ -163,6 +163,54 @@ Apart from resolving documented import-addressable hook handlers, loading
 compiles source-backed declarations but never re-executes prior
 initializations, assignments, templates, tools, LLM requests, filesystem
 writes, or other top-level side effects.
+
+#### Python object snapshots
+
+Install `kedi[snapshots]` for explicitly selected Python mode:
+
+```python
+with kedi.interactive() as session:
+    session.execute("[step: Any] = `(lambda n: lambda: n + 2)(40)`")
+    session.dump("python-session.kedi-state", format="python")
+
+with kedi.load_session("python-session.kedi-state", trusted=True) as session:
+    session.execute("> show: `step()`")  # 42
+```
+
+This mode combines a shared cloudpickle user graph with session-owned restoration
+of Kedi types, procedures, scopes and module runtimes. Supported dynamic classes,
+functions, closures, aliases/cycles, prelude globals, evaluated defaults and imported
+private state survive without replaying saved source initialization. A procedure
+wrapper keeps its existing name-based lookup semantics; snapshotting does not
+change how redefinition works.
+
+Completed Pydantic/LangChain single-lane conversation checkpoints and persistable
+artifact payloads can be included. Release and expiry are not reset. Restored data
+is private and extracted files are removed when the owning session closes. An
+explicitly supplied conversation retains ownership beyond session close unless
+`close_conversation_state=True`; close it to release its extracted resources.
+Unsupported lanes, opaque artifacts and active work reject the snapshot.
+
+Python loading **can execute arbitrary code** through reducers, imported packages
+and schema hooks. It requires `trusted=True`; only load snapshots whose contents
+and provenance you trust. A checksum is not authentication. Saved objects can
+contain credentials; snapshots are owner-only, but are not encrypted.
+
+The Python implementation/full version and Kedi/cloudpickle versions must match.
+The snapshot also pins each installed distribution whose modules the graph imports
+by reference, their runtime dependencies, and Pydantic; those versions must match
+exactly. Unrelated packages may differ, be added, or be removed. Local modules
+without an installed distribution are not version-checked. Dependencies are never
+installed automatically. Required paths and native dependencies must
+already exist. The archive does not capture external files, databases or services.
+This is compatible-environment restart, not a universal portable Python image.
+
+Python mode supports the default local executor, not notebook/browser/host bridges.
+Open resources, threads, live generators/tasks and running model/subagent work are
+not restorable. Notebook uploads remain on the existing portable/trust boundary.
+Both formats retain atomic replacement; unsupported Python state never falls back
+to a partial or portable snapshot automatically.
+
 
 ### Lifecycle and Failure Semantics
 
