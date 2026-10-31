@@ -79,6 +79,32 @@ Use the profile default for a stable reusable contract. Use an explicit schema
 when a particular delegation intentionally needs a different result. A schema
 override does not grant tools or widen permissions.
 
+### Local Schema References
+
+`final_schema`, profile `> output:` types, and task captures support document-local
+JSON Pointer references, including Pydantic's generated `$defs`:
+
+```json
+{
+  "$defs": {"Count": {"type": "integer", "minimum": 0}},
+  "type": "object",
+  "properties": {"completed": {"$ref": "#/$defs/Count"}},
+  "required": ["completed"]
+}
+```
+
+Kedi expands these references before wrapping or sending the result schema.
+Nested models, lists, unions, and repeated references retain their constraints;
+the original schema is not modified. `$ref` sibling constraints are conjunctive
+in modern JSON Schema dialects, not overrides of the referenced constraints.
+
+No external schema is fetched. External references, `$id`, dynamic references,
+unknown pointer targets, and recursive expansion are rejected. The 32 KiB schema
+size limit and maximum nesting depth of 16 also apply after expansion, preventing
+small reference graphs from expanding into unbounded schemas. A data property
+named `$ref`, or a `$ref` string inside `default`, `const`, or examples, is not
+itself a schema reference.
+
 ## Failure Outcomes
 
 - Invalid or unsupported schemas are rejected rather than treated as prose.

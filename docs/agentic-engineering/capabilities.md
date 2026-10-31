@@ -239,6 +239,36 @@ Each run owns its activation; sharing an adapter or descriptor does not share
 loaded state. Revealing a nested catalog changes its instruction prefix, so this
 path does not guarantee prefix-cache preservation.
 
+## Conditional Contributions
+
+Use deterministic guards to choose an instruction/tool bundle or its loading
+policy. The capability still contributes resources, not agent-wide overrides:
+
+```kedi
+[needs_citations: bool] = `True`
+
+> capability: evidence_policy:
+    > if: `needs_citations`:
+        > instructions: Support factual conclusions with supplied sources.
+    > else:
+        > instructions: Clearly distinguish suggestions from observed facts.
+
+> use: evidence_policy
+```
+
+The Python expression must return an exact `bool` and is evaluated once per
+application. Only the selected branch's computed values and uses run. Nested
+guards and optional `> else:` follow the same rules as
+[conditional profile configuration](profiles.md#conditional-configuration).
+Selected instructions remain additive to the host's base instructions. Selected
+approval and hooks remain limited to this capability's owned tools. A selected
+`> defer: true` makes the resulting capability load on demand; it does not defer
+the guard itself. Unselected tools are not registered.
+
+All branches must respect the configuration boundary below, including branches
+whose guard is false. A condition is not a way to add model selection or other
+caller-owned settings to a capability.
+
 ## Configuration Boundary
 
 | Capability member | Effect |

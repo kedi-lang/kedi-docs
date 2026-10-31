@@ -46,9 +46,49 @@ A profile body contains directives, not an executable procedure body:
 | Tool execution | `codemode` | Enable the code-based tool interface. |
 | Child agents | `subagent`, `max_agents`, `workflow`, `output` | Define delegation, its budget, orchestration mode, and a default child result type. |
 
-Choose either `adapter` or `agent` within a profile, not both. Profiles are
+Choose either `adapter` or `agent` on one selected profile path, not both. Profiles are
 top-level declarations. Tools referenced by the profile must exist; declaring
 their names does not implement them.
+
+## Conditional Configuration
+
+Group related settings under a deterministic condition instead of repeating the
+same expression in each field:
+
+```kedi
+[detailed_review: bool] = `True`
+
+> profile: reviewer:
+    > adapter: pydantic
+    > if: `detailed_review`:
+        > model: openai:gpt-5.6-sol
+        > effort: high
+        > instructions: Explain each finding using repository evidence.
+    > else:
+        > model: openai:gpt-5.6-luna
+        > effort: medium
+        > instructions: Return only actionable findings supported by evidence.
+
+> use: reviewer
+```
+
+The guard must return an exact Python `bool`. It runs once when the profile is
+applied, in the same environment as its computed fields. Unselected expressions
+and uses do not run. The selected members contribute to the profile in source
+order; later members can override them. Without `> else:`, a false condition adds
+nothing. Guards can nest and selected branches may contain `> use:`.
+
+This is configuration selection, not an executable body: templates, calls,
+returns, and model-evaluated claims are not allowed as members or guards. The
+closing colon after the Python expression is required. Both branches are checked
+for valid members. A selected path cannot contain both `agent` and `adapter`, or
+multiple `output` or `workflow` members in one profile. A dynamic workflow must
+have a child after its selected configuration has merged.
+
+When applied before a procedure definition, the selected configuration is captured
+there; changing the guard's inputs later does not rewrite the captured profile.
+Editor analysis does not execute guards. Runtime validates selections it cannot
+prove statically.
 
 ## Profile Documentation
 
@@ -164,7 +204,7 @@ helpers private.
 A profile can name a child profile declared later. Kedi resolves the complete
 profile graph and rejects unknown children and cycles.
 
-Within one profile, framework and harness selection remain mutually exclusive.
+On one selected profile path, framework and harness selection remain mutually exclusive.
 Invalid backend kinds, unknown members, duplicate output/workflow declarations, invalid settings,
 nonpositive `max_agents`, missing tools, and unsupported required capabilities
 produce diagnostics or compile-time errors.
