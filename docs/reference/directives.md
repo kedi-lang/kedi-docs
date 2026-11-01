@@ -111,6 +111,7 @@ return validation are not retried. See
 | `> subagent: child` | Permit one direct child profile |
 | `> max_agents: N` | Bound descendant starts for one invocation |
 | `> workflow: delegate\|blocking\|dynamic` | Select full delegation, synchronous-only delegation, or sandboxed dynamic child orchestration |
+| `> workflow:` block with `> mode:` and `> tools:` | Set the mode and, in `delegate` mode, which subagent control tools the model sees |
 | `> output: Type` | Declare a profile's default structured child result; an explicit child-call `final_schema` overrides it |
 
 A profile body may contain adapter or agent selection, model, effort, instructions,

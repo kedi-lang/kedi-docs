@@ -49,6 +49,29 @@ and its children get no channel back to it. `> workflow: dynamic` instead gives
 it `run_workflow(code)` and exposes the direct children as async functions inside
 a sandbox.
 
+In delegate mode, a `> workflow:` block can also choose which control tools the
+model sees. `delegate_task` is always offered:
+
+```kedi
+> profile: coordinator:
+    > adapter: pydantic
+    > subagent: researcher
+    > workflow:
+        > mode: delegate
+        > tools:
+            wait_subagent
+            cancel_subagent
+```
+
+`tools` accepts `continue_subagent`, `wait_subagent`, `cancel_subagent`,
+`subagent_status` and `send_subagent_input` (one per line, or one name on the
+`> tools:` line); `tools: all` is the default and `mode` defaults to `delegate`.
+`delegate_task` offers `background` only when `wait_subagent` is listed, and
+`cancel_subagent` and `subagent_status` require it. Children can message the
+parent only when `send_subagent_input` is offered. Using `tools` with
+`mode: blocking` or `mode: dynamic` is an error because those modes offer no
+control tools to choose from: remove `tools`, or use `mode: delegate`.
+
 Use delegate mode when the model manages children over time, and blocking mode
 for fan-out that needs none of those controls, which also keeps their schemas
 out of every request. Use [Dynamic Workflows](dynamic-workflows.md) for generated
