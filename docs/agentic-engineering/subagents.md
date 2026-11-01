@@ -55,6 +55,12 @@ out of every request. Use [Dynamic Workflows](dynamic-workflows.md) for generate
 dependencies. All modes preserve the same child boundaries, budgets, and approval
 ceilings.
 
+Every profile also carries the artifact tools and their instructions on each
+request by default, which costs on the order of a thousand input tokens per
+request. Children that never see large results can turn that off with
+`> artifacts: enabled: false`; leave it on for any child whose tools may return
+large values, since a disabled profile sends them to the model in full.
+
 ## Start a Child in Kedi Code
 
 Use native `> task` when the program, rather than the parent model, decides to
