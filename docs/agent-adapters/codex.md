@@ -21,7 +21,7 @@ configuration; Kedi does not accept or persist Codex credentials.
 
 ```kedi
 > agent: codex
-> model: gpt-5
+> model: gpt-6.1-sol
 > effort: high
 ```
 

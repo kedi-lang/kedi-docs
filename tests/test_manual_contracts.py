@@ -144,7 +144,7 @@ class ManualContractTests(unittest.TestCase):
                 self.assertEqual(
                     adapter.model_calls,
                     [
-                        "openai:gpt-5.6-luna",
+                        "openai:gpt-6-luna",
                         "typesafe/jev-latest",
                     ],
                 )

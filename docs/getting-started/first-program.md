@@ -13,7 +13,7 @@ Create `film.kedi`:
 
 ```kedi
 > adapter: pydantic
-> model: openai:gpt-5.6-luna
+> model: openai:gpt-6-luna
 
 [film: str] = Spirited Away
 
@@ -66,7 +66,7 @@ instead of individual film facts. Create `review.kedi`:
 
 ```kedi
 > adapter: pydantic
-> model: openai:gpt-5.6-luna
+> model: openai:gpt-6-luna
 
 ~Review(decision: Literal["approve", "revise"], summary: str)
 

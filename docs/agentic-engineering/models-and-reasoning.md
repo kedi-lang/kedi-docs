@@ -7,7 +7,7 @@ framework or harness by themselves.
 
 ```kedi
 > adapter: pydantic
-> model: openai:gpt-5.6-luna
+> model: openai:gpt-6-luna
 ```
 
 The model identifier is passed to the selected adapter. Its accepted syntax,
@@ -36,7 +36,7 @@ Each procedure captures the top-level state present when it is defined.
 
 ````kedi
 ```
-selected_model = "openai:gpt-5.6-luna"
+selected_model = "openai:gpt-6-luna"
 ```
 
 > model: `selected_model`

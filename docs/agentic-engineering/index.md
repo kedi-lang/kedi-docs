@@ -42,7 +42,7 @@ scope:
 
 ```kedi
 > adapter: pydantic
-> model: openai:gpt-5.6-luna
+> model: openai:gpt-6-luna
 > effort: low
 > instructions: Use tools only when they improve factual accuracy.
 ```
@@ -58,7 +58,7 @@ Profiles name reusable state:
 ```kedi
 > profile: reviewer:
     > adapter: pydantic
-    > model: openai:gpt-5.6-luna
+    > model: openai:gpt-6-luna
     > instructions: Review evidence before making a claim.
 
 > use: reviewer

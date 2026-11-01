@@ -10,7 +10,7 @@ remain unchanged.
 ```kedi
 > profile: reviewer:
     > adapter: pydantic
-    > model: openai:gpt-5.6-luna
+    > model: openai:gpt-6-luna
     > instructions: Review the supplied evidence. State uncertainties explicitly.
 
 > profile: coordinator:
@@ -62,7 +62,7 @@ The review and release note are separate tasks. Redirecting the review does not
 restart the release note or consume another delegation slot:
 
 ```kedi
-> model: openai:gpt-5.6-luna
+> model: openai:gpt-6-luna
 
 > profile: reviewer:
     > adapter: pydantic

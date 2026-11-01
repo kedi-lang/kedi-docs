@@ -24,7 +24,7 @@ Only an explicitly exported profile can become the server entry:
 ```kedi
 > profile: researcher:
     > adapter: pydantic
-    > model: openai:gpt-5.6-luna
+    > model: openai:gpt-6-luna
     > instructions:
         Inspect the available evidence before answering.
         State uncertainty instead of inventing missing facts.
@@ -225,7 +225,7 @@ subagent-capable coordinator:
 
 > profile: coordinator:
     > adapter: pydantic
-    > model: openai:gpt-5.6-luna
+    > model: openai:gpt-6-luna
     > subagent: cloud_worker
 
 @coordinate(question: str) -> str:

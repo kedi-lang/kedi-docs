@@ -19,7 +19,7 @@ Select the adapter and a Pydantic-style or LiteLLM-style model:
 
 ```kedi
 > adapter: pydantic
-> model: openai:gpt-5.6-luna
+> model: openai:gpt-6-luna
 ```
 
 Strings using `vendor/model` are normalized to Pydantic's model naming form.

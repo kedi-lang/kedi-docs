@@ -7,7 +7,7 @@ after a model call.
 
 ```kedi
 > adapter: pydantic
-> model: openai:gpt-5.6-luna
+> model: openai:gpt-6-luna
 > instructions: Extract only facts stated in the incident report.
 
 ~Owner(

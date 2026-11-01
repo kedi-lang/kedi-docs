@@ -8,7 +8,7 @@ requires measurement; the listing is not evidence of a quality gain.
 
 ````kedi
 > adapter: pydantic
-> model: openai:gpt-5.6-luna
+> model: openai:gpt-6-luna
 
 @extract_owner(ticket: str) -> str:
   > optimize: owner_prompt:

@@ -14,7 +14,7 @@ A model is required; DSPy has no model-less Kedi default.
 
 ```kedi
 > adapter: dspy
-> model: openai/gpt-5.6-luna
+> model: openai/gpt-6-luna
 ```
 
 Model names normalize to LiteLLM form. The adapter establishes a baseline

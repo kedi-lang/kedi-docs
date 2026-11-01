@@ -117,7 +117,7 @@ allows dynamic values:
 
 ````kedi
 ```
-selected_model = "openai:gpt-5.6-luna"
+selected_model = "openai:gpt-6-luna"
 ```
 
 > model: `selected_model`

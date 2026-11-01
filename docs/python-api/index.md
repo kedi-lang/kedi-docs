@@ -21,7 +21,7 @@ def summarize(text: str) -> str:
     ...
 
 
-kedi.configure(adapter="pydantic", model="openai:gpt-5.6-luna")
+kedi.configure(adapter="pydantic", model="openai:gpt-6-luna")
 print(summarize("Kedi combines LLM templates with Python."))
 ```
 
@@ -60,7 +60,7 @@ also requires the selected provider's dependencies and credentials.
 ```python
 kedi.configure(
     adapter="pydantic",
-    model="openai:gpt-5.6-luna",
+    model="openai:gpt-6-luna",
     system="Answer with evidence.",
 )
 ```
@@ -68,7 +68,7 @@ kedi.configure(
 `kedi.context(...)` temporarily merges overrides:
 
 ```python
-with kedi.context(model="openai:gpt-5.6-luna"):
+with kedi.context(model="openai:gpt-6-luna"):
     result = summarize("...")
 ```
 

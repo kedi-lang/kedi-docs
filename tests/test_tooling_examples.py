@@ -54,7 +54,10 @@ class ToolingExampleTests(unittest.TestCase):
     def test_cli_default_inventory(self):
         defaults = {p.name: p.default for p in main.params}
         self.assertEqual(defaults["adapter"], "pydantic")
-        self.assertEqual(defaults["adapter_model"], "groq:qwen/qwen3-32b")
+        self.assertEqual(defaults["adapter_model"], "openai/gpt-6-luna")
+        self.assertEqual(defaults["codegen_model"], "openai/gpt-6-luna")
+        self.assertEqual(defaults["optimizer_model"], "openai/gpt-6-luna")
+        self.assertEqual(defaults["optimizer_reflection_model"], "openai/gpt-6.1-sol")
         self.assertEqual(defaults["optimizer"], "mock")
         self.assertEqual(defaults["optimizer_max_metric_calls"], 100)
         self.assertEqual(defaults["codegen_retries"], 5)

@@ -122,7 +122,7 @@ is allowed.
 A model-backed program uses the usual Kedi directives:
 
 ```kedi
-> model: openai:gpt-5.6-luna
+> model: openai:gpt-6-luna
 [country] = Sweden
 >> The capital of <country> is [capital].
 > show: The capital is <capital>.
