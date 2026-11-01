@@ -43,12 +43,17 @@ supported in the initial capability implementation.
 ## Choose an Orchestration Mode
 
 The default `> workflow: delegate` gives the model delegation and supported
-lifecycle tools. `> workflow: dynamic` instead gives it `run_workflow(code)`
-and exposes the direct children as async functions inside a sandbox.
+lifecycle tools. `> workflow: blocking` keeps only a synchronous `delegate_task`:
+no `background` argument, continuation, wait, cancel, status or live-input tools,
+and its children get no channel back to it. `> workflow: dynamic` instead gives
+it `run_workflow(code)` and exposes the direct children as async functions inside
+a sandbox.
 
-Use delegate mode for one child result at a time. Use
-[Dynamic Workflows](dynamic-workflows.md) for generated dependencies and fan-out.
-Both modes preserve the same child boundaries, budgets, and approval ceilings.
+Use delegate mode when the model manages children over time, and blocking mode
+for fan-out that needs none of those controls, which also keeps their schemas
+out of every request. Use [Dynamic Workflows](dynamic-workflows.md) for generated
+dependencies. All modes preserve the same child boundaries, budgets, and approval
+ceilings.
 
 ## Start a Child in Kedi Code
 
