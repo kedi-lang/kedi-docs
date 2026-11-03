@@ -1,8 +1,13 @@
 name: Documentation
 
+# Publishes the documentation revision that Kedi `stable` references, which is not always the
+# latest push: documentation lands on main before the Kedi pull request that bumps the gitlink
+# is merged. A schedule picks up that merge; runs whose target is already published skip.
 on:
   push:
     branches: [main]
+  schedule:
+    - cron: "7,22,37,52 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -10,15 +15,17 @@ permissions:
 
 concurrency:
   group: documentation-${{ github.ref }}
-  cancel-in-progress: true
+  # A scheduled check must not cancel a deployment in progress.
+  cancel-in-progress: false
 
 jobs:
-  deploy:
+  target:
     runs-on: ubuntu-24.04
+    outputs:
+      kedi: ${{ steps.target.outputs.kedi }}
+      docs: ${{ steps.target.outputs.docs }}
+      deploy: ${{ steps.target.outputs.deploy }}
     steps:
-      - name: Check out repository
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-
       - name: Check Kedi repository access
         env:
           KEDI_REPOSITORY_TOKEN: ${{ secrets.KEDI_REPOSITORY_TOKEN }}
@@ -28,31 +35,55 @@ jobs:
             exit 1
           fi
 
-      - name: Wait for Kedi stable to reference this documentation revision
+      - name: Resolve the documentation revision Kedi stable references
+        id: target
         env:
           GH_TOKEN: ${{ secrets.KEDI_REPOSITORY_TOKEN }}
-        timeout-minutes: 6
+          PAGES_TOKEN: ${{ github.token }}
         run: |
-          for attempt in {1..30}; do
-            revision="$(
-              gh api "repos/kedi-lang/kedi/contents/kedi-docs?ref=stable" \
-                --jq .sha 2>/dev/null || true
-            )"
-            if [ "$revision" = "$GITHUB_SHA" ]; then
-              echo "Kedi stable references documentation revision $GITHUB_SHA"
-              exit 0
+          if ! kedi="$(gh api repos/kedi-lang/kedi/commits/stable --jq .sha)" ||
+            ! docs="$(gh api "repos/kedi-lang/kedi/contents/kedi-docs?ref=$kedi" --jq .sha)"; then
+            echo "::error::KEDI_REPOSITORY_TOKEN cannot read kedi-lang/kedi; renew the token or its repository access"
+            exit 1
+          fi
+          for revision in "$kedi" "$docs"; do
+            if ! [[ "$revision" =~ ^[0-9a-f]{40}$ ]]; then
+              echo "::error::Could not resolve Kedi stable and its kedi-docs gitlink"
+              exit 1
             fi
-            echo "Waiting for Kedi stable to reference $GITHUB_SHA (attempt $attempt/30)"
-            sleep 10
           done
-          echo "::error::Kedi stable does not reference documentation revision $GITHUB_SHA"
-          exit 1
+          published="$(GH_TOKEN="$PAGES_TOKEN" gh api \
+            'repos/kedi-lang/kedi-docs/contents/deployment.json?ref=gh-pages' \
+            --jq '.content | @base64d | fromjson | .docs' 2>/dev/null || true)"
+          [[ "$published" =~ ^[0-9a-f]{40}$ ]] || published=""
+          deploy=true
+          if [ "$published" = "$docs" ] && [ "$GITHUB_EVENT_NAME" != workflow_dispatch ]; then
+            deploy=false
+            echo "Documentation revision $docs is already published"
+          elif [ "$docs" != "$GITHUB_SHA" ] && [ "$GITHUB_EVENT_NAME" = push ]; then
+            echo "::notice::Kedi stable references $docs, not $GITHUB_SHA yet; publishing $docs. The schedule publishes $GITHUB_SHA once a Kedi stable commit references it."
+          fi
+          {
+            echo "kedi=$kedi"
+            echo "docs=$docs"
+            echo "deploy=$deploy"
+          } >> "$GITHUB_OUTPUT"
+
+  deploy:
+    needs: target
+    if: needs.target.outputs.deploy == 'true'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out the referenced documentation revision
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ needs.target.outputs.docs }}
 
       - name: Check out Kedi stable
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: kedi-lang/kedi
-          ref: stable
+          ref: ${{ needs.target.outputs.kedi }}
           token: ${{ secrets.KEDI_REPOSITORY_TOKEN }}
           path: .kedi-source
           persist-credentials: false
@@ -105,6 +136,14 @@ jobs:
           python scripts/build_docs.py
           python -m unittest discover -s tests -v
           npm run test:browser
+
+      - name: Record the published revisions
+        env:
+          KEDI: ${{ needs.target.outputs.kedi }}
+          DOCS: ${{ needs.target.outputs.docs }}
+        run: |
+          jq -n --arg kedi "$KEDI" --arg docs "$DOCS" '{kedi: $kedi, docs: $docs}' \
+            > site/deployment.json
 
       - name: Publish documentation
         uses: peaceiris/actions-gh-pages@329bcc8f12caed2cefe5a5b80781499a6f3b361b # v4
