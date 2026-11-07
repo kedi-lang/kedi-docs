@@ -215,6 +215,7 @@ nav = [
     ] },
     { "Optimization" = [
       { "Prompt Optimization" = "evals-and-optimization/prompt-optimization.md" },
+      { "Evolve Groups and Forms" = "evals-and-optimization/evolve-groups.md" },
       { "GEPA" = "evals-and-optimization/gepa.md" },
       { "Reproducible Comparisons" = "evals-and-optimization/reproducibility.md" },
     ] },
