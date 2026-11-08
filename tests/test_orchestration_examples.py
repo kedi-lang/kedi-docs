@@ -13,10 +13,10 @@ from unittest.mock import patch
 from pydantic_ai.messages import ModelResponse, TextPart, ToolCallPart
 from pydantic_ai.models.function import FunctionModel
 from pydantic_ai.usage import RequestUsage
+from test_reviewed_evidence import returned
 
 from kedi.agent_adapter import PydanticAdapter
 from kedi.lang import compile_program, parse_program
-from test_reviewed_evidence import returned
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))

@@ -9,10 +9,11 @@ import unittest
 from pathlib import Path
 from types import SimpleNamespace
 
+from pydantic_ai.models.test import TestModel
+
 import kedi
 from kedi.agent_adapter import PydanticAdapter
 from kedi.lang import compile_program, parse_program
-from pydantic_ai.models.test import TestModel
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
