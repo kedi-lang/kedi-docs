@@ -26,24 +26,14 @@ jobs:
       docs: ${{ steps.target.outputs.docs }}
       deploy: ${{ steps.target.outputs.deploy }}
     steps:
-      - name: Check Kedi repository access
-        env:
-          KEDI_REPOSITORY_TOKEN: ${{ secrets.KEDI_REPOSITORY_TOKEN }}
-        run: |
-          if [ -z "$KEDI_REPOSITORY_TOKEN" ]; then
-            echo "::error::KEDI_REPOSITORY_TOKEN must grant read access to kedi-lang/kedi and kedi-lang/tree-sitter-kedi"
-            exit 1
-          fi
-
       - name: Resolve the documentation revision Kedi stable references
         id: target
         env:
-          GH_TOKEN: ${{ secrets.KEDI_REPOSITORY_TOKEN }}
-          PAGES_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           if ! kedi="$(gh api repos/kedi-lang/kedi/commits/stable --jq .sha)" ||
             ! docs="$(gh api "repos/kedi-lang/kedi/contents/kedi-docs?ref=$kedi" --jq .sha)"; then
-            echo "::error::KEDI_REPOSITORY_TOKEN cannot read kedi-lang/kedi; renew the token or its repository access"
+            echo "::error::Could not read Kedi stable from kedi-lang/kedi"
             exit 1
           fi
           for revision in "$kedi" "$docs"; do
@@ -52,7 +42,7 @@ jobs:
               exit 1
             fi
           done
-          published="$(GH_TOKEN="$PAGES_TOKEN" gh api \
+          published="$(gh api \
             'repos/kedi-lang/kedi-docs/contents/deployment.json?ref=gh-pages' \
             --jq '.content | @base64d | fromjson | .docs' 2>/dev/null || true)"
           [[ "$published" =~ ^[0-9a-f]{40}$ ]] || published=""
@@ -84,7 +74,6 @@ jobs:
         with:
           repository: kedi-lang/kedi
           ref: ${{ needs.target.outputs.kedi }}
-          token: ${{ secrets.KEDI_REPOSITORY_TOKEN }}
           path: .kedi-source
           persist-credentials: false
 
@@ -103,7 +92,6 @@ jobs:
         with:
           repository: kedi-lang/tree-sitter-kedi
           ref: ${{ steps.tree-sitter-kedi.outputs.revision }}
-          token: ${{ secrets.KEDI_REPOSITORY_TOKEN }}
           path: .tree-sitter-kedi-source
           persist-credentials: false
 

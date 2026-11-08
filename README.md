@@ -81,11 +81,9 @@ npm run test:browser
 Rollback: revert the documentation source commit and dispatch the workflow
 again. Homepage releases do not rebuild or republish documentation.
 
-The repository secret `KEDI_REPOSITORY_TOKEN` must contain a fine-grained
-GitHub token with read-only `Contents` access to the private
-`kedi-lang/kedi` and `kedi-lang/tree-sitter-kedi` repositories. The workflow
-checks out Kedi's `stable` branch, resolves its pinned `tree-sitter-kedi`
-submodule revision, and installs both packages from those local checkouts.
+The workflow checks out Kedi's `stable` branch, resolves its pinned
+`tree-sitter-kedi` submodule revision, and installs both packages from those
+local checkouts. Both repositories are public, so no extra token is needed.
 
 The workflow can also be started manually from **Actions → Documentation → Run
 workflow**.
