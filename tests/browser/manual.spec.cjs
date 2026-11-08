@@ -128,7 +128,7 @@ for (const width of [360, 390, 768, 1024, 1280, 1440, 1920]) {
         if (path === "/")
           await expect(page.locator(".kedi-directory li")).toHaveCount(categories.length);
         if (path === article) {
-          await expect(page.locator(".kedi-code-frame")).toHaveCount(5);
+          await expect(page.locator(".kedi-code-frame")).toHaveCount(6);
           await expect(
             page.locator(".kedi-code-frame .md-code__button").first(),
           ).toBeHidden();
