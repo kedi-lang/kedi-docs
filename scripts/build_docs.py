@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import html
+import os
 import re
 import shutil
 import subprocess
@@ -238,9 +239,24 @@ def generate_machine_readable_docs() -> None:
     print(f"Generated Markdown endpoints and LLM indexes for {len(pages)} pages")
 
 
+def _run_zensical(*arguments: str) -> None:
+    # Zensical imports the `kedi` fence formatter, scripts/kedi_highlight.py, which needs Kedi
+    # from this interpreter's environment.
+    path = os.pathsep.join(filter(None, (str(ROOT / "scripts"), os.environ.get("PYTHONPATH"))))
+    subprocess.run(
+        [sys.executable, "-m", "zensical", *arguments],
+        cwd=ROOT,
+        check=True,
+        env={**os.environ, "PYTHONPATH": path},
+    )
+
+
 def main() -> None:
-    arguments = sys.argv[1:] or ["--clean", "--strict"]
-    subprocess.run(["zensical", "build", *arguments], cwd=ROOT, check=True)
+    arguments = sys.argv[1:]
+    if arguments[:1] == ["serve"]:
+        _run_zensical(*arguments)
+        return
+    _run_zensical("build", *(arguments or ["--clean", "--strict"]))
     generate_machine_readable_docs()
 
 

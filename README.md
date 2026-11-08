@@ -4,18 +4,26 @@ The Kedi documentation site is built with Zensical.
 
 ## Develop
 
+Install Kedi from the source version the documentation targets and
+`requirements-docs.txt` into one environment, then run:
+
 ```bash
-uv tool run --from zensical==0.0.51 zensical serve
+python scripts/build_docs.py serve
 ```
+
+Kedi fences are highlighted at build time by `scripts/kedi_highlight.py` with
+Kedi's own semantic tokens, the tree-sitter-kedi highlight query its language
+server and REPL use. The build therefore needs Kedi, and its colors follow the
+grammar of the Kedi revision it documents.
 
 ## Validate
 
-Install Kedi from the source version the documentation targets, then run:
+In the same environment, run:
 
 ```bash
 python scripts/validate_kedi_examples.py
 python scripts/sync_capability_matrix.py --check
-uv tool run --from zensical==0.0.51 python scripts/build_docs.py
+python scripts/build_docs.py
 ```
 
 The first command parser-checks Kedi fences with their declared source

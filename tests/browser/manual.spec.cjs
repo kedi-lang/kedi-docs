@@ -42,7 +42,7 @@ for (const colorScheme of ["light", "dark"]) {
   test(`${colorScheme}: capability and profile declarations share keyword highlighting`, async ({ page }, info) => {
     await page.emulateMedia({ colorScheme });
     await page.goto("/agentic-engineering/capabilities/");
-    const blocks = page.locator("pre.kedi > code[data-kedi-highlighted]");
+    const blocks = page.locator("pre.kedi > code");
     const example = blocks.filter({ hasText: "> profile: release_reviewer:" }).first();
     await expect(example).toBeVisible();
     const keywords = example.locator(".k");

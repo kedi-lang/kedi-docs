@@ -13,7 +13,6 @@ extra_css = [
   "stylesheets/manual.css",
 ]
 extra_javascript = [
-  "javascripts/kedi-highlight.js",
   "javascripts/copy-markdown.js",
   "javascripts/manual.js",
 ]
@@ -347,7 +346,7 @@ pygments_lang_class = true
 [project.markdown_extensions.pymdownx.snippets]
 [project.markdown_extensions.pymdownx.superfences]
 custom_fences = [
-  { name = "kedi", class = "kedi", format = "pymdownx.superfences.fence_code_format" },
+  { name = "kedi", class = "kedi", format = "kedi_highlight.fence" },
 ]
 [project.markdown_extensions.pymdownx.tabbed]
 alternate_style = true
