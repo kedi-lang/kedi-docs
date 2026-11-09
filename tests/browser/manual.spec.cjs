@@ -45,15 +45,31 @@ for (const colorScheme of ["light", "dark"]) {
     const blocks = page.locator("pre.kedi > code");
     const example = blocks.filter({ hasText: "> profile: release_reviewer:" }).first();
     await expect(example).toBeVisible();
-    const keywords = example.locator(".k");
+    const keywords = example.locator(".kt-keyword");
     await expect(keywords.filter({ hasText: /^capability$/ })).toHaveCount(2);
     await expect(keywords.filter({ hasText: /^profile$/ })).toHaveCount(1);
-    const colors = await example.locator(".k").evaluateAll((tokens) => tokens
+    const colors = await keywords.evaluateAll((tokens) => tokens
       .filter((token) => ["capability", "profile"].includes(token.textContent))
       .map((token) => getComputedStyle(token).color));
     expect(new Set(colors).size).toBe(1);
-    await expect(blocks.locator(".k").filter({ hasText: /^defer$/ }).first()).toBeVisible();
+    await expect(blocks.locator(".kt-keyword").filter({ hasText: /^defer$/ }).first()).toBeVisible();
     await example.screenshot({ path: info.outputPath("capability-highlighting.png") });
+  });
+
+  test(`${colorScheme}: Kedi roles keep distinct colors`, async ({ page }, info) => {
+    await page.emulateMedia({ colorScheme });
+    await page.goto("/agentic-engineering/subagent-tasks/");
+    const example = page.locator("pre.kedi > code").filter({ hasText: "> task [review_job]: reviewer:" }).first();
+    await expect(example).toBeVisible();
+    // Prose, bindings, types, constants, directives and operators must not share a color.
+    // Numbers share the constant color, as in the REPL.
+    const roles = ["kt-string", "kt-variable", "kt-type", "kt-constant", "kt-keyword", "kt-operator"];
+    const colors = {};
+    for (const role of roles) {
+      colors[role] = await example.locator(`.${role}`).first().evaluate((token) => getComputedStyle(token).color);
+    }
+    expect(new Set(Object.values(colors)).size, JSON.stringify(colors)).toBe(roles.length);
+    await example.screenshot({ path: info.outputPath("kedi-roles.png") });
   });
 }
 

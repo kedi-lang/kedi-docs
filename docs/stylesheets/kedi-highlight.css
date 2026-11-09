@@ -1,5 +1,44 @@
-/* Kedi fences are highlighted at build time by scripts/kedi_highlight.py, which maps Kedi's
-   semantic tokens to these Pygments class names. */
+/* Kedi fences are highlighted at build time by scripts/kedi_highlight.py. It gives each token
+   the role class that Kedi's REPL uses (kt-keyword, kt-string, ...).
+
+   The dark scheme uses the REPL's colors (KEDI_IDLE_STYLE in kedi/idle_input.py), except
+   comments, which use the site's comment color so they stay readable on the code background.
+   The light scheme uses darker colors of the same hues, each at least 5:1 against the code
+   background. The theme's code palette is not used, because it gives strings, variables and
+   functions one color. */
+
+:root,
+[data-md-color-scheme="default"] {
+  --kedi-token-namespace: #2f5aa8;
+  --kedi-token-type: #7b3fa8;
+  --kedi-token-parameter: #955200;
+  --kedi-token-variable: #29372e;
+  --kedi-token-property: #0d6b61;
+  --kedi-token-constant: #726000;
+  --kedi-token-function: #2f5aa8;
+  --kedi-token-keyword: #b0245c;
+  --kedi-token-comment: #5f6b61;
+  --kedi-token-string: #3d6b29;
+  --kedi-token-number: #726000;
+  --kedi-token-operator: #0a6c7e;
+  --kedi-token-decorator: #ad4317;
+}
+
+[data-md-color-scheme="slate"] {
+  --kedi-token-namespace: #82aaff;
+  --kedi-token-type: #c792ea;
+  --kedi-token-parameter: #f6c177;
+  --kedi-token-variable: #d8dee9;
+  --kedi-token-property: #7fdbca;
+  --kedi-token-constant: #d0bf69;
+  --kedi-token-function: #82aaff;
+  --kedi-token-keyword: #ff7ab2;
+  --kedi-token-comment: #95a494;
+  --kedi-token-string: #a8cc8c;
+  --kedi-token-number: #d0bf69;
+  --kedi-token-operator: #89ddff;
+  --kedi-token-decorator: #f78c6c;
+}
 
 pre.kedi {
   color: var(--md-code-fg-color);
@@ -10,42 +49,56 @@ pre.kedi code {
   display: block;
 }
 
-pre.kedi .c1 {
-  color: var(--md-code-hl-comment-color);
+pre.kedi .kt-namespace {
+  color: var(--kedi-token-namespace);
 }
 
-pre.kedi .k {
-  color: var(--md-code-hl-keyword-color);
+pre.kedi .kt-type {
+  color: var(--kedi-token-type);
 }
 
-pre.kedi .nf,
-pre.kedi .nd {
-  color: var(--md-code-hl-function-color);
+pre.kedi .kt-parameter {
+  color: var(--kedi-token-parameter);
 }
 
-pre.kedi .nc,
-pre.kedi .nl {
-  color: var(--md-code-hl-special-color);
+pre.kedi .kt-variable {
+  color: var(--kedi-token-variable);
 }
 
-pre.kedi .nv {
-  color: var(--md-code-hl-variable-color);
+pre.kedi .kt-property {
+  color: var(--kedi-token-property);
 }
 
-pre.kedi .na,
-pre.kedi .nn {
-  color: var(--md-code-hl-name-color);
+pre.kedi .kt-constant {
+  color: var(--kedi-token-constant);
 }
 
-pre.kedi .mi {
-  color: var(--md-code-hl-number-color);
+pre.kedi .kt-function {
+  color: var(--kedi-token-function);
 }
 
-pre.kedi .s,
-pre.kedi .sr {
-  color: var(--md-code-hl-string-color);
+pre.kedi .kt-keyword {
+  color: var(--kedi-token-keyword);
+  font-weight: 700;
 }
 
-pre.kedi .o {
-  color: var(--md-code-hl-operator-color);
+pre.kedi .kt-comment {
+  color: var(--kedi-token-comment);
+  font-style: italic;
+}
+
+pre.kedi .kt-string {
+  color: var(--kedi-token-string);
+}
+
+pre.kedi .kt-number {
+  color: var(--kedi-token-number);
+}
+
+pre.kedi .kt-operator {
+  color: var(--kedi-token-operator);
+}
+
+pre.kedi .kt-decorator {
+  color: var(--kedi-token-decorator);
 }

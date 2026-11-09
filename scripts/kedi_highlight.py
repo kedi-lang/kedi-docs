@@ -1,10 +1,11 @@
 """Highlight Kedi fences with Kedi's own tree-sitter token pipeline.
 
-Kedi code on the site is colored the way Kedi's language server and REPL color it. The tokens
-come from `compute_semantic_tokens_full`, which runs tree-sitter-kedi's highlight query and
-highlights embedded Python with tree-sitter-python. The build therefore always uses the grammar
-of the Kedi revision it documents. Classes are Pygments short names, so the theme's code colors
-apply.
+Kedi code on the site is colored the way Kedi's REPL colors it. The tokens come from
+`compute_semantic_tokens_full`, which runs tree-sitter-kedi's highlight query and highlights
+embedded Python with tree-sitter-python. The build therefore always uses the grammar of the Kedi
+revision it documents. Each token gets the REPL's role as its class (`kt-keyword`, `kt-string`,
+and so on), and `stylesheets/kedi-highlight.css` colors the roles. The theme's code palette is not
+used: it gives strings, variables and functions one color.
 """
 
 from __future__ import annotations
@@ -12,32 +13,13 @@ from __future__ import annotations
 from html import escape
 from typing import Any
 
+from kedi.idle_input import _TOKEN_STYLES
 from kedi.lsp.features import SEMANTIC_TOKEN_TYPES, compute_semantic_tokens_full
 
+# The REPL's role for each semantic token type, as a class name.
 _CLASSES = {
-    "namespace": "nn",
-    "type": "nc",
-    "class": "nc",
-    "enum": "nc",
-    "interface": "nc",
-    "struct": "nc",
-    "typeParameter": "nc",
-    "parameter": "nv",
-    "variable": "nv",
-    "property": "na",
-    "enumMember": "nl",
-    "event": "n",
-    "function": "nf",
-    "method": "nf",
-    "macro": "nf",
-    "keyword": "k",
-    "modifier": "k",
-    "comment": "c1",
-    "string": "s",
-    "number": "mi",
-    "regexp": "sr",
-    "operator": "o",
-    "decorator": "nd",
+    token_type: "kt-" + style.removeprefix("class:kedi.")
+    for token_type, style in _TOKEN_STYLES.items()
 }
 
 
