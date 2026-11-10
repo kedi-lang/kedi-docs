@@ -41,6 +41,7 @@ nav = [
     { "Model Interaction" = [
       { "Templates and Invokes" = "core-language/templates-and-invokes.md" },
       { "Substitutions and Calls" = "core-language/substitutions-and-calls.md" },
+      { "Media Input" = "core-language/media-input.md" },
     ] },
     { "Procedures" = [
       { "Procedures and Closures" = "core-language/procedures.md" },

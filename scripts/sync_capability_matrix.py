@@ -52,6 +52,7 @@ CAPABILITIES = (
     ("Subagent interruption", "supports_subagent_interrupt"),
     ("Semantic stream events", "supports_stream_events"),
     ("Native history processing", "supports_history_processing"),
+    ("Media input", "supports_media_input"),
     ("Agent lifecycle hooks", "hooks"),
 )
 
