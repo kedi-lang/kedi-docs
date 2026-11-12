@@ -105,8 +105,9 @@ accept media: a prompt with media fails before model I/O, and the editor reports
 it statically. See the [capability matrix](../reference/capability-matrix.md).
 
 Decision models read less. Jev (`typesafe/...`) reads images and text documents:
-images reach TypeSafe as image assets, and Kedi downloads image URLs first. Laya
-reads text documents only. Kedi rejects any other attachment for them before the
+images reach TypeSafe as image assets, and Kedi downloads image URLs first.
+TypeSafe image input is experimental, and the API rejects images it considers too
+small (64×64 fails, 512×512 works). Laya reads text documents only. Kedi rejects any other attachment for them before the
 call.
 
 URLs go to the provider as URLs when the model accepts them. Otherwise Kedi
