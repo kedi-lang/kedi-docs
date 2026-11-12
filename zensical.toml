@@ -181,7 +181,7 @@ nav = [
     { "Framework Adapters" = [
       { "Pydantic AI" = "agent-adapters/pydantic-ai.md" },
       { "LangChain" = "agent-adapters/langchain.md" },
-      { "DSPy" = "agent-adapters/dspy.md" },
+      { "Archived DSPy Adapter" = "agent-adapters/dspy.md" },
     ] },
     { "Agent Harnesses" = [
       { "Codex App Server" = "agent-adapters/codex.md" },
