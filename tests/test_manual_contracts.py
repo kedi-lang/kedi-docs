@@ -148,7 +148,7 @@ class ManualContractTests(unittest.TestCase):
                         "typesafe/jev-latest",
                     ],
                 )
-                self.assertEqual(adapter.settings_calls[1]["typesafe_threshold"], 0.9)
+                self.assertEqual(adapter.settings_calls[1]["decision_boolean_threshold"], 0.9)
                 self.assertIn("reply-value", adapter.request_calls[1])
                 self.assertEqual(len(adapter.request_calls), 2)
 
