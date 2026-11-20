@@ -114,10 +114,15 @@ documents process spawning.
 
 ## `.env` Loading and Security
 
-The Python API's default configuration loads `.env` through its environment
-setup. Explicit arguments and scoped configuration take precedence. Do not
-depend on `.env` loading inside a separately spawned harness unless that process
-also loads or receives the values.
+The Python API does not load the project `.env` by default: importing
+`kedi` does not read it, and the default configuration does not either.
+Call `dotenv.load_dotenv()` yourself when embedding and depending on a
+`.env` file, as [Installation](../getting-started/installation.md) says.
+`kedi.configure()` does attempt a dotenv load, but python-dotenv resolves
+the file from the calling code rather than the working directory, so a
+project `.env` is not reliably found that way; load it explicitly from
+your own code instead. Do not depend on `.env` loading inside a separately
+spawned harness unless that process also loads or receives the values.
 
 Never put secrets in `.kedi` source, optimizer datasets, debug exports, or
 committed environment files. `MarkdownDebugExporter` does not redact values.
