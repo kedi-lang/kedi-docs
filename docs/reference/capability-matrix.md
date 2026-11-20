@@ -117,7 +117,7 @@ search, schema hydration, and bounded code execution. Pydantic AI, LangChain,
 Claude Agent SDK, and Codex App Server implement the Kedi-owned surface; Kedi
 does not infer it from ordinary tool registration.
 
-Hook support is event-specific. ACP exposes only `user_prompt_submit`.
+Hook support is event-specific. ACP and A2A expose only `user_prompt_submit`.
 Pydantic AI, LangChain, Claude, Codex, and WebGPU expose
 the event matrix documented in
 [Agent Lifecycle Hooks](../agentic-engineering/hooks.md). A generic `yes` in the
