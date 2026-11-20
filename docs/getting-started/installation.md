@@ -85,6 +85,10 @@ uv add "kedi[langchain-aws]"
 uv add "kedi[playground]"
 uv add "kedi[notebook]"
 uv add "kedi[typesafe]"
+uv add "kedi[snapshots]"
+uv add "kedi[terminal-bench]"
+uv add "kedi[a2a]"
+uv add "kedi[a2a-persistence]"
 ```
 
 `dspy` installs DSPy for GEPA optimization, not a runtime adapter. `langchain`
@@ -92,7 +96,11 @@ installs the LangChain adapter's common OpenAI, OpenRouter, and MCP
 integrations; add `langchain-aws` only for Bedrock. `groq` installs the provider
 SDK used by Groq-backed Pydantic AI models. `claude` and `codex-model` install
 their corresponding SDK bridges, while `playground` adds browser server
-dependencies. Codex, Claude, and ACP harnesses may also require an executable,
+dependencies. `snapshots` installs cloudpickle for Python object snapshots
+(`--snapshot-format python`). `terminal-bench` installs Terminal-Bench
+tooling and targets Python 3.12+. `a2a` installs the A2A server
+(`kedi a2a serve`); `a2a-persistence` adds SQLite-backed persistence for it
+(`--state-dir`). Codex, Claude, and ACP harnesses may also require an executable,
 authentication, or explicit command configuration.
 
 Install only what the program uses. The Codex-model extra targets Python 3.11+
