@@ -13,7 +13,12 @@ from kedi.tests_runner import run_evals, run_tests
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 KEDI_SOURCE = ROOT / ".kedi-source" if (ROOT / ".kedi-source").is_dir() else ROOT.parent
-sys.path.insert(0, str(KEDI_SOURCE / "tests"))
+# mock_adapter lives in the kedi checkout's tests/ in a nested checkout;
+# a standalone docs checkout falls back to the vendored copy in tests/.
+for _candidate in (KEDI_SOURCE / "tests", ROOT / "tests"):
+    if (_candidate / "mock_adapter.py").is_file():
+        sys.path.insert(0, str(_candidate))
+        break
 from mock_adapter import MockAdapter  # noqa: E402
 from validate_kedi_examples import _kedi_fences  # noqa: E402
 

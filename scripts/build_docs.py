@@ -56,10 +56,18 @@ def _page_summary(source: Path) -> str:
     paragraph: list[str] = []
     seen_h1 = False
     in_fence = False
+    fence_len = 0
 
     for line in lines:
-        if line.startswith("```"):
-            in_fence = not in_fence
+        stripped = line.lstrip()
+        backticks = len(stripped) - len(stripped.lstrip("`"))
+        if backticks >= 3 and stripped.startswith("`"):
+            if not in_fence:
+                in_fence = True
+                fence_len = backticks
+            elif backticks >= fence_len and stripped[backticks:].strip() == "":
+                in_fence = False
+                fence_len = 0
             continue
         if in_fence:
             continue
