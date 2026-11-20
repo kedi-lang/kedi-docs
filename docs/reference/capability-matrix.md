@@ -30,6 +30,13 @@ part of the base adapter protocol rather than an optional capability.
 | Background subagents | yes | yes |
 | Live subagent input | yes | yes |
 | Subagent interruption | yes | yes |
+| Artifacts | yes | yes |
+| Native artifacts | yes | yes |
+| Stateful history | yes | yes |
+| History replay | yes | yes |
+| Native compaction | yes | yes |
+| Request budget | yes | yes |
+| Tool attempt budget | yes | yes |
 | Semantic stream events | yes | yes |
 | Native history processing | yes | yes |
 | Media input | yes | yes |
@@ -55,6 +62,13 @@ part of the base adapter protocol rather than an optional capability.
 | Background subagents | yes | yes | no | yes |
 | Live subagent input | yes | yes | no | no |
 | Subagent interruption | yes | yes | no | no |
+| Artifacts | yes | yes | no | no |
+| Native artifacts | no | no | no | no |
+| Stateful history | yes | yes | no | yes |
+| History replay | no | no | no | no |
+| Native compaction | yes | yes | no | no |
+| Request budget | no | no | no | no |
+| Tool attempt budget | no | no | no | no |
 | Semantic stream events | yes | yes | yes | yes |
 | Native history processing | no | no | no | no |
 | Media input | no | no | no | no |
@@ -104,6 +118,13 @@ not only the adapter.
 | `native_approval_handler` | Dynamic handler projected natively |
 | `subagents` | `> subagent:` |
 | `background_subagents` | Background lifecycle tools |
+| `artifacts` | `> artifacts:` enabled |
+| `native_artifacts` | Native artifact admission for adapter-owned tools |
+| `stateful_history` | History kept across requests by the adapter |
+| `history_replay` | Replaying stored history into a new run |
+| `native_compaction` | Adapter-native history compaction |
+| `request_budget` | `> budget:` `request_limit` |
+| `tool_attempt_budget` | `> budget:` `tool_attempt_limit` |
 | `stream_events` | Completed semantic commentary/final messages and run lifecycle events |
 | `hooks` | Agent lifecycle interception; support is declared separately for each event |
 
