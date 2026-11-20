@@ -50,7 +50,12 @@ it enabled in normal production logs.
 | Variable | Contract |
 | --- | --- |
 | `KEDI_HOME` | Absolute Kedi state root; relative paths are rejected |
-| `KEDI_REGISTRY_MOCK_ROOT` | Local mock registry root until the public registry exists |
+| `KEDI_REGISTRY_URL` | Registry base URL; default `https://registry.kedi-lang.org` |
+| `KEDI_REGISTRY_MOCK_ROOT` | Local mock registry root for registry-contract testing |
+
+The public registry lives at `https://registry.kedi-lang.org` by default.
+Set `KEDI_REGISTRY_URL` to use another HTTPS registry or a local HTTP server
+(see [Installation and Registries](../modules-and-packaging/installation-and-registries.md)).
 
 Installed packages live beneath `$KEDI_HOME/registry` or the platform default
 Kedi home. Git package operations set `GIT_TERMINAL_PROMPT=0` so unattended
