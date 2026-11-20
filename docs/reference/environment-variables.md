@@ -68,6 +68,7 @@ installs fail instead of waiting for credentials.
 | `KEDI_WORKSPACE_POLICY` | Unset/empty or `strict` enforces workspace containment; `none` disables that containment, not all secret/deletion rules |
 | `KEDI_HISTORY` | REPL input history file, default `~/.kedi_history` |
 | `KEDI_CODEX_AUTH_FILE` | Explicit Codex Responses auth file; see [Codex models](../agent-adapters/codex-models.md) |
+| `NO_COLOR` | Nonempty value disables REPL input highlighting and error colors (same as `--no-color`) |
 
 See [Filesystem](../modules-and-packaging/filesystem.md) before changing workspace
 policy. It does not sandbox embedded Python or external agents.
@@ -94,6 +95,7 @@ resets active runtimes. These files and their contents must not be committed.
 | `KEDI_A2A_USERNAME` | Basic-auth username; default `kedi` |
 | `KEDI_A2A_SECRET` | Direct server credential fallback |
 | `KEDI_A2A_MODEL` | Model override for the exported server profile |
+| `KEDI_A2A_STATE_DIR` | Persist A2A tasks and sessions across restarts; the `--state-dir` equivalent |
 
 Prefer a named variable through `--secret-env` or a mounted file through
 `--secret-file` over `KEDI_A2A_SECRET`. Client profiles reference their own
