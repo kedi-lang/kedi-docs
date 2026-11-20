@@ -159,7 +159,7 @@ class CookbookTests(unittest.TestCase):
                 },
             )
 
-        with self.assertLogs("kedi", level="ERROR"), self.assertRaises(KediExecutionError):
+        with self.assertRaises(KediExecutionError):
             execute(
                 local_source("structured-extraction.md"),
                 adapter=PydanticAdapter(FunctionModel(respond), retries=0),

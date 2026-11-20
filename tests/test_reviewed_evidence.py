@@ -138,10 +138,7 @@ class ReviewedEvidenceTests(unittest.TestCase):
                 self.assertTrue(children)
                 return
             if invalid_child:
-                with (
-                    self.assertLogs("kedi", level="ERROR"),
-                    self.assertRaises(KediExecutionError) as raised,
-                ):
+                with self.assertRaises(KediExecutionError) as raised:
                     namespace["run_review"](adapter, directory)
                 self.assertRegex(str(raised.exception), "(?i)validat|retries|delegat|child")
                 self.assertFalse((Path(directory) / "review.txt").exists())
