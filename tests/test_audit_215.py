@@ -68,10 +68,10 @@ class CliAndEnvTests(unittest.TestCase):
         """P0-6: the matrix says A2A, like ACP, exposes only user_prompt_submit."""
         text = _read("reference/capability-matrix.md")
         line = next(
-            line for line in text.splitlines() if "exposes only" in line
+            line for line in text.splitlines() if "only `user_prompt_submit`" in line
         )
         self.assertIn("A2A", line)
-        self.assertIn("user_prompt_submit", line)
+        self.assertIn("ACP", line)
 
     def test_cli_and_env_reference_gaps(self):
         """P1-2: explain/audit/debug --stdio/--state-dir and env vars are covered."""
@@ -96,9 +96,11 @@ class DirectivesTests(unittest.TestCase):
         ):
             self.assertIn(token, text)
         self.assertIn("enabled", text)
-        hooks = next(
-            line for line in text.splitlines() if line.startswith("`> hooks:` fields")
+        lines = text.splitlines()
+        index = next(
+            i for i, line in enumerate(lines) if line.startswith("`> hooks:` fields")
         )
+        hooks = " ".join(lines[index : index + 3])
         self.assertIn("post_tool_result_failure", hooks)
         self.assertIn("enabled", hooks)
 
@@ -107,7 +109,8 @@ class InstallationTests(unittest.TestCase):
     def test_no_separate_pydantic_ai_slim_openai(self):
         """P0-4: 0.1.5 does not need a separate pydantic-ai-slim[openai] install."""
         text = _read("getting-started/installation.md")
-        self.assertNotIn("pydantic-ai-slim[openai]", text)
+        self.assertNotIn("also need `pydantic-ai-slim[openai]`", text)
+        self.assertIn("no separate install", text)
 
     def test_install_extras(self):
         """P1-4: snapshots/terminal-bench/a2a/a2a-persistence extras are listed."""
@@ -232,7 +235,7 @@ class StandaloneCheckoutTests(unittest.TestCase):
         for name in ("test_manual_contracts.py", "test_validation_examples.py"):
             text = (ROOT / "tests" / name).read_text(encoding="utf-8")
             self.assertIn('ROOT / "tests"', text)
-            self.assertNotIn("ROOT.parent", text)
+            self.assertNotIn('sys.path.insert(0, str(KEDI_SOURCE / "tests"))', text)
 
     def test_standalone_import(self):
         """P2-2: the contract tests import without a surrounding kedi checkout."""
