@@ -59,7 +59,8 @@ adapter = PydanticAdapter("openai:gpt-6-luna", codemode=True)
 Use `CodeModeSettings` when Python should preload known tools:
 
 ```python
-from kedi.agent_adapter import CodeModeSettings, PydanticAdapter
+from kedi import CodeModeSettings
+from kedi.agent_adapter import PydanticAdapter
 
 adapter = PydanticAdapter(
     "openai:gpt-6-luna",
