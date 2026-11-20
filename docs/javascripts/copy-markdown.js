@@ -19,28 +19,33 @@
   }
 
   // The current page's Markdown: read when clicked, since instant navigation swaps pages without reloading
-  // the head this script first saw.
-  function markdownPath() {
+  // the head this script first saw. A section page `/runtime/` is `runtime/index.md` and an ordinary page
+  // `/runtime/x/` is `runtime/x.md`, so without a matching alternate both are tried.
+  function markdownPaths() {
     const alternate = document.querySelector(
       'link[rel="alternate"][type="text/markdown"]',
     );
     const here = location.pathname.replace(/\/(index\.html)?$/, "");
     const path = alternate ? new URL(alternate.href, location.href).pathname : "";
-    return path.replace(/\.md$/, "") === here ? path : `${here}.md`;
+    if (path && path.replace(/(\/index)?\.md$/, "") === here) return [path];
+    return here ? [`${here}.md`, `${here}/index.md`] : ["/index.md"];
+  }
+
+  async function fetchMarkdown() {
+    let status = 0;
+    for (const path of markdownPaths()) {
+      const response = await fetch(path, { headers: { Accept: "text/markdown" } });
+      if (response.ok) return response.text();
+      status = response.status;
+    }
+    throw new Error(`Markdown request failed with ${status}`);
   }
 
   // Safari (WebKit) lets a page write to the clipboard only within the click: a write started after an awaited
   // fetch is refused. So the write starts in the click, with the Markdown as a promise of its contents.
   async function copyMarkdown(button) {
     button.disabled = true;
-    const markdown = fetch(markdownPath(), {
-      headers: { Accept: "text/markdown" },
-    }).then((response) => {
-      if (!response.ok) {
-        throw new Error(`Markdown request failed with ${response.status}`);
-      }
-      return response.text();
-    });
+    const markdown = fetchMarkdown();
     try {
       let copied = false;
       if (navigator.clipboard && window.isSecureContext) {

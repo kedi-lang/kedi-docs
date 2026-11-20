@@ -268,6 +268,16 @@ test("mobile navigation and page contents are separate and usable", async ({
   await expect(page.locator("h2#raw-model-invokes-with")).toBeInViewport();
 });
 
+test("Markdown copy reads section index pages and the home page", async ({ page, context }) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  for (const [path, heading] of [["/core-language/", "# Language Reference"], ["/", "# "]]) {
+    await page.goto(path);
+    await page.locator(".kedi-copy-markdown").click();
+    await expect(page.locator(".kedi-copy-markdown")).toHaveClass(/is-copied/);
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toContain(heading);
+  }
+});
+
 test("Markdown copy follows instant navigation to the new page", async ({ page, context }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.goto(article);
