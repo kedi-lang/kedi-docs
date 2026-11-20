@@ -116,7 +116,7 @@ that result; enabling CodeMode does not itself execute the tool.
 
 ### `search_tools`
 
-```python
+```text
 search_tools(
     *,
     query: str | None = None,
@@ -133,7 +133,7 @@ A changed tool catalog makes old cursors stale.
 
 ### `get_tool_schema`
 
-```python
+```text
 get_tool_schema(*, tool_names: list[str])
 ```
 
@@ -151,7 +151,7 @@ to the same callable name are rejected when the catalog is built.
 
 ### `execute_code`
 
-```python
+```text
 execute_code(*, code: str, restart: bool = False)
 ```
 
