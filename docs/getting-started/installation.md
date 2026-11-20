@@ -50,8 +50,9 @@ The `source` command above is for POSIX shells.
 No provider or API key is needed for parsing or deterministic Python expressions.
 The model-backed learning examples explicitly select
 `openai:gpt-6-luna` through the Pydantic adapter, and Kedi installs its OpenAI
-provider support. Kedi 0.1.5 and earlier also need `pydantic-ai-slim[openai]`
-in the same environment.
+provider support. That support ships with the core package:
+`pydantic-ai-slim[openai]` is a core dependency, so no separate install
+is needed.
 
 Set `OPENAI_API_KEY` in your shell or a local, untracked `.env` file:
 
