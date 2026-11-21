@@ -81,8 +81,8 @@ behavior.
 | `--quiet` | Suppress codegen and GEPA progress |
 | `-p`, `--parse` | Parse source without compiling or executing |
 
-If both `--test` and `--eval` are given, tests run and return first. Avoid the
-ambiguous combination and invoke each validation mode separately.
+`--test` and `--eval` cannot be combined; run each validation mode
+separately.
 
 ## Code Generation Options
 

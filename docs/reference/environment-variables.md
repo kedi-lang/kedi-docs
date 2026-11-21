@@ -95,6 +95,7 @@ resets active runtimes. These files and their contents must not be committed.
 | `KEDI_A2A_USERNAME` | Basic-auth username; default `kedi` |
 | `KEDI_A2A_SECRET` | Direct server credential fallback |
 | `KEDI_A2A_MODEL` | Model override for the exported server profile |
+| `KEDI_A2A_STATE_DIR` | Directory that keeps A2A tasks and sessions across server restarts (`--state-dir`) |
 | `KEDI_A2A_STATE_DIR` | Persist A2A tasks and sessions across restarts; the `--state-dir` equivalent |
 
 Prefer a named variable through `--secret-env` or a mounted file through
@@ -121,15 +122,14 @@ documents process spawning.
 
 ## `.env` Loading and Security
 
-The Python API does not load the project `.env` by default: importing
-`kedi` does not read it, and the default configuration does not either.
-Call `dotenv.load_dotenv()` yourself when embedding and depending on a
-`.env` file, as [Installation](../getting-started/installation.md) says.
-`kedi.configure()` does attempt a dotenv load, but python-dotenv resolves
-the file from the calling code rather than the working directory, so a
-project `.env` is not reliably found that way; load it explicitly from
-your own code instead. Do not depend on `.env` loading inside a separately
-spawned harness unless that process also loads or receives the values.
+Importing `kedi` does not read a `.env` file, and the default configuration
+does not either. `kedi.configure()` and the `kedi` CLI load the `.env` found
+by searching from the working directory upward; variables already set in the
+environment keep their values. When you embed Kedi without calling
+`configure()`, call `dotenv.load_dotenv()` yourself, as
+[Installation](../getting-started/installation.md) says. Do not depend on
+`.env` loading inside a separately spawned harness unless that process also
+loads or receives the values.
 
 Never put secrets in `.kedi` source, optimizer datasets, debug exports, or
 committed environment files. `MarkdownDebugExporter` does not redact values.
