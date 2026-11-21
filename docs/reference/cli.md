@@ -81,8 +81,7 @@ behavior.
 | `--quiet` | Suppress codegen and GEPA progress |
 | `-p`, `--parse` | Parse source without compiling or executing |
 
-If both `--test` and `--eval` are given, tests run and return first. Avoid the
-ambiguous combination and invoke each validation mode separately.
+Combining `--test` and `--eval` is a usage error (`--test and --eval cannot be combined.`). Run each validation mode separately.
 
 ## Code Generation Options
 
@@ -93,8 +92,11 @@ ambiguous combination and invoke each validation mode separately.
 | `--codegen-retries` | `5` |
 
 The alternate codegen agent is `mock`, intended for deterministic tests.
-Retries count generation stages. Generated implementations are cached beside
-the source as `SOURCE.cache.kedi`.
+Retries count generation stages. `--codegen-retries 0` means no retries (the
+default is 5). `--test` forwards the codegen options (`--codegen-agent`,
+`--codegen-model`, `--codegen-retries`) and `--quiet` to the codegen step, so
+test runs use the same generation settings as a normal run. Generated
+implementations are cached beside the source as `SOURCE.cache.kedi`.
 
 ## Optimizer Options
 
