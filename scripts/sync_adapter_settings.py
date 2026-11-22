@@ -15,7 +15,6 @@ from __future__ import annotations
 import argparse
 import ast
 import os
-import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -102,9 +101,7 @@ def _setting_keys(source: Path) -> dict[str, set[str]]:
             name = node.target.id
             if name.endswith("_SETTING_KEYS") and isinstance(node.value, ast.Call):
                 keys[name] = {
-                    elt.value
-                    for elt in node.value.args[0].elts
-                    if isinstance(elt, ast.Constant)
+                    elt.value for elt in node.value.args[0].elts if isinstance(elt, ast.Constant)
                 }
     return keys
 

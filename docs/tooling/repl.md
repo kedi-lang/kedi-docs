@@ -134,6 +134,9 @@ kedi --idle --record
 kedi --idle --load ~/.kedi/sessions/idle-20260826T120000-ab12cd34.kedi-state
 ```
 
+A portable snapshot that restores lifecycle hook handlers imports their Python
+modules, so it loads only with `--trust-snapshot`.
+
 For supported local Python objects, install `kedi[snapshots]` and select
 `--snapshot-format python`:
 

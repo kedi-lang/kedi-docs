@@ -81,7 +81,8 @@ behavior.
 | `--quiet` | Suppress codegen and GEPA progress |
 | `-p`, `--parse` | Parse source without compiling or executing |
 
-Combining `--test` and `--eval` is a usage error (`--test and --eval cannot be combined.`). Run each validation mode separately.
+Combining `--test` and `--eval` is a usage error
+(`--test and --eval cannot be combined.`). Run each validation mode separately.
 
 ## Code Generation Options
 

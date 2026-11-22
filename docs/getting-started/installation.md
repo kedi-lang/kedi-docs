@@ -60,8 +60,9 @@ Set `OPENAI_API_KEY` in your shell or a local, untracked `.env` file:
 OPENAI_API_KEY=your-key-here
 ```
 
-The `kedi` command loads dotenv at startup. The Python API does not imply the
-same CLI startup step: call `dotenv.load_dotenv()` yourself when embedding and
+The `kedi` command and `kedi.configure()` load the `.env` found by searching
+from the working directory upward. Importing `kedi` does not: call
+`dotenv.load_dotenv()` yourself when embedding without `configure()` and
 depending on a `.env` file. A key authenticates the provider; it does not select
 a model. The source example supplies both `> adapter:` and `> model:`.
 

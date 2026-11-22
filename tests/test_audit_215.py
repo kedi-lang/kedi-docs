@@ -67,9 +67,7 @@ class CliAndEnvTests(unittest.TestCase):
     def test_a2a_prompt_only_hooks_in_matrix(self):
         """P0-6: the matrix says A2A, like ACP, exposes only user_prompt_submit."""
         text = _read("reference/capability-matrix.md")
-        line = next(
-            line for line in text.splitlines() if "only `user_prompt_submit`" in line
-        )
+        line = next(line for line in text.splitlines() if "only `user_prompt_submit`" in line)
         self.assertIn("A2A", line)
         self.assertIn("ACP", line)
 
@@ -97,9 +95,7 @@ class DirectivesTests(unittest.TestCase):
             self.assertIn(token, text)
         self.assertIn("enabled", text)
         lines = text.splitlines()
-        index = next(
-            i for i, line in enumerate(lines) if line.startswith("`> hooks:` fields")
-        )
+        index = next(i for i, line in enumerate(lines) if line.startswith("`> hooks:` fields"))
         hooks = " ".join(lines[index : index + 3])
         self.assertIn("post_tool_result_failure", hooks)
         self.assertIn("enabled", hooks)
@@ -163,9 +159,7 @@ class AdapterSettingsTests(unittest.TestCase):
     def _setting_keys():
         import kedi
 
-        settings = (
-            Path(kedi.__file__).resolve().parent / "agent_profile" / "settings.py"
-        )
+        settings = Path(kedi.__file__).resolve().parent / "agent_profile" / "settings.py"
         tree = ast.parse(settings.read_text(encoding="utf-8"))
         keys = {}
         for node in ast.walk(tree):
@@ -185,7 +179,9 @@ class AdapterSettingsTests(unittest.TestCase):
             keys = self._setting_keys()
         except ImportError:
             self.skipTest("kedi is not installed")
-        expected = sorted(set(keys["PYDANTIC_MODEL_SETTING_KEYS"]) | set(keys["KEDI_RUNTIME_SETTING_KEYS"]))
+        expected = sorted(
+            set(keys["PYDANTIC_MODEL_SETTING_KEYS"]) | set(keys["KEDI_RUNTIME_SETTING_KEYS"])
+        )
         text = _read("agent-adapters/pydantic-ai.md")
         missing = [key for key in expected if key not in text]
         self.assertEqual(missing, [], f"missing settings: {missing}")
@@ -196,7 +192,9 @@ class AdapterSettingsTests(unittest.TestCase):
             keys = self._setting_keys()
         except ImportError:
             self.skipTest("kedi is not installed")
-        expected = sorted(set(keys["LANGCHAIN_MODEL_SETTING_KEYS"]) | set(keys["KEDI_RUNTIME_SETTING_KEYS"]))
+        expected = sorted(
+            set(keys["LANGCHAIN_MODEL_SETTING_KEYS"]) | set(keys["KEDI_RUNTIME_SETTING_KEYS"])
+        )
         text = _read("agent-adapters/langchain.md")
         missing = [key for key in expected if key not in text]
         self.assertEqual(missing, [], f"missing settings: {missing}")
@@ -248,9 +246,7 @@ class StandaloneCheckoutTests(unittest.TestCase):
             shutil.copytree(
                 ROOT,
                 copy,
-                ignore=shutil.ignore_patterns(
-                    ".git", "site", "__pycache__", ".kedi-source"
-                ),
+                ignore=shutil.ignore_patterns(".git", "site", "__pycache__", ".kedi-source"),
             )
             env = dict(**{k: v for k, v in __import__("os").environ.items()})
             result = subprocess.run(
