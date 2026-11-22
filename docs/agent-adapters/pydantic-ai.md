@@ -54,6 +54,7 @@ The full list of supported `> settings:` keys comes from Kedi's
 | `media_limit` | Largest media value, in bytes, a request may attach; default 20 MB cap. |
 | `parallel_tool_calls` | Whether the model may call several tools in one turn. |
 | `presence_penalty` | Penalty for repeating tokens already present. |
+| `request_retries` | Retries for transient provider request failures; does not replay tools or entire runs. |
 | `response_cache` | Enable provider response caching for identical requests. |
 | `response_cache_ttl` | Cache time-to-live in seconds for cached responses. |
 | `seed` | Seed for deterministic sampling where the provider supports it. |
