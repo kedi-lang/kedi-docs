@@ -47,6 +47,7 @@ DESCRIPTIONS = {
     "parallel_tool_calls": "Whether the model may call several tools in one turn.",
     "presence_penalty": "Penalty for repeating tokens already present.",
     "rate_limiter": "Rate limiter applied to model calls.",
+    "request_retries": "Retries for transient provider request failures; does not replay tools or entire runs.",
     "reasoning": 'Reasoning configuration mapping (for example `{"effort": "high"}`).',
     "reasoning_effort": "Reasoning effort level for models without a reasoning mapping.",
     "response_cache": "Enable provider response caching for identical requests.",

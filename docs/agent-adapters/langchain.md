@@ -54,6 +54,7 @@ The full list of supported `> settings:` keys comes from Kedi's
 | `rate_limiter` | Rate limiter applied to model calls. |
 | `reasoning` | Reasoning configuration mapping (for example `{"effort": "high"}`). |
 | `reasoning_effort` | Reasoning effort level for models without a reasoning mapping. |
+| `request_retries` | Retries for transient provider request failures; does not replay tools or entire runs. |
 | `response_cache` | Enable provider response caching for identical requests. |
 | `response_cache_ttl` | Cache time-to-live in seconds for cached responses. |
 | `seed` | Seed for deterministic sampling where the provider supports it. |

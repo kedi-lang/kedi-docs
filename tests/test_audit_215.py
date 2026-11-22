@@ -50,11 +50,11 @@ class CliAndEnvTests(unittest.TestCase):
         self.assertNotIn("a2a", row)
         self.assertIn("kedi a2a serve", text)
 
-    def test_python_api_does_not_load_dotenv(self):
-        """P0-3: environment-variables.md says the Python API loads no .env."""
+    def test_python_api_dotenv_behavior_is_explicit(self):
+        """Configuration loads dotenv; low-level adapter construction does not."""
         text = _read("reference/environment-variables.md")
-        self.assertNotIn("default configuration loads `.env`", text)
-        self.assertIn("does not load", text)
+        self.assertIn("default configuration does not either", " ".join(text.split()))
+        self.assertIn("`kedi.configure()` and the `kedi` CLI load", text)
         self.assertIn("dotenv.load_dotenv()", text)
 
     def test_registry_url_documented(self):
