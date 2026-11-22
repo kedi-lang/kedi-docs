@@ -146,7 +146,7 @@ Restoring an import-addressable hook imports its Python module, so that module's
 normal import-time code may run; Kedi does not execute the hook handler itself
 during load. A portable snapshot that restores hook handlers therefore loads
 only with `trusted=True` (`--trust-snapshot` in the CLI); without it, loading
-stops before importing anything. Portable snapshots without hook handlers load
+stops before importing hook modules. Portable snapshots without hook handlers load
 without trust.
 
 Adapters and executors are not serialized. Supply them when the restored
