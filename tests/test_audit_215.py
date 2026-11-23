@@ -266,7 +266,7 @@ class StandaloneCheckoutTests(unittest.TestCase):
 
 class StaleVersionTests(unittest.TestCase):
     def test_no_stale_versions(self):
-        """P2-3: repl/terminal-bench/typesafe/vscode/zed name current versions."""
+        """Pages name current releases and the compatible published editor stack."""
         self.assertNotIn("0.1.4", _read("tooling/repl.md"))
         self.assertNotIn("0.1.4", _read("tooling/terminal-bench.md"))
         self.assertNotIn("0.3.0 package", _read("agent-adapters/typesafe.md"))
@@ -275,7 +275,9 @@ class StaleVersionTests(unittest.TestCase):
             self.assertNotIn("kedi==0.1.4", text)
             self.assertNotIn("tree-sitter-kedi==0.4.6", text)
             self.assertIn("kedi==0.1.5", text)
-            self.assertIn("tree-sitter-kedi==0.4.9", text)
+            self.assertIn("tree-sitter-kedi==0.4.7", text)
+            self.assertIn("kedi-debugger==0.1.1", text)
+            self.assertNotIn("tree-sitter-kedi==0.4.9", text)
 
 
 class BuiltInModulesTests(unittest.TestCase):
