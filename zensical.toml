@@ -205,6 +205,38 @@ nav = [
       { "Artifact Integration" = "agent-adapters/artifact-contract.md" },
     ] },
   ] },
+  { "Adapter Development" = [
+    "adapter-development/index.md",
+    { "Reference Adapter" = "adapter-development/reference-adapter.md" },
+    { "Foundations" = [
+      { "Call Lifecycle" = "adapter-development/call-lifecycle.md" },
+      { "Prompts and Instructions" = "adapter-development/prompt-contract.md" },
+      { "Structured Output" = "adapter-development/structured-output.md" },
+      { "Errors, Retries, and Cancellation" = "adapter-development/errors.md" },
+      { "Profiles, Models, and Settings" = "adapter-development/profiles.md" },
+      { "Capability Reference" = "adapter-development/capabilities.md" },
+    ] },
+    { "Tools and Safety" = [
+      { "Tools" = "adapter-development/tools.md" },
+      { "Approvals" = "adapter-development/approvals.md" },
+      { "Hooks" = "adapter-development/hooks.md" },
+      { "MCP, Skills, and Capability Tools" = "adapter-development/mcp-and-skills.md" },
+      { "CodeMode" = "adapter-development/codemode.md" },
+      { "Artifacts" = "adapter-development/artifacts.md" },
+    ] },
+    { "Agents" = [
+      { "Subagents" = "adapter-development/subagents.md" },
+      { "Conversations and History" = "adapter-development/conversations.md" },
+      { "Compaction and Prompt Caching" = "adapter-development/compaction.md" },
+    ] },
+    { "Runtime Services" = [
+      { "Media Input" = "adapter-development/media.md" },
+      { "Budgets and Usage" = "adapter-development/budgets.md" },
+      { "Events, Streaming, and Telemetry" = "adapter-development/events.md" },
+      { "Concurrency and Event Loops" = "adapter-development/concurrency.md" },
+    ] },
+    { "Testing an Adapter" = "adapter-development/testing.md" },
+  ] },
   { "Testing and Optimization" = [
     "evals-and-optimization/index.md",
     { "Validation" = [
