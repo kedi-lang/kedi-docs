@@ -50,7 +50,7 @@ fails in ways Kedi cannot detect.
 | `supports_stream_events` | emits streaming events | — | `> requires: stream_events` fails |
 | `supports_request_budget` | admits each model request against the run budget | allows `> budget: request_limit` | `Adapter '<shortname>' cannot enforce request run budget for this execution` |
 | `supports_tool_attempt_budget` | admits each tool attempt against the run budget | allows `> budget: tool_attempt_limit` (not with MCP or external tools) | `Adapter '<shortname>' cannot enforce tool_attempt run budget for this execution` |
-| `supports_media_input` | places prompt media in the request | allows media in prompts | `MediaError: Adapter '<shortname>' does not accept media input` |
+| `supports_media_input` | accepts multimodal input: places prompt images, audio, video, and documents in the request | allows multimodal prompts | `MediaError: Adapter '<shortname>' does not accept media input` |
 | `hooks` | dispatches the listed hook events (`HookCapabilities`) | runs profile hooks | `Agent hooks are not supported by adapter '<shortname>'`, or `Agent hook events <names> are not supported` |
 | `supported_json_schema_formats` | enforces these JSON Schema `format`s | the language server flags other formats for built-in adapters | — |
 | `negotiated_capabilities` | checks these `None` capabilities itself, before remote work | lets `> requires:` pass for them | — |

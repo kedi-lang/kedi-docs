@@ -48,7 +48,8 @@ For one call, Kedi:
    inheriting its caller's tools.
 4. **Enters the profile.** For an adapter with `SupportsProfileOverride`, it
    enters `profile_override(profile)`.
-5. **Checks media.** A prompt with media and an adapter without
+5. **Checks multimodal input.** A prompt with images, audio, video, or
+   documents and an adapter without
    `supports_media_input` fails with `MediaError: Adapter '<shortname>' does
    not accept media input`.
 6. **Runs the prompt hook.** For an adapter based on `HookRegistrationMixin`,

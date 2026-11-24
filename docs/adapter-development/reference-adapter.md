@@ -87,6 +87,7 @@ from kedi.agent_adapter.invocation import InvocationUsage, report_invocation
 from kedi.agent_adapter.output_schema import build_output_model
 from kedi.agent_adapter.request_retry import request_retry_limit, wait_for_request_retry
 from kedi.agent_adapter.tools.errors import correctable_tool_error
+from kedi.agent_adapter.tools.execution import validate_tool_arguments
 from kedi.agent_profile import AgentProfile, AgentProfileOverrideUnsupported
 from kedi.agent_profile.settings import KEDI_RUNTIME_SETTING_KEYS
 
@@ -189,11 +190,11 @@ need no handling here: Kedi already renders them into the `instructions` argumen
         if tool is None:
             return json.dumps({"ok": False, "error": f"Unknown tool {call.name!r}"})
         try:
-            result = tool.fn(**call.arguments)
+            result = tool.fn(**validate_tool_arguments(tool, call.arguments))
             if inspect.isawaitable(result):
                 result = await result
         except (ToolApprovalDenied, HookDeniedError) as exc:
-            return json.dumps({"ok": False, "error": str(exc)})
+            return json.dumps({"ok": False, "error": exc.message})
         except Exception as exc:
             message = correctable_tool_error(tool, exc)
             if message is None:

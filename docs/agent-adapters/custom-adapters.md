@@ -238,7 +238,7 @@ MCP configuration.
 
 `AdapterCapabilities` records structured output, tools, MCP, profile/model/
 effort/settings overrides, codemode, native approvals, subagents, background
-subagents, artifacts, media input, history, hooks, accepted setting names, and
+subagents, artifacts, multimodal input, history, hooks, accepted setting names, and
 JSON Schema string formats.
 
 `None` means unknown; `False` means unsupported. LSP diagnostics and runtime

@@ -11,7 +11,7 @@ When `tool.fn(**arguments)` raises, the adapter must pick one of three paths:
 
 | Failure | Path | Example |
 |---|---|---|
-| `ToolApprovalDenied` (approval policy) or `HookDeniedError` (`pre_tool_use` hook) | return `str(exc)` to the model as a failed tool result | `Tool 'delete_file' was denied: static deny policy` |
+| `ToolApprovalDenied` (approval policy) or `HookDeniedError` (`pre_tool_use` hook) | return `exc.message` to the model as a failed tool result | `Tool 'delete_file' was denied: static deny policy` |
 | `correctable_tool_error(tool, exc)` returns a message | return that message to the model | `Tool lookup failed: ValueError: unknown city. Correct the arguments if they caused this, or continue without this result.` |
 | `correctable_tool_error(tool, exc)` returns `None` | re-raise; the program call fails | a `RuntimeError` in a procedure, `RunBudgetExceeded`, run cancellation |
 
@@ -30,6 +30,10 @@ and `None` for budget exhaustion (`RunBudgetExceeded`), cancellation, failures
 after a tool already returned, and every other exception. Do not write your
 own classification or your own message; a message from this function is the
 text the model should read.
+
+Kedi's errors (`KediExecutionError` and its subclasses, including both denial
+types) render a Kedi stack trace in `str(exc)`. Send `exc.message`, the plain
+message, to the model.
 
 The reference adapter's `_execute` implements exactly this table. A framework
 with a tool-retry envelope (Pydantic AI's `ModelRetry`, LangChain's

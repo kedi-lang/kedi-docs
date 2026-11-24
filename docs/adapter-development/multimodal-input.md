@@ -1,4 +1,4 @@
-# Media Input
+# Multimodal Input
 
 !!! note "Draft"
     This page is being written. It will cover:

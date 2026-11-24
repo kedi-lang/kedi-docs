@@ -52,7 +52,7 @@ relies on the protocol, and the LSP uses the same flags for diagnostics.
 | `SupportsSubagentExecution` | `subagent_scope`, `subagent_run_kwargs`, `produce_subagent`, `telemetry_model_name` | `supports_subagents`, `supports_background_subagents`, `supports_live_subagent_input`, `supports_subagent_interrupt` | [Subagents](subagents.md) |
 | `SupportsConversationState` | `conversation_scope` | `supports_stateful_history`, `supports_history_replay`, `supports_history_processing` | [Conversations and History](conversations.md) |
 | compaction and caching | history codecs, compaction backends | `supports_native_compaction` | [Compaction and Prompt Caching](compaction.md) |
-| media | `PromptDraft.media` | `supports_media_input` | [Media Input](media.md) |
+| multimodal input | `PromptDraft.media` | `supports_media_input` | [Multimodal Input](multimodal-input.md) |
 | budgets | usage reporting, run-budget admission | `supports_request_budget`, `supports_tool_attempt_budget` | [Budgets and Usage](budgets.md) |
 | events | `AgentEventSink`, stream events | `supports_stream_events` | [Events, Streaming, and Telemetry](events.md) |
 

@@ -41,7 +41,7 @@ nav = [
     { "Model Interaction" = [
       { "Templates and Invokes" = "core-language/templates-and-invokes.md" },
       { "Substitutions and Calls" = "core-language/substitutions-and-calls.md" },
-      { "Media Input" = "core-language/media-input.md" },
+      { "Multimodal Input" = "core-language/multimodal-input.md" },
     ] },
     { "Procedures" = [
       { "Procedures and Closures" = "core-language/procedures.md" },
@@ -230,7 +230,7 @@ nav = [
       { "Compaction and Prompt Caching" = "adapter-development/compaction.md" },
     ] },
     { "Runtime Services" = [
-      { "Media Input" = "adapter-development/media.md" },
+      { "Multimodal Input" = "adapter-development/multimodal-input.md" },
       { "Budgets and Usage" = "adapter-development/budgets.md" },
       { "Events, Streaming, and Telemetry" = "adapter-development/events.md" },
       { "Concurrency and Event Loops" = "adapter-development/concurrency.md" },
