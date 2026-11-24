@@ -90,6 +90,7 @@ from kedi.agent_adapter.tools.errors import correctable_tool_error
 from kedi.agent_adapter.tools.execution import validate_tool_arguments
 from kedi.agent_profile import AgentProfile, AgentProfileOverrideUnsupported
 from kedi.agent_profile.settings import KEDI_RUNTIME_SETTING_KEYS
+from kedi.run_budget import admit_run_operation
 
 from backend import Backend, BackendRequest, Reply, ToolCall
 
@@ -107,6 +108,8 @@ class ChatAdapter:
         supports_settings=True,
         settings=frozenset({"temperature"}),
         supports_mcp=False,
+        supports_request_budget=True,
+        supports_tool_attempt_budget=True,
     )
 
     def __init__(
@@ -283,6 +286,7 @@ See [Errors, Retries, and Cancellation](errors.md).
         retries = request_retry_limit(self.active_profile.settings, self._request_retries)
         attempt = 0
         while True:
+            admit_run_operation("request")
             try:
                 return await self._backend.complete(request)
             except Exception as error:
@@ -338,7 +342,8 @@ The rules that matter:
   limits, request-size reservations, telemetry, and checkpoint usage events.
   A subagent limit that is exceeded raises from inside `report_invocation`;
   let that exception propagate. Run budgets (`> budget:`) need one more call
-  before each request; see [Budgets and Usage](budgets.md).
+  before each request: `admit_run_operation("request")`, which `_complete`
+  calls before every attempt; see [Budgets and Usage](budgets.md).
 - **Kedi validates.** `produce` returns the decoded value. Kedi checks it
   against the requested type, converts it, and fails the call if a field is
   missing.
