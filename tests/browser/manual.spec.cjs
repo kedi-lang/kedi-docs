@@ -1,7 +1,7 @@
 const { test, expect } = require("@playwright/test");
 const legacyRoutes = require("../fixtures/legacy-routes.json");
 const currentRoutes = Object.keys(legacyRoutes).map((route) => route.replace(/^\/docs/, "") || "/");
-const categories = ["Learn Kedi", "Language Reference", "Modules and Packages", "Agents and Orchestration", "Context and Runtime", "Python API", "Models and Integrations", "Testing and Optimization", "Tools and Environments", "Cookbook", "Benchmarks"];
+const categories = ["Learn Kedi", "Language Reference", "Modules and Packages", "Agents and Orchestration", "Context and Runtime", "Python API", "Models and Integrations", "Adapter Development", "Testing and Optimization", "Tools and Environments", "Cookbook", "Benchmarks"];
 const localOrigin = "http://127.0.0.1:8794";
 
 const article = "/core-language/templates-and-invokes/";
