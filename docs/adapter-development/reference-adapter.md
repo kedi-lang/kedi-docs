@@ -49,18 +49,19 @@ class Reply:
 @dataclass(frozen=True)
 class BackendRequest:
     model: str
-    system: str | None
+    instructions: str | None
     messages: list[dict[str, Any]]
     tools: list[dict[str, Any]] = field(default_factory=list)
     output_schema: dict[str, Any] | None = None
+    temperature: float | None = None
 
 
 class Backend(Protocol):
     async def complete(self, request: BackendRequest) -> Reply: ...
 ```
 
-A real backend translates `BackendRequest` into its provider call: `system`
-becomes the system message, `messages` the conversation, `tools` the
+A real backend translates `BackendRequest` into its provider call: `instructions`
+becomes the system or developer message, `messages` the conversation, `tools` the
 provider's tool declarations, and `output_schema` its structured-output or
 response-format option.
 
@@ -79,11 +80,15 @@ from typing import Any
 from pydantic import TypeAdapter
 from pydantic_core import to_jsonable_python
 
-from kedi.agent_adapter import AdapterCapabilities, AgentAdapterKind, ToolSpec
+from kedi.agent_adapter import AdapterCapabilities, AgentAdapterKind, HookDeniedError, ToolSpec
+from kedi.agent_adapter.approvals.policy import ToolApprovalDenied
 from kedi.agent_adapter.execution import run_sync
 from kedi.agent_adapter.invocation import InvocationUsage, report_invocation
 from kedi.agent_adapter.output_schema import build_output_model
+from kedi.agent_adapter.request_retry import request_retry_limit, wait_for_request_retry
+from kedi.agent_adapter.tools.errors import correctable_tool_error
 from kedi.agent_profile import AgentProfile, AgentProfileOverrideUnsupported
+from kedi.agent_profile.settings import KEDI_RUNTIME_SETTING_KEYS
 
 from backend import Backend, BackendRequest, Reply, ToolCall
 
@@ -98,14 +103,18 @@ class ChatAdapter:
         supports_profile_override=True,
         supports_model_override=True,
         supports_effort=False,
-        supports_settings=False,
+        supports_settings=True,
+        settings=frozenset({"temperature"}),
         supports_mcp=False,
     )
 
-    def __init__(self, backend: Backend, *, model: str, max_steps: int = 8) -> None:
+    def __init__(
+        self, backend: Backend, *, model: str, max_steps: int = 8, request_retries: int = 2
+    ) -> None:
         self._backend = backend
         self._model = model
         self._max_steps = max_steps
+        self._request_retries = request_retries
         self._profiles: ContextVar[tuple[AgentProfile, ...]] = ContextVar(
             f"chat_profiles_{id(self)}", default=()
         )
@@ -135,11 +144,13 @@ in background tasks, so state stored on `self` would leak between them.
             name
             for name, present in (
                 ("effort", profile.effort is not None),
-                ("settings", bool(profile.settings)),
                 ("mcp", bool(profile.mcp_servers)),
             )
             if present
         ]
+        unsupported += sorted(
+            set(profile.settings) - KEDI_RUNTIME_SETTING_KEYS - self.capabilities.settings
+        )
         if unsupported:
             raise AgentProfileOverrideUnsupported(
                 f"{self.shortname} does not support profile fields: {', '.join(unsupported)}"
@@ -153,8 +164,11 @@ in background tasks, so state stored on `self` would leak between them.
 
 Kedi enters `profile_override(profile)` around every call. Once an adapter
 implements it, Kedi no longer rejects profile fields on the adapter's behalf,
-so the adapter must refuse what it cannot honor. `profile.system` needs no
-handling here: Kedi already renders it into `instructions`.
+so the adapter must refuse what it cannot honor. Settings named in
+`KEDI_RUNTIME_SETTING_KEYS` (`context_limit`, `media_limit`, `request_retries`,
+`tool_reason`) belong to Kedi and are never an error; see [Profiles, Models,
+and Settings](profiles.md). The profile's `> instructions:`
+need no handling here: Kedi already renders them into the `instructions` argument.
 
 ### Tools
 
@@ -178,8 +192,13 @@ handling here: Kedi already renders it into `instructions`.
             result = tool.fn(**call.arguments)
             if inspect.isawaitable(result):
                 result = await result
-        except Exception as exc:  # the model sees the failure and may recover
-            return json.dumps({"ok": False, "error": f"{type(exc).__name__}: {exc}"})
+        except (ToolApprovalDenied, HookDeniedError) as exc:
+            return json.dumps({"ok": False, "error": str(exc)})
+        except Exception as exc:
+            message = correctable_tool_error(tool, exc)
+            if message is None:
+                raise
+            return json.dumps({"ok": False, "error": message})
         return json.dumps({"ok": True, "result": to_jsonable_python(result, fallback=str)})
 
     @staticmethod
@@ -192,9 +211,19 @@ handling here: Kedi already renders it into `instructions`.
 ```
 
 `tool.fn` is already wrapped by Kedi. Calling it applies approval policy,
-required-tool tracking, artifact admission, and telemetry; a denied call raises
-`ToolApprovalDenied` like any other tool failure. Some Kedi tools are
+required-tool tracking, artifact admission, and telemetry. Some Kedi tools are
 coroutines (subagent delegation is one), so always await an awaitable result.
+
+Failures take one of three paths, the same ones Kedi's built-in adapters use:
+
+- a denial (`ToolApprovalDenied`, or `HookDeniedError` from a `pre_tool_use`
+  hook) goes back to the model as a failed result; the run continues;
+- an error that `correctable_tool_error` classifies as correctable goes back
+  to the model with Kedi's message;
+- anything else, including budget exhaustion and cancellation, propagates and
+  ends the run.
+
+See [Errors, Retries, and Cancellation](errors.md).
 
 ### Calls
 
@@ -212,13 +241,14 @@ coroutines (subagent delegation is one), so always await an awaitable result.
         tools = {tool.name: tool for tool in self._tools.get()}
         steps = self._max_steps if max_requests is None else min(self._max_steps, max_requests)
         for _ in range(steps):
-            reply = await self._backend.complete(
+            reply = await self._complete(
                 BackendRequest(
                     model=self.active_profile.model or self._model,
-                    system=instructions,
+                    instructions=instructions,
                     messages=list(messages),
                     tools=[self._declaration(tool) for tool in tools.values()],
                     output_schema=output_schema,
+                    temperature=self.active_profile.settings.get("temperature"),
                 )
             )
             report_invocation(
@@ -247,6 +277,18 @@ coroutines (subagent delegation is one), so always await an awaitable result.
                 content = await self._execute(tools, call)
                 messages.append({"role": "tool", "tool_call_id": call.id, "content": content})
         raise RuntimeError(f"{self.shortname} stopped after {steps} model requests")
+
+    async def _complete(self, request: BackendRequest) -> Reply:
+        retries = request_retry_limit(self.active_profile.settings, self._request_retries)
+        attempt = 0
+        while True:
+            try:
+                return await self._backend.complete(request)
+            except Exception as error:
+                attempt += 1
+                retry = await wait_for_request_retry(error, attempt=attempt, retries=retries)
+                if not retry:
+                    raise
 
     async def invoke(self, *, prompt: str, instructions: str | None = None, **_: Any) -> str:
         reply, _messages = await self._run(
@@ -366,7 +408,7 @@ backend = ScriptedBackend(answer)
 assert run(SOURCE, backend) == 2_100_000
 first = backend.requests[0]
 assert first.model == "m1"
-assert "<TemplateInstructions>" in (first.system or "")
+assert "<TemplateInstructions>" in (first.instructions or "")
 assert first.output_schema is not None and "count" in first.output_schema["properties"]
 assert "population" in {tool["name"] for tool in first.tools}
 ```

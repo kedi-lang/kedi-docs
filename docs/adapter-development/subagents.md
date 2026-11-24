@@ -431,7 +431,7 @@ def text_child(request: BackendRequest) -> Reply:
 value, backend = run(PROFILES.format(output=""), text_child)
 assert value == "O-1 was delivered on Monday."
 child = next(r for r in backend.requests if not is_parent(r))
-assert "Report the status" in (child.system or "")
+assert "Report the status" in (child.instructions or "")
 assert child.tools == [] or all(t["name"] != "delegate_task" for t in child.tools)
 ```
 
