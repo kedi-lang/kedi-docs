@@ -521,6 +521,51 @@ value, _backend = run(PROFILES.format(output=""), background_child)
 assert value == "O-1 was delivered."
 ```
 
+A parent's `deny` binds a child whose own profile says `allow`:
+
+```python title="run_subagents.py"
+GUARDED = """
+@cancel_order(order: str) -> str:
+  ###
+  Cancel an order.
+  ###
+  > tool:
+    risk: mutating
+  = `"cancelled " + order`
+
+> profile: worker:
+    ###
+    Handles orders.
+    ###
+    > approval: allow
+    > use: cancel_order
+
+> profile: coordinator:
+    > approval: deny
+    > subagent: worker
+
+> use: coordinator
+[answer] << Cancel order O-1.
+= <answer>
+"""
+
+
+def guarded_child(request: BackendRequest) -> Reply:
+    results = tool_results(request)
+    if not is_parent(request):
+        if not results:
+            return Reply(tool_calls=(ToolCall("c1", "cancel_order", {"order": "O-1"}),))
+        return Reply(text=results[0].get("error") or results[0]["result"])
+    if not results:
+        arguments = {"subagent": "worker", "task": "Cancel O-1."}
+        return Reply(tool_calls=(ToolCall("p1", "delegate_task", arguments),))
+    return Reply(text=results[0]["result"]["task_summary"])
+
+
+value, _backend = run(GUARDED, guarded_child)
+assert "was denied" in value, value
+```
+
 ## Background Children
 
 Advertise `supports_background_subagents` only when a child can run while the

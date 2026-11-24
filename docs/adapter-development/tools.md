@@ -198,4 +198,11 @@ assert result == {"ok": True, "result": 8}
 assert declaration["description"] == "Double a number. Returns `int` instance."
 assert declaration["parameters"]["properties"]["n"]["type"] == "integer"
 assert declaration["parameters"]["required"] == ["n"]
+
+result, _first = run({"n": "four"})
+assert result["ok"] is False
+assert result["error"].startswith("Tool double failed: ToolArgumentError"), result
 ```
+
+A valid call ran the procedure. An argument of the wrong type did not end the
+run: the model received Kedi's correction and could call the tool again.
