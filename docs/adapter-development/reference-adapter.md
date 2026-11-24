@@ -334,7 +334,7 @@ The rules that matter:
   `kedi.agent_adapter.execution`, never `asyncio.run`. Kedi runs all
   overlapping model work on one shared event loop, and background subagents
   started by a tool call keep running on it after the call returns. A private
-  loop would close under them. See [Concurrency](../runtime/concurrency.md).
+  loop would close under them. See [Concurrency and Event Loops](concurrency.md).
 - **Kedi's text, unchanged.** `instructions` is the system message, the prompt
   is the user message, and the JSON Schema comes from `build_output_model`, so
   the field descriptions Kedi adds reach the model.

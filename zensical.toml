@@ -202,7 +202,6 @@ nav = [
     ] },
     { "Extending Kedi" = [
       { "Custom Adapters" = "agent-adapters/custom-adapters.md" },
-      { "Artifact Integration" = "agent-adapters/artifact-contract.md" },
     ] },
   ] },
   { "Adapter Development" = [
