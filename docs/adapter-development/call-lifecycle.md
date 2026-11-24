@@ -59,7 +59,7 @@ For one call, Kedi:
    definitions, output contract, and conversation coordinates become one
    immutable `AgentRunRequest`.
 8. **Opens the conversation turn.** With history enabled, it reserves the
-   next turn in the conversation; `> history: true` on an adapter without
+   next turn in the conversation; `> history: enabled` on an adapter without
    `supports_stateful_history` and `SupportsConversationState` fails with
    `Adapter '<shortname>' does not support stateful history`. See
    [Conversations and History](conversations.md).

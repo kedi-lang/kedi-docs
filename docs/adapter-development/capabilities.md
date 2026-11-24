@@ -43,7 +43,7 @@ fails in ways Kedi cannot detect.
 | `supports_subagent_interrupt` | stops and restarts a child attempt | accepts `interrupt: true` | `> requires: subagent_interrupt` fails |
 | `supports_artifacts` | passes Kedi tool results through unchanged and registers artifact tools | adds the artifact contract to calls with tools | a call with tools fails: `ArtifactCapabilityError: Active adapter does not support Kedi artifact references and tools` |
 | `supports_native_artifacts` | admits adapter-native and MCP tool results before they enter history | — | `> requires: native_artifacts` fails |
-| `supports_stateful_history` | continues native conversations (`SupportsConversationState`) | enters `conversation_scope` and keeps continuation state | `> history: true` fails: `Adapter '<shortname>' does not support stateful history` |
+| `supports_stateful_history` | continues native conversations (`SupportsConversationState`) | enters `conversation_scope` and keeps continuation state | `> history: enabled` fails: `Adapter '<shortname>' does not support stateful history` |
 | `supports_history_replay` | rebuilds the full causal message sequence from Kedi history | — | `> requires: history_replay` fails |
 | `supports_history_processing` | runs history processors | allows processors and conditions | `MissingAdapterCapabilityError` for `history_processing` |
 | `supports_native_compaction` | compacts history natively | allows `compaction: native` | `native compaction is not supported by adapter '<shortname>'` |
