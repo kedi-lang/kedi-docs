@@ -58,6 +58,7 @@ CAPABILITIES = (
     ("Semantic stream events", "supports_stream_events"),
     ("Native history processing", "supports_history_processing"),
     ("Media input", "supports_media_input"),
+    ("Image output", "supports_image_output"),
     ("Agent lifecycle hooks", "hooks"),
 )
 
