@@ -364,6 +364,10 @@ model reports it, and is `None` otherwise.
   answer.
 - A speech request offers no tools. Only the program's own `> instructions:`
   go with it, and a Gemini TTS model, which reads its prompt aloud, gets none.
+- A speech request stays outside the conversation: with `> history: enabled`
+  it neither reads nor records history, so later text turns do not see it.
+- It counts as one model request for `> budget:`. Fallback models are not
+  tried for it.
 - Any other model fails with an error naming it. Adapters without speech
   output (Claude Agent SDK, Codex, WebGPU, ACP, A2A) fail before the call, and
   the editor reports `[x: Audio] <<` on them.
