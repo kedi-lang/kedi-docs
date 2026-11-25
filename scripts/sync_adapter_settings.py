@@ -65,6 +65,7 @@ DESCRIPTIONS = {
     "tool_choice": "Tool selection policy (`none`, `auto`, `required`).",
     "tool_reason": "Opts into an optional `reason` string on tool calls.",
     "top_p": "Nucleus sampling cutoff.",
+    "voice": "Voice of `[x: Audio] <<` speech; LangChain's Gemini models take none.",
 }
 
 PAGES = (

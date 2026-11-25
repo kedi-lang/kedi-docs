@@ -59,6 +59,7 @@ CAPABILITIES = (
     ("Native history processing", "supports_history_processing"),
     ("Media input", "supports_media_input"),
     ("Image output", "supports_image_output"),
+    ("Speech output", "supports_audio_output"),
     ("Agent lifecycle hooks", "hooks"),
 )
 
