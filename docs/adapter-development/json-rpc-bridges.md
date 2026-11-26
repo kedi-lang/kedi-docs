@@ -14,6 +14,9 @@ with JsonRpcAdapter(["node", "my_bridge.mjs"], model="my-model") as adapter:
     runtime.run_main()
 ```
 
+From Kedi source, `> agent: rpc:` with a `command:` body launches a bridge (see
+[Backend Selection](../agentic-engineering/backend-selection.md#json-rpc-bridges)).
+
 The adapter launches the command and owns the process. Readiness is
 structural: the constructor is the handshake, so an adapter object always has
 its negotiated capabilities, and a bridge that fails `initialize` is stopped
