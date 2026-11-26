@@ -60,6 +60,8 @@ CAPABILITIES = (
     ("Media input", "supports_media_input"),
     ("Image output", "supports_image_output"),
     ("Speech output", "supports_audio_output"),
+    ("Native structured output", "supports_native_structured_output"),
+    ("Native tool calling", "supports_native_tool_calling"),
     ("Agent lifecycle hooks", "hooks"),
 )
 

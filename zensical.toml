@@ -210,6 +210,7 @@ nav = [
     { "Foundations" = [
       { "Call Lifecycle" = "adapter-development/call-lifecycle.md" },
       { "Prompts and Instructions" = "adapter-development/prompt-contract.md" },
+      { "Rendered Request" = "adapter-development/rendered-request.md" },
       { "Structured Output" = "adapter-development/structured-output.md" },
       { "Errors, Retries, and Cancellation" = "adapter-development/errors.md" },
       { "Profiles, Models, and Settings" = "adapter-development/profiles.md" },
