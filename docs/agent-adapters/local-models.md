@@ -93,8 +93,8 @@ measurements:
   `sandbox-exec -p '(version 1)(allow default)(deny network*)' python ...`.
 - **Turn off cloud handoff.** Some local runtimes forward requests to a cloud.
   `cactus serve`, from Cactus Engine, hands low-confidence completions to Cactus's
-  cloud unless it gets `--no-cloud-handoff`. llama.cpp's `llama-server` sends
-  nothing.
+  cloud unless it gets `--no-cloud-handoff`. llama.cpp's `llama-server`, run
+  from local model files, worked with outbound networking denied.
 - **Keep model packages out of Kedi.** The model packages are not Kedi
   dependencies. Each example pins its own in `requirements.txt`, for a separate
   environment.
