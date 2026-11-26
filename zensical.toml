@@ -177,6 +177,7 @@ nav = [
       { "Models and Reasoning" = "agentic-engineering/models-and-reasoning.md" },
       { "Codex Model Connections" = "agent-adapters/codex-models.md" },
       { "Capability Matrix" = "reference/capability-matrix.md" },
+      { "Local Models" = "agent-adapters/local-models.md" },
     ] },
     { "Framework Adapters" = [
       { "Pydantic AI" = "agent-adapters/pydantic-ai.md" },
