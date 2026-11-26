@@ -55,6 +55,7 @@ CAPABILITIES = (
     ("Native compaction", "supports_native_compaction"),
     ("Request budget", "supports_request_budget"),
     ("Tool attempt budget", "supports_tool_attempt_budget"),
+    ("Token usage", "supports_token_usage"),
     ("Semantic stream events", "supports_stream_events"),
     ("Native history processing", "supports_history_processing"),
     ("Media input", "supports_media_input"),
