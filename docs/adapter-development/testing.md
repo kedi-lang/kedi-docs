@@ -145,7 +145,10 @@ which speaks three protocols:
 | `{base_url}/v1/messages` | Anthropic Messages |
 | `{base_url}/kedi/webgpu` | the WebGPU bridge payload |
 
-Send requests with `stream` off; the endpoint refuses streamed ones.
+Send requests with `stream` off; the endpoint refuses streamed ones. The kit
+creates a fresh adapter for every run and closes it afterwards with `aclose()`
+or `close()` when the adapter has one, so `for_conformance` may start
+processes or open clients.
 
 Each scenario runs one Kedi call in two variants with different text:
 
@@ -170,8 +173,10 @@ the kit checks that:
   passes and the report lists it; text that depends on the request, such as
   "Fill these fields: …", fails.
 
-`--json` prints the report as JSON. The command exits 1 when a check fails. The
-built-in adapters have `for_conformance`:
+`--json` prints the report as JSON. The command exits 1 when a check fails.
+`PydanticAdapter`, `LangChainAdapter` and `WebGPUAdapter` have
+`for_conformance`; the Claude and Codex harness adapters reach their models
+through their CLIs, so this endpoint cannot record them:
 
 ```bash
 kedi adapter check kedi.agent_adapter:PydanticAdapter
