@@ -236,6 +236,7 @@ nav = [
       { "Concurrency and Event Loops" = "adapter-development/concurrency.md" },
     ] },
     { "Testing an Adapter" = "adapter-development/testing.md" },
+    { "JSON-RPC Bridges" = "adapter-development/json-rpc-bridges.md" },
   ] },
   { "Testing and Optimization" = [
     "evals-and-optimization/index.md",
