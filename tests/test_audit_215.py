@@ -266,18 +266,20 @@ class StandaloneCheckoutTests(unittest.TestCase):
 
 class StaleVersionTests(unittest.TestCase):
     def test_no_stale_versions(self):
-        """Pages name current releases and the compatible published editor stack."""
-        self.assertNotIn("0.1.4", _read("tooling/repl.md"))
-        self.assertNotIn("0.1.4", _read("tooling/terminal-bench.md"))
+        """Pages name the Kedi release they document and the editor stack it installs."""
+        from importlib.metadata import requires, version
+
+        kedi = version("kedi")
+        grammar = next(spec for spec in requires("kedi") or [] if spec.startswith("tree-sitter-kedi=="))
+        self.assertIn(f"Kedi {kedi} on ", _read("tooling/repl.md"))
+        terminal_bench = _read("tooling/terminal-bench.md")
+        self.assertIn(f"kedi-{kedi}-py3-none-any.whl", terminal_bench)
+        self.assertEqual(terminal_bench.count("-py3-none-any.whl"), terminal_bench.count(f"kedi-{kedi}-py3"))
         self.assertNotIn("0.3.0 package", _read("agent-adapters/typesafe.md"))
         for page in ("tooling/vscode.md", "tooling/zed.md"):
             text = _read(page)
-            self.assertNotIn("kedi==0.1.4", text)
-            self.assertNotIn("tree-sitter-kedi==0.4.6", text)
-            self.assertIn("kedi==0.1.5", text)
-            self.assertIn("tree-sitter-kedi==0.4.7", text)
-            self.assertIn("kedi-debugger==0.1.1", text)
-            self.assertNotIn("tree-sitter-kedi==0.4.9", text)
+            self.assertIn(f"`kedi=={kedi}`, `{grammar}`", text)
+            self.assertIn("`kedi-debugger==0.1.2`", text)
 
 
 class BuiltInModulesTests(unittest.TestCase):
