@@ -128,9 +128,10 @@ optionally with a PEP 440 specifier.
 
 Names resolve through the registry, also when the package itself is installed
 from a local path or a Git URL; an entry cannot name a path or a URL. The
-package's modules import a dependency like any installed package
-(`> import: hermes`), and the dependency's adapters come with it
-(`> agent: hermes`). How installation and removal treat them is described in
+package's own modules import a dependency like any installed package
+(`> import: hermes`). That import makes the dependency's adapters selectable in
+the importing module (`> agent: hermes`); modules that import the package do
+not gain them. How installation and removal treat them is described in
 [Package Commands](../tooling/package-commands.md#kedi-dependencies).
 
 ## Adapters
