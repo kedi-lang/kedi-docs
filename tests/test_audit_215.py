@@ -270,11 +270,15 @@ class StaleVersionTests(unittest.TestCase):
         from importlib.metadata import requires, version
 
         kedi = version("kedi")
-        grammar = next(spec for spec in requires("kedi") or [] if spec.startswith("tree-sitter-kedi=="))
+        grammar = next(
+            spec for spec in requires("kedi") or [] if spec.startswith("tree-sitter-kedi==")
+        )
         self.assertIn(f"Kedi {kedi} on ", _read("tooling/repl.md"))
         terminal_bench = _read("tooling/terminal-bench.md")
         self.assertIn(f"kedi-{kedi}-py3-none-any.whl", terminal_bench)
-        self.assertEqual(terminal_bench.count("-py3-none-any.whl"), terminal_bench.count(f"kedi-{kedi}-py3"))
+        self.assertEqual(
+            terminal_bench.count("-py3-none-any.whl"), terminal_bench.count(f"kedi-{kedi}-py3")
+        )
         self.assertNotIn("0.3.0 package", _read("agent-adapters/typesafe.md"))
         for page in ("tooling/vscode.md", "tooling/zed.md"):
             text = _read(page)
