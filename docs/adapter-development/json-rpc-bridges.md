@@ -204,7 +204,8 @@ Without the capability, Kedi has the model name a request image for
 ### Settings, Effort and Fallback
 
 A bridge lists in `initialize` what it applies: `settings`, the `> settings:`
-names it maps to its backend, and `effort`, the `> effort:` levels it accepts
+names it maps to its backend (Kedi's names or names of its own, such as a
+`reasoning_budget`), and `effort`, the `> effort:` levels it accepts
 (`minimal`, `low`, `medium`, `high`, `xhigh`, `max`). Each run then carries the
 profile's values for those names in `settings`, and its level in `effort`.
 

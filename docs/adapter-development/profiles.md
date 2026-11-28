@@ -76,18 +76,20 @@ dropping it.
 
 ## Settings
 
-`> settings:` names are validated by the parser against one closed list: the
-union of the settings that Kedi itself and the built-in adapters accept (see
-[the settings inventory](../agentic-engineering/instructions-and-settings.md#settings-inventory)). A custom
-adapter therefore chooses its supported settings from those names, for
-example `temperature`, `max_tokens`, or `timeout`, and declares them:
+Kedi knows the settings that it and the built-in adapters accept (see
+[the settings inventory](../agentic-engineering/instructions-and-settings.md#settings-inventory)).
+A custom adapter declares the names it applies, from those or of its own, such
+as a `reasoning_budget` its backend takes:
 
 ```python
 capabilities = AdapterCapabilities(
     supports_settings=True,
-    settings=frozenset({"temperature"}),
+    settings=frozenset({"temperature", "reasoning_budget"}),
 )
 ```
+
+Kedi refuses a name the adapter does not declare before the first model request:
+`adapter '<shortname>' does not take the settings <names>`.
 
 Five settings belong to Kedi and may appear in any profile
 (`kedi.agent_profile.settings.KEDI_RUNTIME_SETTING_KEYS`):

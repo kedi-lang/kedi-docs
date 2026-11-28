@@ -33,7 +33,7 @@ fails in ways Kedi cannot detect.
 | `supports_model_fallback` | tries `> fallback:` models on transient failures | passes `fallback_models` | `> fallback:` fails with `MissingAdapterCapabilityError` for `model_fallback` |
 | `supports_effort` | honors `> effort:` | — | `> requires: effort` fails |
 | `supports_settings` | honors the names in `settings` | — | `> requires: settings` fails |
-| `settings` | the accepted setting names | allows `tool_reason` only when listed | `tool_reason is not supported by adapter '<shortname>'` |
+| `settings` | the accepted setting names | allows `tool_reason`, and names Kedi does not know, only when listed | `tool_reason is not supported by adapter '<shortname>'`; `adapter '<shortname>' does not take the settings <names>` |
 | `supports_codemode` | runs the CodeMode controls, or, on a JSON-RPC bridge, its backend's own code mode | allows `> codemode:` | `CodeMode is not supported by adapter '<shortname>'` |
 | `supports_native_approvals` | applies approval policies itself | stops wrapping tools with approval; passes `approval_ceiling` to children | — |
 | `supports_native_approval_handler` | drives an interactive approval handler natively | — | `> requires: native_approval_handler` fails |

@@ -122,15 +122,15 @@ optionally with a PEP 440 specifier.
   version: 1.0.0
   source: src/release_tools
   kedi_dependencies:
-    hermes>=0.1
+    pi>=0.1
     kedi_http
 ```
 
 Names resolve through the registry, also when the package itself is installed
 from a local path or a Git URL; an entry cannot name a path or a URL. The
 package's own modules import a dependency like any installed package
-(`> import: hermes`). That import makes the dependency's adapters selectable in
-the importing module (`> agent: hermes`); modules that import the package do
+(`> import: pi`). That import makes the dependency's adapters selectable in
+the importing module (`> agent: pi`); modules that import the package do
 not gain them. How installation and removal treat them is described in
 [Package Commands](../tooling/package-commands.md#kedi-dependencies).
 

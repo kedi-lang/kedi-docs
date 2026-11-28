@@ -160,13 +160,13 @@ Each scenario runs one Kedi call in two variants with different text:
 | `tool-allow`, `tool-deny` | a tool the model calls once, with `approval: allow` or `deny` |
 | `media` | an image prompt; runs only with `supports_media_input` |
 | `request-budget` | `request_limit: 1` with a tool call, then with a failing first request; runs only with `supports_request_budget` |
+| `subagent` | a `> task` child with its own instructions and a task capture; the kit checks the child's request, which reaches the adapter through `invoke` or `produce_subagent`; runs only with `supports_subagents` |
 
 Build the factory's client without SDK retries (`max_retries=0`). With retries
 on, Kedi cannot count every request, refuses `request_limit`, and the
 `request-budget` scenario fails.
 
-Subagents are not covered yet; the report says so. For every recorded request
-the kit checks that:
+For every recorded request the kit checks that:
 
 - each instruction part is in the system text exactly once, and the prompt is
   in the user turn exactly once;

@@ -189,20 +189,21 @@ root.
 
 ### A Project From a Repository
 
-Some harnesses ship no wheel and support being installed only from a source checkout. Hermes is
-one: its runtime finds its assets through the checkout's layout. `environment_project:` names the
-uv project of the environment as a GitHub repository at an exact commit:
+Some harnesses ship no wheel and support being installed only from a source checkout, for
+example because their runtime finds its assets through the checkout's layout.
+`environment_project:` names the uv project of the environment as a GitHub repository at an exact
+commit:
 
 ```kedi
-> package: hermes:
+> package: harness:
   version: 0.1.0
-  source: src/hermes
+  source: src/harness
   adapters:
-    hermes:
+    harness:
       kind: agent
       command: python bridge.py
       environment: uv
-      environment_project: git+https://github.com/NousResearch/hermes-agent@8fc0374447313e276f6b9a2764bfc750190c966a
+      environment_project: git+https://github.com/example/harness@0123456789abcdef0123456789abcdef01234567
 ```
 
 - **An exact commit.** The value takes the form of `kedi add git+https://github.com/…`, followed by

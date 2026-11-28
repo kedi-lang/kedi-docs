@@ -189,9 +189,13 @@ its sandbox.
 
 ## Settings Inventory
 
-The parser accepts exactly the keys below in `> settings:` (see
-`MODEL_SETTING_KEYS` in `src/kedi/agent_profile/settings.py`; the parser
-rejects any other name with `K-SETTING-KEY`). "Accepted by" names the
+Kedi knows the keys below in `> settings:` (see `MODEL_SETTING_KEYS` in
+`src/kedi/agent_profile/settings.py`). Any other name belongs to the adapter:
+one that declares it takes it (a package adapter in `capabilities.settings`, a
+JSON-RPC bridge in its handshake's `settings`), and any other adapter refuses
+it before the first model request. Where no package adapter or bridge can be
+selected (the module imports no package and has no `> agent: rpc:`), the
+parser warns about such a name with `K-SETTING-KEY`. "Accepted by" names the
 adapters whose boundary forwards the key; a key can still be filtered out
 for a given provider or model. Value contracts come from the shared
 directive-value registry (`src/kedi/directive_values.py`) where one exists.
